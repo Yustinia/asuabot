@@ -20,7 +20,7 @@ function ENT:FindHidingSpot(target)
 	local areas = navmesh.Find(target:GetPos(), 1500, 100, 20)
 	local targetEye = target:EyePos()
 
-	-- table.Shuffle(areas)
+	table.Shuffle(areas)
 
 	for _, area in ipairs(areas) do
 		local center = area:GetCenter()
