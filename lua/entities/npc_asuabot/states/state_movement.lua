@@ -32,6 +32,13 @@ function ENT:StateWander()
 			return
 		end
 
+		if IsValid(target) and self:IsLineOfSightClear(target) then
+			if math.random(1, 100) <= 10 then
+				self.CurrentState = "FakeOutRush"
+				return
+			end
+		end
+
 		path:Update(self)
 
 		self:ClearObstacles()
