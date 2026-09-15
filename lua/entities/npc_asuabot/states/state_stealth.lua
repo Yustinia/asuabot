@@ -6,10 +6,10 @@ local STALK_DUR = 8
 local STALK_PROXIMITY = 200
 local STALK_HIDE_THRESH = 60
 
-local BEHIND_SPD = 800
-local BEHIND_ACCEL = 800
+local BEHIND_SPD = 1200
+local BEHIND_ACCEL = 10000
 local BEHIND_THRESH = 60
-local BEHIND_DUR = 40
+local BEHIND_DUR = 20
 local BEHIND_DIST = 200
 
 function ENT:StateStalk()
