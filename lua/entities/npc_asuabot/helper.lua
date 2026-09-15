@@ -84,12 +84,10 @@ function ENT:TeleportToDistantNavSpot(minDistance)
 	return false
 end
 
-function ENT:OnContact(ent)
-	local pushIntensity = 1500
+function ENT:PuchOnContact(ent)
+	local pushIntensity = 2500
 
-	if self.CurrentState == "Avoid" and IsValid(ent) and ent:IsPlayer() then
-		ent:TakeDamage(15, self, self)
-
+	if IsValid(ent) and ent:IsPlayer() then
 		local pushVec = ent:GetPos() - self:GetPos()
 		pushVec.z = 0
 		pushVec:Normalize()

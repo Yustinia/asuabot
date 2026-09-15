@@ -55,10 +55,9 @@ function ENT:Initialize()
 	self:SetCollisionGroup(COLLISION_GROUP_NPC)
 	self:SetSolid(SOLID_BBOX)
 
-	-- Using a standard player bounding box for navigation
 	self:SetCollisionBounds(Vector(-16, -16, 0), Vector(16, 16, 72))
 
-	self.CurrentState = "Flickering"
+	self.CurrentState = "Avoid"
 end
 
 -- ==========================================
@@ -76,7 +75,6 @@ function ENT:IsObservedBy(ply)
 
 	local dirToBot = (self:GetPos() - ply:GetPos()):GetNormalized()
 	local plyAim = ply:GetAimVector()
-	-- 0.5 dot product roughly equates to a 90-degree FOV cone
 	return plyAim:Dot(dirToBot) > 0.5
 end
 

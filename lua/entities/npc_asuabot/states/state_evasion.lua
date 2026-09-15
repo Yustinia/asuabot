@@ -1,10 +1,19 @@
 include("entities/npc_asuabot/helper.lua")
 
-local SPEED_AVOID = 400
-local SPEED_FAKEOUT = 2000
+local AVOID_SPD = 700
+local AVOID_ACCEL = 800
+local AVOID_DUR = 12
+local AVOID_FAKEOUT_TIMER = 3
+local AVOID_RAD = 2000
+local AVOID_FAKEOUT_DIST = 60
+local AVOID_GOAL_TOLERANCE = 60
+
+local FAKEOUT_SPD = 2000
+local FAKEOUT_ACCEL = 2000
 
 function ENT:StateAvoid()
-	self.loco:SetDesiredSpeed(SPEED_AVOID)
+	self:HandleSpeed(AVOID_SPD, AVOID_ACCEL)
+
 	local target = self:GetClosestPlayer()
 	if not IsValid(target) then
 		self.CurrentState = "Wander"
@@ -19,7 +28,7 @@ function ENT:StateAvoid()
 
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(300)
-	path:SetGoalTolerance(50)
+	path:SetGoalTolerance(AVOID_GOAL_TOLERANCE)
 	path:Compute(self, fleePos)
 
 	local avoidStartTime = CurTime()
@@ -27,36 +36,38 @@ function ENT:StateAvoid()
 	local isBeingChased = false
 
 	while path:IsValid() and IsValid(target) and target:Alive() do
-		-- Base Sequence 8 Timeout: Re-evaluate state after 8 seconds of fleeing
-		if CurTime() - avoidStartTime >= 8 then
+		if CurTime() - avoidStartTime >= AVOID_DUR then
 			self.CurrentState = "Wander"
+			self:TeleportToDistantNavSpot()
 			return
 		end
 
-		-- Sequence 9: Avoid -> Jumpscare -> Avoid
-		-- Check if player is pursuing within 1050 HU (approx 20m) [Source: Training data / General knowledge domain]
-		if self:GetPos():DistToSqr(target:GetPos()) <= 1102500 then
+		if self:GetPos():Distance(fleePos) <= AVOID_GOAL_TOLERANCE then
+			self.CurrentState = "Wander"
+			self:TeleportToDistantNavSpot()
+			return
+		end
+
+		if self:GetPos():Distance(target:GetPos()) <= AVOID_RAD then
 			if not isBeingChased then
 				isBeingChased = true
 				chaseStartTime = CurTime()
 			end
 
-			-- If chased for 5 seconds continuously
-			if CurTime() - chaseStartTime >= 5 then
-				self.loco:SetDesiredSpeed(SPEED_FAKEOUT)
+			if CurTime() - chaseStartTime >= AVOID_FAKEOUT_TIMER then
+				self:HandleSpeed(FAKEOUT_SPD, FAKEOUT_ACCEL)
 
 				-- Rush directly into the player's face
 				local counterPath = Path("Follow")
 				counterPath:Compute(self, target:GetPos())
 
-				while counterPath:IsValid() and self:GetPos():DistToSqr(target:GetPos()) > 2500 do
+				while counterPath:IsValid() and self:GetPos():Distance(target:GetPos()) > AVOID_FAKEOUT_DIST do
 					counterPath:Compute(self, target:GetPos())
 					counterPath:Update(self)
 					coroutine.yield()
 				end
 
-				-- Stun the player briefly [Source: Training data / General knowledge domain]
-				coroutine.wait(2) -- Hold face-to-face for 2 seconds
+				coroutine.wait(2)
 
 				-- Resume avoiding without dealing damage
 				self.CurrentState = "Avoid"
@@ -67,10 +78,15 @@ function ENT:StateAvoid()
 		end
 
 		path:Update(self)
+
+		self:ClearObstacles()
+
 		if self.loco:IsStuck() then
 			self:HandleStuck()
+			path:Compute(self, target:GetPos())
 			return
 		end
+
 		coroutine.yield()
 	end
 end

@@ -1,10 +1,12 @@
 include("entities/npc_asuabot/helper.lua")
 
-local SPEED_WANDER = 300
+local WANDER_SPD = 500
+local WANDER_ACCEL = 500
 
 function ENT:StateWander()
-	self.loco:SetDesiredSpeed(SPEED_WANDER)
+	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
 
+	local target = self:GetClosestPlayer()
 	local navs = navmesh.GetAllNavAreas()
 	if #navs == 0 then
 		coroutine.wait(1)
@@ -20,13 +22,19 @@ function ENT:StateWander()
 	path:Compute(self, targetPos)
 
 	while path:IsValid() do
-		-- Random chance to switch to aggressive states (testing purposes)
-		if math.random(1, 300) == 1 then
+		if self:IsTouchingPlayer(target) then
+			target:TakeDamage(1, self, self)
+			self:PuchOnContact(target)
+		end
+
+		if math.random(1, 2000) == 1 then
 			self.CurrentState = table.Random({ "Chase", "Rushing", "Flickering" })
 			return
 		end
 
 		path:Update(self)
+
+		self:ClearObstacles()
 		if self.loco:IsStuck() then
 			self:HandleStuck()
 			return
