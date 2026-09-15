@@ -37,6 +37,35 @@ function ENT:FindHidingSpot(target)
 	return nil
 end
 
+function ENT:FindClosestHidingSpot(target)
+	local areas = navmesh.Find(target:GetPos(), 1500, 100, 20)
+	local targetEye = target:EyePos()
+
+	local closestSpot = nil
+	local closestDist = math.huge
+
+	for _, area in ipairs(areas) do
+		local center = area:GetCenter()
+
+		local tr = util.TraceLine({
+			start = center + Vector(0, 0, 64),
+			endpos = targetEye,
+			mask = MASK_OPAQUE,
+		})
+
+		if tr.Hit and tr.Fraction < 1.0 then
+			local dist = center:Distance(target:GetPos())
+
+			if dist < closestDist then
+				closestDist = dist
+				closestSpot = center
+			end
+		end
+	end
+
+	return closestSpot
+end
+
 function ENT:IsTouchingPlayer(target, distanceThreshold)
 	if not IsValid(target) or not target:IsPlayer() or not target:Alive() then
 		return false

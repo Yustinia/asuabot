@@ -18,7 +18,13 @@ function ENT:StateStalk()
 		return
 	end
 
-	local hidePos = self:FindHidingSpot(target)
+	local hidePos
+	if math.random(1, 2) == 1 then
+		hidePos = self:FindHidingSpot(target)
+	else
+		hidePos = self:FindClosestHidingSpot(target)
+	end
+
 	if not hidePos then
 		self.CurrentState = "Wander"
 		return
@@ -29,7 +35,6 @@ function ENT:StateStalk()
 	path:SetGoalTolerance(20)
 	path:Compute(self, hidePos)
 
-	-- Phase 1: Traversal to Hiding Spot
 	while path:IsValid() do
 		path:Update(self)
 		self:ClearObstacles()
@@ -51,6 +56,8 @@ function ENT:StateStalk()
 
 		coroutine.yield()
 	end
+
+	self:HandleSpeed(0, 0)
 
 	local stalkStartTime = CurTime()
 
