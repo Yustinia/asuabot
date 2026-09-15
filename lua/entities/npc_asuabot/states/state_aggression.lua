@@ -79,6 +79,12 @@ function ENT:StateRushing()
 	local stateStartTime = CurTime()
 
 	while IsValid(target) and target:Alive() do
+		if self:IsTouchingPlayer(target) then
+			target:TakeDamage(25, self, self)
+			self:TeleportToDistantNavSpot()
+			self.CurrentState = "Wander"
+		end
+
 		if CurTime() - stateStartTime >= RUSH_DUR then
 			self.CurrentState = "Wander"
 			return
