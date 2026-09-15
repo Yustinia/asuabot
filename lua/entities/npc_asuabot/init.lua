@@ -33,7 +33,7 @@ function ENT:Initialize()
 
 	self:SetCollisionBounds(Vector(-16, -16, 0), Vector(16, 16, 72))
 
-	self:TeleportToDistantNavSpot()
+	-- self:TeleportToDistantNavSpot()
 	self.CurrentState = "Wander"
 end
 

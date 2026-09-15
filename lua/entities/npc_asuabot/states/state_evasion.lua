@@ -10,6 +10,7 @@ local AVOID_GOAL_TOLERANCE = 60
 
 local FAKEOUT_SPD = 2000
 local FAKEOUT_ACCEL = 6000
+local FAKOUT_DIST = 60
 
 function ENT:StateAvoid()
 	self:HandleSpeed(AVOID_SPD, AVOID_ACCEL)
@@ -57,7 +58,6 @@ function ENT:StateAvoid()
 			if CurTime() - chaseStartTime >= AVOID_FAKEOUT_TIMER then
 				self:HandleSpeed(FAKEOUT_SPD, FAKEOUT_ACCEL)
 
-				-- Rush directly into the player's face
 				local counterPath = Path("Follow")
 				counterPath:Compute(self, target:GetPos())
 
@@ -110,8 +110,7 @@ function ENT:StateFakeOutRush()
 		end
 		path:Update(self)
 
-		if self:GetPos():Distance(target:GetPos()) <= 50 then
-			self:ExecuteFaceToFaceJumpscare(target)
+		if self:GetPos():Distance(target:GetPos()) <= FAKOUT_DIST then
 			self:HandleSpeed(0, 0)
 			coroutine.wait(2)
 
