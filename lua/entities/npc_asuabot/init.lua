@@ -33,8 +33,8 @@ function ENT:Initialize()
 
 	self:SetCollisionBounds(Vector(-16, -16, 0), Vector(16, 16, 72))
 
-	-- self:TeleportToDistantNavSpot()
-	self.CurrentState = "Stalk"
+	--self:TeleportToDistantNavSpot()
+	self.CurrentState = "Behind"
 end
 
 -- ==========================================
@@ -68,8 +68,6 @@ function ENT:RunBehaviour()
 			self:StateFlickering()
 		elseif self.CurrentState == "Stalk" then
 			self:StateStalk()
-		elseif self.CurrentState == "Peek" then
-			self:StatePeek()
 		elseif self.CurrentState == "Behind" then
 			self:StateBehind()
 		elseif self.CurrentState == "Avoid" then
