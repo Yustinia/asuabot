@@ -12,7 +12,9 @@ local RUSH_ACCEL = 2000
 local RUSH_DUR = 16
 local RUSH_AGE = 0.2
 
-local SPEED_FLICKER = 800
+local FLICKER_SPD = 600
+local FLICKER_ACCEL = 600
+local FLICKER_DUR = 4
 
 function ENT:StateChase()
 	self:HandleSpeed(CHASE_SPD, CHASE_ACCEL)
@@ -121,40 +123,43 @@ function ENT:StateFlickering()
 	local isCurrentlyObserved = false
 
 	while IsValid(target) and target:Alive() do
+		if self:IsTouchingPlayer(target) then
+			target:TakeDamage(10, self, self)
+			self:TeleportToDistantNavSpot()
+
+			-- HANDLE JUMPSCARE
+
+			self.CurrentState = "Wander"
+		end
+
 		local wasObserved = isCurrentlyObserved
 		isCurrentlyObserved = self:IsObservedBy(target)
 
 		if isCurrentlyObserved then
-			self.loco:SetDesiredSpeed(0) -- Freeze
+			self:HandleSpeed(0, 0)
 
 			if not wasObserved then
 				observedStartTime = CurTime()
 			end
 
-			-- 18b: Timeout (Stared at for 8 seconds)
-			if CurTime() - observedStartTime >= 8 then
-				-- [Placeholder] Fade away opacity logic goes here
+			if CurTime() - observedStartTime >= FLICKER_DUR then
+				self:TeleportToDistantNavSpot()
 				self.CurrentState = "Wander"
 				return
 			end
 		else
-			self.loco:SetDesiredSpeed(SPEED_FLICKER)
-
-			-- 18a: Reach Target while unobserved (Distance check ~50 HU)
-			if self:GetPos():DistToSqr(target:GetPos()) <= 2500 then
-				-- [Placeholder] Display Jumpscare Trigger goes here
-				self.CurrentState = "Wander"
-				return
-			end
+			self:HandleSpeed(FLICKER_SPD, FLICKER_ACCEL)
 
 			if path:GetAge() > 0.5 then
 				path:Compute(self, target:GetPos())
 			end
 			path:Update(self)
 
+			self:ClearObstacles()
+
 			if self.loco:IsStuck() then
 				self:HandleStuck()
-				return
+				path:Compute(self, target:GetPos())
 			end
 		end
 

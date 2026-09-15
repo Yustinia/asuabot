@@ -58,7 +58,7 @@ function ENT:Initialize()
 	-- Using a standard player bounding box for navigation
 	self:SetCollisionBounds(Vector(-16, -16, 0), Vector(16, 16, 72))
 
-	self.CurrentState = "Rushing"
+	self.CurrentState = "Flickering"
 end
 
 -- ==========================================
