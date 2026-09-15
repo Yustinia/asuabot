@@ -68,6 +68,7 @@ function ENT:StateStalk()
 		self.loco:FaceTowards(target:GetPos())
 
 		if CurTime() - stalkStartTime >= STALK_DUR then
+			self:TeleportToDistantNavSpot()
 			self.CurrentState = "Wander"
 			return
 		end
@@ -79,8 +80,16 @@ function ENT:StateStalk()
 		end
 
 		if self:GetPos():Distance(target:GetPos()) <= STALK_PROXIMITY then
-			self.CurrentState = "Avoid"
-			return
+			local chance = math.random(1, 2)
+
+			if chance == 1 then
+				self:TeleportToDistantNavSpot()
+				self.CurrentState = "Chase"
+				return
+			elseif chance == 2 then
+				self.CurrentState = "Behind"
+				return
+			end
 		end
 
 		if self:IsObservedBy(target) then
@@ -118,6 +127,8 @@ function ENT:StateBehind()
 				self.CurrentState = "Wander"
 				return
 			else
+				-- JUMPSCARE
+
 				target:TakeDamage(25, self, self)
 				self:TeleportToDistantNavSpot()
 				self.CurrentState = "Wander"
@@ -126,6 +137,7 @@ function ENT:StateBehind()
 		end
 
 		if CurTime() - stateStartTime >= BEHIND_DUR then
+			self:TeleportToDistantNavSpot()
 			self.CurrentState = "Wander"
 			return
 		end

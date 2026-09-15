@@ -37,6 +37,7 @@ function ENT:StateChase()
 			target:TakeDamage(CHASE_DMG, self, self)
 			self:TeleportToDistantNavSpot()
 			self.CurrentState = "Wander"
+			return
 		end
 
 		if CurTime() - stateStartTime >= CHASE_DUR then
@@ -47,6 +48,7 @@ function ENT:StateChase()
 		if target:IsLineOfSightClear(self) then
 			lastSeenTime = CurTime()
 		elseif CurTime() - lastSeenTime >= CHASE_HID then
+			self:TeleportToDistantNavSpot()
 			self.CurrentState = "Wander"
 			return
 		end
@@ -86,10 +88,11 @@ function ENT:StateRushing()
 			target:TakeDamage(25, self, self)
 			self:TeleportToDistantNavSpot()
 			self.CurrentState = "Wander"
+			return
 		end
 
 		if CurTime() - stateStartTime >= RUSH_DUR then
-			self.CurrentState = "Wander"
+			self.CurrentState = "Avoid"
 			return
 		end
 
@@ -132,12 +135,11 @@ function ENT:StateFlickering()
 		end
 
 		if self:IsTouchingPlayer(target) then
-			target:TakeDamage(10, self, self)
-			self:TeleportToDistantNavSpot()
+			target:TakeDamage(2, self, self)
 
 			-- HANDLE JUMPSCARE
 
-			self.CurrentState = "Wander"
+			self.CurrentState = "Behind"
 			return
 		end
 

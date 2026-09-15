@@ -38,14 +38,14 @@ function ENT:StateAvoid()
 
 	while path:IsValid() and IsValid(target) and target:Alive() do
 		if CurTime() - avoidStartTime >= AVOID_DUR then
-			self.CurrentState = "Wander"
 			self:TeleportToDistantNavSpot()
+			self.CurrentState = "Wander"
 			return
 		end
 
 		if self:GetPos():Distance(fleePos) <= AVOID_GOAL_TOLERANCE then
-			self.CurrentState = "Wander"
 			self:TeleportToDistantNavSpot()
+			self.CurrentState = "Wander"
 			return
 		end
 
@@ -113,8 +113,15 @@ function ENT:StateFakeOutRush()
 		if self:GetPos():Distance(target:GetPos()) <= FAKOUT_DIST then
 			coroutine.wait(2)
 
-			self.CurrentState = "Avoid"
-			return
+			local chance = math.random(1, 2)
+
+			if chance == 1 then
+				self.CurrentState = "Avoid"
+				return
+			elseif chance == 2 then
+				self.CurrentState = "Behind"
+				return
+			end
 		end
 
 		if self.loco:IsStuck() then
