@@ -84,7 +84,7 @@ function ENT:TeleportToDistantNavSpot(minDistance)
 	return false
 end
 
-function ENT:PuchOnContact(ent)
+function ENT:PushOnContact(ent)
 	local pushIntensity = 2500
 
 	if IsValid(ent) and ent:IsPlayer() then

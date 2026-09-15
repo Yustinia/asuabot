@@ -24,7 +24,7 @@ function ENT:StateWander()
 	while path:IsValid() do
 		if self:IsTouchingPlayer(target) then
 			target:TakeDamage(1, self, self)
-			self:PuchOnContact(target)
+			self:PushOnContact(target)
 		end
 
 		if math.random(1, 2000) == 1 then
