@@ -9,6 +9,7 @@ include("states/state_movement.lua")
 include("states/state_stealth.lua")
 
 util.AddNetworkString("Asuabot_ThirdPersonToggle")
+util.AddNetworkString("Asuabot_DisplayJumpscare")
 
 -- Listen for third-person toggles and flag the player
 net.Receive("Asuabot_ThirdPersonToggle", function(len, ply)
@@ -57,7 +58,7 @@ function ENT:Initialize()
 	-- Using a standard player bounding box for navigation
 	self:SetCollisionBounds(Vector(-16, -16, 0), Vector(16, 16, 72))
 
-	self.CurrentState = "Wander"
+	self.CurrentState = "Peek"
 end
 
 -- ==========================================
@@ -99,8 +100,6 @@ end
 -- ==========================================
 -- Evasive Helpers & Collision Hooks
 -- ==========================================
-local SPEED_AVOID = 400
-local SPEED_FAKEOUT = 900
 
 -- Helper: Scans nearby navmesh and returns the point furthest from the target
 function ENT:FindFleeSpot(target)
@@ -163,7 +162,10 @@ function ENT:RunBehaviour()
 		else
 			-- Fallback if state is undefined
 			self.CurrentState = "Wander"
-			coroutine.yield()
+			self:StateWander()
 		end
+
+		-- Safety yield: Prevents infinite loop server crashes if a state function exits immediately
+		coroutine.yield()
 	end
 end

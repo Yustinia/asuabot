@@ -29,3 +29,23 @@ hook.Add("Think", "Asuabot_ThirdPersonTracker", function()
 		end
 	end
 end)
+
+-- cl_init.lua additions
+
+net.Receive("Asuabot_DisplayJumpscare", function()
+	local duration = net.ReadFloat() or 1.5
+	local hideTime = CurTime() + duration
+
+	-- Hook into HUDPaint to render full-screen image overlay
+	hook.Add("HUDPaint", "Asuabot_JumpscareOverlay", function()
+		if CurTime() > hideTime then
+			hook.Remove("HUDPaint", "Asuabot_JumpscareOverlay")
+			return
+		end
+
+		-- Covers the entire display screen using the placeholder material
+		surface.SetDrawColor(255, 255, 255, 255)
+		surface.SetMaterial(botMaterial)
+		surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
+	end)
+end)

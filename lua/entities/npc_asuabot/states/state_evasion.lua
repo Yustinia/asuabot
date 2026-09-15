@@ -1,3 +1,6 @@
+local SPEED_AVOID = 400
+local SPEED_FAKEOUT = 900
+
 function ENT:StateAvoid()
 	self.loco:SetDesiredSpeed(SPEED_AVOID)
 	local target = self:GetClosestPlayer()
@@ -51,9 +54,7 @@ function ENT:StateAvoid()
 				end
 
 				-- Stun the player briefly [Source: Training data / General knowledge domain]
-				target:Freeze(true)
 				coroutine.wait(2) -- Hold face-to-face for 2 seconds
-				target:Freeze(false)
 
 				-- Resume avoiding without dealing damage
 				self.CurrentState = "Avoid"

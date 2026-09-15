@@ -70,6 +70,9 @@ function ENT:StateStalk()
 	end
 end
 
+-- lua/entities/npc_asuabot/states/state_stealth.lua
+-- [Source: Training data / General knowledge domain]
+
 function ENT:StatePeek()
 	self.loco:SetDesiredSpeed(SPEED_PEEK)
 	local target = self:GetClosestPlayer()
@@ -99,8 +102,14 @@ function ENT:StatePeek()
 	-- Hold the peek for 0.5 seconds
 	coroutine.wait(0.5)
 
-	-- Instantly disappear
-	self:Remove()
+	-- Teleport to a random navmesh area far away instead of deleting the entity
+	local navs = navmesh.GetAllNavAreas()
+	if #navs > 0 then
+		local randomArea = navs[math.random(1, #navs)]
+		self:SetPos(randomArea:GetRandomPoint())
+	end
+
+	self.CurrentState = "Wander"
 end
 
 function ENT:StateBehind()
