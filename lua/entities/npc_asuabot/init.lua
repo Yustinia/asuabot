@@ -25,30 +25,6 @@ net.Receive("Asuabot_ThirdPersonToggle", function(len, ply)
 	end
 end)
 
--- Helper: Scans navmesh for spots that block Line-of-Sight to the player
-function ENT:FindHidingSpot(target)
-	local areas = navmesh.Find(target:GetPos(), 1500, 100, 20)
-	local targetEye = target:EyePos()
-
-	-- Shuffle areas for randomness
-	table.Random(areas)
-
-	for _, area in ipairs(areas) do
-		local center = area:GetCenter()
-		local tr = util.TraceLine({
-			start = center + Vector(0, 0, 64), -- Eye level of the spot
-			endpos = targetEye,
-			mask = MASK_OPAQUE, -- Only hit solid world geometry
-		})
-
-		-- If the trace hits something before reaching the player, it's hidden
-		if tr.Hit and tr.Fraction < 1.0 then
-			return center
-		end
-	end
-	return nil
-end
-
 function ENT:Initialize()
 	self:SetModel("models/player/kleiner.mdl") -- Invisible physical hull
 	self:SetHealth(1000)
@@ -57,7 +33,7 @@ function ENT:Initialize()
 
 	self:SetCollisionBounds(Vector(-16, -16, 0), Vector(16, 16, 72))
 
-	self.CurrentState = "Wander"
+	self.CurrentState = "Stalk"
 end
 
 -- ==========================================

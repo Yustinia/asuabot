@@ -15,6 +15,28 @@ function ENT:FindFleeSpot(target)
 
 	return bestSpot
 end
+
+function ENT:FindHidingSpot(target)
+	local areas = navmesh.Find(target:GetPos(), 1500, 100, 20)
+	local targetEye = target:EyePos()
+
+	-- table.Shuffle(areas)
+
+	for _, area in ipairs(areas) do
+		local center = area:GetCenter()
+		local tr = util.TraceLine({
+			start = center + Vector(0, 0, 64),
+			endpos = targetEye,
+			mask = MASK_OPAQUE,
+		})
+
+		if tr.Hit and tr.Fraction < 1.0 then
+			return center
+		end
+	end
+	return nil
+end
+
 function ENT:IsTouchingPlayer(target, distanceThreshold)
 	if not IsValid(target) or not target:IsPlayer() or not target:Alive() then
 		return false

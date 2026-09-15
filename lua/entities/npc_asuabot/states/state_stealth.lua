@@ -1,11 +1,17 @@
 include("entities/npc_asuabot/helper.lua")
 
-local SPEED_STALK = 150
+local STALK_SPD = 600
+local STALK_ACCEL = 400
+local STALK_DUR = 8
+local STALK_PROXIMITY = 200
+local STALK_HIDE_THRESH = 60
+
 local SPEED_PEEK = 300
 local SPEED_BEHIND = 250
 
 function ENT:StateStalk()
-	self.loco:SetDesiredSpeed(SPEED_STALK)
+	self:HandleSpeed(STALK_SPD, STALK_ACCEL)
+
 	local target = self:GetClosestPlayer()
 	if not IsValid(target) then
 		self.CurrentState = "Wander"
@@ -16,56 +22,60 @@ function ENT:StateStalk()
 	if not hidePos then
 		self.CurrentState = "Wander"
 		return
-	end -- Fallback if no cover found
+	end
 
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(300)
 	path:SetGoalTolerance(20)
 	path:Compute(self, hidePos)
 
-	-- Move to cover
+	-- Phase 1: Traversal to Hiding Spot
 	while path:IsValid() do
 		path:Update(self)
+		self:ClearObstacles()
+
+		if self:IsTouchingPlayer(target) then
+			self:PushOnContact(target)
+			self.CurrentState = "Avoid"
+			return
+		end
+
 		if self.loco:IsStuck() then
 			self:HandleStuck()
 			return
 		end
-		if self:GetPos():DistToSqr(hidePos) < 2500 then
+
+		if self:GetPos():Distance(hidePos) < STALK_HIDE_THRESH then
 			break
 		end
+
 		coroutine.yield()
 	end
 
-	-- Wait in cover and look at player
-	local observedStartTime = 0
-	local hasBeenSpotted = false
+	local stalkStartTime = CurTime()
 
 	while IsValid(target) and target:Alive() do
-		-- Constantly face the player while stalking
 		self.loco:FaceTowards(target:GetPos())
 
+		if CurTime() - stalkStartTime >= STALK_DUR then
+			self.CurrentState = "Wander"
+			return
+		end
+
+		if self:IsTouchingPlayer(target) then
+			self:TeleportToDistantNavSpot()
+			self.CurrentState = "Wander"
+			return
+		end
+
+		if self:GetPos():Distance(target:GetPos()) <= STALK_PROXIMITY then
+			self.CurrentState = "Avoid"
+			return
+		end
+
 		if self:IsObservedBy(target) then
-			if not hasBeenSpotted then
-				hasBeenSpotted = true
-				observedStartTime = CurTime()
-			end
-
-			-- Retreat after 3 seconds of being seen
-			if CurTime() - observedStartTime >= 3 then
-				self.CurrentState = "Avoid" -- Transition to Avoid (Category 3)
-				return
-			end
-
-			-- Sequence 7: Stalk -> Jumpscare -> Disappear
-			-- If player pushes within 1050 HU (approx 20m) before 3s is up
-			if self:GetPos():DistToSqr(target:GetPos()) <= 1102500 then
-				-- [Placeholder] Execute Jumpscare / Disappear
-				self:Remove()
-				return
-			end
-		else
-			-- If they look away before 3 seconds, reset the timer
-			hasBeenSpotted = false
+			self.CurrentState = "Avoid"
+			return
 		end
 
 		coroutine.yield()
