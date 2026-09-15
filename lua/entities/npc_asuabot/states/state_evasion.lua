@@ -9,7 +9,7 @@ local AVOID_FAKEOUT_DIST = 60
 local AVOID_GOAL_TOLERANCE = 60
 
 local FAKEOUT_SPD = 2000
-local FAKEOUT_ACCEL = 2000
+local FAKEOUT_ACCEL = 6000
 
 function ENT:StateAvoid()
 	self:HandleSpeed(AVOID_SPD, AVOID_ACCEL)
@@ -97,16 +97,12 @@ function ENT:StateFakeOutRush()
 		return
 	end
 
-	-- 1. The Silence (Freeze in place for 5 seconds)
-	self.loco:SetDesiredSpeed(0)
+	self:HandleSpeed(0, 0)
 	self.loco:FaceTowards(target:GetPos())
 	coroutine.wait(5)
 
-	-- 2. The High-Speed Rush
-	self.loco:SetDesiredSpeed(SPEED_FAKEOUT)
-
+	self:HandleSpeed(FAKEOUT_SPD, FAKEOUT_ACCEL)
 	local path = Path("Follow")
-	local isLethal = (math.random(1, 2) == 1)
 
 	while IsValid(target) and target:Alive() do
 		if path:GetAge() > 0.1 then
@@ -114,25 +110,21 @@ function ENT:StateFakeOutRush()
 		end
 		path:Update(self)
 
-		-- On contact range (~50 HU)
-		if self:GetPos():DistToSqr(target:GetPos()) <= 2500 then
-			-- Trigger Sequence 5 (Face-To-Face Jumpscare)
-			if isLethal then
-				-- Sequence 13: Snap face-to-face, hold 0.5s, deal damage
-				self:ExecuteFaceToFaceJumpscare(target, 0.5, true)
-			else
-				-- Sequence 12: Snap face-to-face, hold 2.0s, no damage
-				self:ExecuteFaceToFaceJumpscare(target, 2.0, false)
-			end
+		if self:GetPos():Distance(target:GetPos()) <= 50 then
+			self:ExecuteFaceToFaceJumpscare(target)
+			self:HandleSpeed(0, 0)
+			coroutine.wait(2)
 
 			self.CurrentState = "Avoid"
 			return
 		end
 
 		if self.loco:IsStuck() then
+			self:HandleStuck()
 			self.CurrentState = "Avoid"
 			return
 		end
+
 		coroutine.yield()
 	end
 end
