@@ -82,9 +82,6 @@ function ENT:StateStalk()
 	end
 end
 
--- lua/entities/npc_asuabot/states/state_stealth.lua
--- [Source: Training data / General knowledge domain]
-
 function ENT:StatePeek()
 	self.loco:SetDesiredSpeed(SPEED_PEEK)
 	local target = self:GetClosestPlayer()
