@@ -1,9 +1,20 @@
-local SPEED_CHASE = 300
-local SPEED_RUSH = 700
+include("entities/npc_asuabot/helper.lua")
+
+local CHASE_SPD = 600
+local CHASE_ACCEL = 800
+local CHASE_DUR = 12
+local CHASE_HID = 4
+local CHASE_AGE = 0.5
+
+local RUSH_SPD = 1200
+local RUSH_ACCEL = 2000
+local RUSH_DUR = 16
+local RUSH_AGE = 0.2
+
 local SPEED_FLICKER = 800
 
 function ENT:StateChase()
-	self.loco:SetDesiredSpeed(SPEED_CHASE)
+	self:HandleSpeed(CHASE_SPD, CHASE_ACCEL)
 	local target = self:GetClosestPlayer()
 	if not IsValid(target) then
 		self.CurrentState = "Wander"
@@ -12,31 +23,30 @@ function ENT:StateChase()
 
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(300)
-	path:SetGoalTolerance(20)
+	path:SetGoalTolerance(0)
 
 	local stateStartTime = CurTime()
 	local lastSeenTime = CurTime()
 
 	while IsValid(target) and target:Alive() do
-		-- 1b: Loss of Interest (10 seconds limit)
-		if CurTime() - stateStartTime >= 10 then
+		if CurTime() - stateStartTime >= CHASE_DUR then
 			self.CurrentState = "Wander"
 			return
 		end
 
-		-- 1a: Loss of Sight (3 seconds hidden)
 		if target:IsLineOfSightClear(self) then
 			lastSeenTime = CurTime()
-		elseif CurTime() - lastSeenTime >= 3 then
+		elseif CurTime() - lastSeenTime >= CHASE_HID then
 			self.CurrentState = "Wander"
 			return
 		end
 
-		-- Path update logic
-		if path:GetAge() > 0.5 then
+		if path:GetAge() > CHASE_AGE then
 			path:Compute(self, target:GetPos())
 		end
 		path:Update(self)
+
+		self:ClearObstacles()
 
 		if self.loco:IsStuck() then
 			self:HandleStuck()
@@ -47,7 +57,8 @@ function ENT:StateChase()
 end
 
 function ENT:StateRushing()
-	self.loco:SetDesiredSpeed(SPEED_RUSH)
+	self:HandleSpeed(RUSH_SPD, RUSH_ACCEL)
+
 	local target = self:GetClosestPlayer()
 	if not IsValid(target) then
 		self.CurrentState = "Wander"
@@ -56,28 +67,27 @@ function ENT:StateRushing()
 
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(300)
-	path:SetGoalTolerance(20)
+	path:SetGoalTolerance(0)
 
 	local stateStartTime = CurTime()
 
 	while IsValid(target) and target:Alive() do
-		-- 2b: Loss of Interest (8 seconds limit)
-		if CurTime() - stateStartTime >= 8 then
+		if CurTime() - stateStartTime >= RUSH_DUR then
 			self.CurrentState = "Wander"
 			return
 		end
 
-		-- 2a: Path Collision / Stuck
-		if self.loco:IsStuck() or (self:GetVelocity():LengthSqr() < 400 and path:GetAge() > 1) then
-			-- Pretending to choose "another sequence" per instructions
-			self.CurrentState = "Wander"
-			return
-		end
-
-		if path:GetAge() > 0.2 then -- Faster recalculation for high speeds
+		if path:GetAge() > RUSH_AGE then
 			path:Compute(self, target:GetPos())
 		end
 		path:Update(self)
+
+		self:ClearObstacles()
+
+		if self.loco:IsStuck() then
+			self:HandleStuck()
+			path:Compute(self, target:GetPos())
+		end
 
 		coroutine.yield()
 	end

@@ -1,3 +1,5 @@
+include("entities/npc_asuabot/helper.lua")
+
 local SPEED_WANDER = 300
 
 function ENT:StateWander()

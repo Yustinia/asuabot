@@ -58,29 +58,12 @@ function ENT:Initialize()
 	-- Using a standard player bounding box for navigation
 	self:SetCollisionBounds(Vector(-16, -16, 0), Vector(16, 16, 72))
 
-	self.CurrentState = "FakeOutRush"
+	self.CurrentState = "Wander"
 end
 
 -- ==========================================
 -- Helper Functions
 -- ==========================================
-
-function ENT:GetClosestPlayer()
-	local closest = nil
-	local minDist = math.huge
-	local myPos = self:GetPos()
-
-	for _, ply in ipairs(player.GetAll()) do
-		if ply:Alive() and not ply:GetObserverMode() ~= OBS_MODE_NONE then
-			local distSq = myPos:DistToSqr(ply:GetPos())
-			if distSq < minDist then
-				minDist = distSq
-				closest = ply
-			end
-		end
-	end
-	return closest
-end
 
 -- Checks if the Nextbot is inside the player's FOV and not behind a wall
 function ENT:IsObservedBy(ply)
@@ -97,48 +80,7 @@ function ENT:IsObservedBy(ply)
 	return plyAim:Dot(dirToBot) > 0.5
 end
 
--- ==========================================
--- Evasive Helpers & Collision Hooks
--- ==========================================
-
--- Helper: Scans nearby navmesh and returns the point furthest from the target
-function ENT:FindFleeSpot(target)
-	-- Find nav areas within 2000 HU [Source: Training data / General knowledge domain]
-	local hideSpots = navmesh.Find(self:GetPos(), 2000, 100, 20)
-	local bestSpot = nil
-	local maxDist = 0
-
-	for _, area in ipairs(hideSpots) do
-		local dist = area:GetCenter():DistToSqr(target:GetPos())
-		if dist > maxDist then
-			maxDist = dist
-			bestSpot = area:GetCenter()
-		end
-	end
-
-	return bestSpot
-end
-
--- Sequence 10: Avoid -> Collision -> Avoid
-function ENT:OnContact(ent)
-	if self.CurrentState == "Avoid" and IsValid(ent) and ent:IsPlayer() then
-		-- Deal partial damage [Source: Training data / General knowledge domain]
-		ent:TakeDamage(15, self, self)
-
-		-- Calculate push vector away from the Nextbot
-		local pushVec = ent:GetPos() - self:GetPos()
-		pushVec.z = 0 -- Ensure no vertical movement (Z-axis lock) [Source: Mathematical derivation shown above]
-		pushVec:Normalize()
-
-		-- Apply heavy horizontal impulse velocity to the player [Source: Training data / General knowledge domain]
-		ent:SetVelocity(pushVec * 1500)
-	end
-end
-
--- ==========================================
--- State Machine (Core Loop)
--- ==========================================
-
+-- Nextbot loop
 function ENT:RunBehaviour()
 	while true do
 		if self.CurrentState == "Wander" then

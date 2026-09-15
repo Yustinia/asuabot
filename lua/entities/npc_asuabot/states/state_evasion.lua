@@ -1,5 +1,7 @@
+include("entities/npc_asuabot/helper.lua")
+
 local SPEED_AVOID = 400
-local SPEED_FAKEOUT = 900
+local SPEED_FAKEOUT = 2000
 
 function ENT:StateAvoid()
 	self.loco:SetDesiredSpeed(SPEED_AVOID)
@@ -72,11 +74,6 @@ function ENT:StateAvoid()
 		coroutine.yield()
 	end
 end
-
--- lua/entities/npc_asuabot/states/state_evasion.lua
-
-local SPEED_AVOID = 400
-local SPEED_FAKEOUT = 2000
 
 function ENT:StateFakeOutRush()
 	local target = self:GetClosestPlayer()

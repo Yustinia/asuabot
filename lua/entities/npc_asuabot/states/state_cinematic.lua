@@ -1,3 +1,5 @@
+include("entities/npc_asuabot/helper.lua")
+
 function ENT:TriggerDisplayJumpscare(target, duration)
 	if not IsValid(target) or not target:IsPlayer() then
 		return

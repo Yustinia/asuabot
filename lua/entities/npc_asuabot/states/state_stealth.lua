@@ -1,3 +1,5 @@
+include("entities/npc_asuabot/helper.lua")
+
 local SPEED_STALK = 150
 local SPEED_PEEK = 300
 local SPEED_BEHIND = 250
