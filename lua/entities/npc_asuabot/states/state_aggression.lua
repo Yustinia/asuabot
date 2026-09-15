@@ -5,6 +5,7 @@ local CHASE_ACCEL = 800
 local CHASE_DUR = 12
 local CHASE_HID = 4
 local CHASE_AGE = 0.5
+local CHASE_DMG = 10
 
 local RUSH_SPD = 1200
 local RUSH_ACCEL = 2000
@@ -29,6 +30,12 @@ function ENT:StateChase()
 	local lastSeenTime = CurTime()
 
 	while IsValid(target) and target:Alive() do
+		if self:IsTouchingPlayer(target) then
+			target:TakeDamage(CHASE_DMG, self, self)
+			self:TeleportToDistantNavSpot()
+			self.CurrentState = "Wander"
+		end
+
 		if CurTime() - stateStartTime >= CHASE_DUR then
 			self.CurrentState = "Wander"
 			return

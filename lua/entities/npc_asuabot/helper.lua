@@ -15,6 +15,74 @@ function ENT:FindFleeSpot(target)
 
 	return bestSpot
 end
+function ENT:IsTouchingPlayer(target, distanceThreshold)
+	if not IsValid(target) or not target:IsPlayer() or not target:Alive() then
+		return false
+	end
+
+	distanceThreshold = distanceThreshold or 60
+
+	local dist = self:GetPos():Distance(target:GetPos())
+	if dist <= distanceThreshold then
+		return true
+	end
+
+	local botTorso = self:GetPos() + Vector(0, 0, 36)
+	local plyTorso = target:GetPos() + Vector(0, 0, 36)
+
+	local tr = util.TraceHull({
+		start = botTorso,
+		endpos = plyTorso,
+		mins = Vector(-10, -10, -10),
+		maxs = Vector(10, 10, 10),
+		filter = self,
+	})
+
+	return tr.Hit and tr.Entity == target and botTorso:Distance(plyTorso) <= (distanceThreshold + 20)
+end
+
+function ENT:TeleportToDistantNavSpot(minDistance)
+	minDistance = minDistance or 1000
+	local minDistSqr = minDistance * minDistance
+
+	local navAreas = navmesh.GetAllNavAreas()
+	if not navAreas or #navAreas == 0 then
+		return false
+	end
+
+	local validSpots = {}
+
+	for i = 1, #navAreas do
+		local area = navAreas[i]
+		local spot = area:GetCenter()
+		local isFarEnough = true
+
+		for _, ply in ipairs(player.GetAll()) do
+			if IsValid(ply) and ply:Alive() then
+				if spot:DistToSqr(ply:GetPos()) < minDistSqr then
+					isFarEnough = false
+					break
+				end
+			end
+		end
+
+		if isFarEnough then
+			table.insert(validSpots, area)
+		end
+	end
+
+	local selectedArea = (#validSpots > 0) and validSpots[math.random(#validSpots)] or navAreas[math.random(#navAreas)]
+
+	if IsValid(selectedArea) then
+		self:SetPos(selectedArea:GetRandomPoint() + Vector(0, 0, 10))
+		if self.loco then
+			self.loco:ClearStuck()
+		end
+		return true
+	end
+
+	return false
+end
 
 function ENT:OnContact(ent)
 	local pushIntensity = 1500
