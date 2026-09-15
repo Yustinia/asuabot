@@ -73,6 +73,11 @@ function ENT:StateAvoid()
 	end
 end
 
+-- lua/entities/npc_asuabot/states/state_evasion.lua
+
+local SPEED_AVOID = 400
+local SPEED_FAKEOUT = 2000
+
 function ENT:StateFakeOutRush()
 	local target = self:GetClosestPlayer()
 	if not IsValid(target) then
@@ -87,29 +92,25 @@ function ENT:StateFakeOutRush()
 
 	-- 2. The High-Speed Rush
 	self.loco:SetDesiredSpeed(SPEED_FAKEOUT)
-	local path = Path("Follow")
 
-	-- 50/50 chance to dictate if this is Seq 12 (No Damage) or Seq 13 (Damage)
+	local path = Path("Follow")
 	local isLethal = (math.random(1, 2) == 1)
 
 	while IsValid(target) and target:Alive() do
-		-- Compute shortest path strictly to the player's real-time position
 		if path:GetAge() > 0.1 then
 			path:Compute(self, target:GetPos())
 		end
 		path:Update(self)
 
-		-- Stop when directly face-to-face (within ~50 HU) [Source: Training data / General knowledge domain]
+		-- On contact range (~50 HU)
 		if self:GetPos():DistToSqr(target:GetPos()) <= 2500 then
-			self.loco:SetDesiredSpeed(0)
-
+			-- Trigger Sequence 5 (Face-To-Face Jumpscare)
 			if isLethal then
-				-- Seq 13: Deal damage, hold for a split second, then flee
-				target:TakeDamage(40, self, self)
-				coroutine.wait(0.5)
+				-- Sequence 13: Snap face-to-face, hold 0.5s, deal damage
+				self:ExecuteFaceToFaceJumpscare(target, 0.5, true)
 			else
-				-- Seq 12: No damage, hold the face-to-face tension for 2 seconds
-				coroutine.wait(2)
+				-- Sequence 12: Snap face-to-face, hold 2.0s, no damage
+				self:ExecuteFaceToFaceJumpscare(target, 2.0, false)
 			end
 
 			self.CurrentState = "Avoid"
