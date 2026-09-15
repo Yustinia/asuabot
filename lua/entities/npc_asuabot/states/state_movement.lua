@@ -22,7 +22,7 @@ function ENT:StateWander()
 	path:Compute(self, targetPos)
 
 	while path:IsValid() do
-		local randomChance = math.random(1, 200)
+		local randomChance = math.random(1, 500)
 
 		if IsValid(target) and self:IsTouchingPlayer(target) then
 			target:TakeDamage(1, self, self)
@@ -35,18 +35,18 @@ function ENT:StateWander()
 				self.CurrentState = "FakeOutRush"
 				return
 
-			-- 12%
-			elseif randomChance <= 14 then
+			-- 8%
+			elseif randomChance <= 10 then
 				self.CurrentState = "Flickering"
 				return
 
 			-- 6%
-			elseif randomChance <= 20 then
+			elseif randomChance <= 16 then
 				self.CurrentState = "Chase"
 				return
 
 			-- 3%
-			elseif randomChance <= 23 then
+			elseif randomChance <= 19 then
 				self.CurrentState = "Rushing"
 				return
 			end
