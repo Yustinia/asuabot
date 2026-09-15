@@ -15,6 +15,7 @@ local RUSH_AGE = 0.2
 local FLICKER_SPD = 600
 local FLICKER_ACCEL = 600
 local FLICKER_DUR = 4
+local FLICKER_LIFETIME = 12
 
 function ENT:StateChase()
 	self:HandleSpeed(CHASE_SPD, CHASE_ACCEL)
@@ -120,9 +121,16 @@ function ENT:StateFlickering()
 	path:SetGoalTolerance(20)
 
 	local observedStartTime = 0
+	local flickerStartTime = CurTime()
 	local isCurrentlyObserved = false
 
 	while IsValid(target) and target:Alive() do
+		if CurTime() - flickerStartTime >= FLICKER_LIFETIME then
+			self:TeleportToDistantNavSpot()
+			self.CurrentState = "Wander"
+			return
+		end
+
 		if self:IsTouchingPlayer(target) then
 			target:TakeDamage(10, self, self)
 			self:TeleportToDistantNavSpot()
@@ -130,6 +138,7 @@ function ENT:StateFlickering()
 			-- HANDLE JUMPSCARE
 
 			self.CurrentState = "Wander"
+			return
 		end
 
 		local wasObserved = isCurrentlyObserved
