@@ -69,7 +69,6 @@ function ENT:StateAvoid()
 
 				coroutine.wait(2)
 
-				-- Resume avoiding without dealing damage
 				self.CurrentState = "Avoid"
 				return
 			end
