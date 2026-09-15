@@ -111,7 +111,6 @@ function ENT:StateFakeOutRush()
 		path:Update(self)
 
 		if self:GetPos():Distance(target:GetPos()) <= FAKOUT_DIST then
-			self:HandleSpeed(0, 0)
 			coroutine.wait(2)
 
 			self.CurrentState = "Avoid"
