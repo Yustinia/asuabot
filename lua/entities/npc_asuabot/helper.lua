@@ -94,7 +94,6 @@ end
 
 function ENT:TeleportToDistantNavSpot(minDistance)
 	minDistance = minDistance or 1000
-	local minDistSqr = minDistance * minDistance
 
 	local navAreas = navmesh.GetAllNavAreas()
 	if not navAreas or #navAreas == 0 then
@@ -110,7 +109,7 @@ function ENT:TeleportToDistantNavSpot(minDistance)
 
 		for _, ply in ipairs(player.GetAll()) do
 			if IsValid(ply) and ply:Alive() then
-				if spot:DistToSqr(ply:GetPos()) < minDistSqr then
+				if spot:Distance(ply:GetPos()) < minDistance then
 					isFarEnough = false
 					break
 				end

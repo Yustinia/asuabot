@@ -2,6 +2,7 @@ include("entities/npc_asuabot/helper.lua")
 
 local WANDER_SPD = 500
 local WANDER_ACCEL = 500
+local WANDER_GOAL_THRESH = 60
 
 local FAKEOUT_SPD = 2000
 local FAKEOUT_ACCEL = 6000
@@ -22,11 +23,17 @@ function ENT:StateWander()
 
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(300)
-	path:SetGoalTolerance(20)
+	path:SetGoalTolerance(0)
 	path:Compute(self, targetPos)
 
 	while path:IsValid() do
 		local randomChance = math.random(1, 500)
+
+		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
+			-- DO SOMETHING
+
+			return
+		end
 
 		if IsValid(target) and self:IsTouchingPlayer(target) then
 			target:TakeDamage(1, self, self)
