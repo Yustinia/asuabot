@@ -56,16 +56,7 @@ function ENT:StateAvoid()
 			end
 
 			if CurTime() - chaseStartTime >= AVOID_FAKEOUT_TIMER then
-				self:HandleSpeed(FAKEOUT_SPD, FAKEOUT_ACCEL)
-
-				local counterPath = Path("Follow")
-				counterPath:Compute(self, target:GetPos())
-
-				while counterPath:IsValid() and self:GetPos():Distance(target:GetPos()) > AVOID_FAKEOUT_DIST do
-					counterPath:Compute(self, target:GetPos())
-					counterPath:Update(self)
-					coroutine.yield()
-				end
+				self:FakeRush(target)
 
 				coroutine.wait(2)
 
