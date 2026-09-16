@@ -44,8 +44,6 @@ function ENT:StateStalk()
 
 		if self:IsTouchingPlayer(target) then
 			self:PushOnContact(target)
-			self.CurrentState = "Avoid"
-			return
 		end
 
 		if self.loco:IsStuck() then
@@ -83,7 +81,6 @@ function ENT:StateStalk()
 			local chance = math.random(1, 2)
 
 			if chance == 1 then
-				self:TeleportToDistantNavSpot()
 				self.CurrentState = "Chase"
 				return
 			elseif chance == 2 then
