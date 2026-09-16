@@ -1,0 +1,5 @@
+{
+  "workspace.library": [".glua-api"],
+  "runtime.version": "LuaJIT",
+  "diagnostics.globals": ["hook", "net", "timer", "surface", "render", "GAMEMODE", "ENT", "SWEP"]
+}
