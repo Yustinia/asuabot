@@ -1,3 +1,6 @@
+local UNSTUCK_LIFT = Vector(0,0,10)
+local UNSTUCK_DIST = 40
+
 function ENT:ClearObstacles()
 	local myPos = self:GetPos() + Vector(0, 0, 40)
 	local forwardVec = self:GetForward()
@@ -39,18 +42,17 @@ function ENT:ClearObstacles()
 	end
 end
 
-function ENT:CustomHandleStuck()
-	self:ClearObstacles()
+function ENT:HandleStuck()
+    self:ClearObstacles()
+    self.loco:ClearStuck()
 
-	self.loco:ClearStuck()
+    local currentNav = navmesh.GetNearestNavArea(self:GetPos())
+    if IsValid(currentNav) then
+        local randomPoint = currentNav:GetRandomPoint()
+        self:SetPos(randomPoint + UNSTUCK_LIFT)
+    else
+        self:SetPos(self:GetPos() - (self:GetForward() * UNSTUCK_DIST) + UNSTUCK_LIFT)
+    end
 
-	local currentNav = navmesh.GetNearestNavArea(self:GetPos())
-	if IsValid(currentNav) then
-		local randomPoint = currentNav:GetRandomPoint()
-		self:SetPos(randomPoint + Vector(0, 0, 5))
-	else
-		self:SetPos(self:GetPos() - (self:GetForward() * 40) + Vector(0, 0, 10))
-	end
-
-	coroutine.yield()
+    coroutine.yield()
 end

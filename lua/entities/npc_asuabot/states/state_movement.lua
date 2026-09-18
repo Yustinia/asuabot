@@ -1,29 +1,50 @@
 local WANDER_SPD = 500
 local WANDER_ACCEL = 500
-local WANDER_GOAL_THRESH = 60
+local WANDER_GOAL_THRESH = 120
+local WANDER_SCAN_RAD = 2000
+local WANDER_RETRY_WAIT = 1
 
 function ENT:StateWander()
 	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
 
 	local target = self:GetClosestPlayer()
-	local navs = navmesh.GetAllNavAreas()
+	local navs = self.CachedNavAreas
 
 	if #navs == 0 then
 		coroutine.wait(1)
 		return
 	end
 
-	local targetArea = navs[math.random(1, #navs)]
+    local myPos = self:GetPos()
+    local nearbyNavs = {}
+
+    for i = 1, #navs do
+        local area = navs[i]
+
+        if area:GetCenter():Distance(myPos) <= WANDER_SCAN_RAD then
+            table.insert(nearbyNavs, area)
+        end
+    end
+
+    local candidateNavs = (#nearbyNavs > 0) and nearbyNavs or navs
+
+	local targetArea = candidateNavs[math.random(1, #candidateNavs)]
 	local targetPos = targetArea:GetRandomPoint()
 
 	local path = Path("Follow")
 	path:SetMinLookAheadDistance(300)
-	path:SetGoalTolerance(0)
+	path:SetGoalTolerance(WANDER_GOAL_THRESH)
 	path:Compute(self, targetPos)
+
+    if not path:IsValid() then
+        coroutine.wait(WANDER_RETRY_WAIT)
+        return
+    end
 
 	while path:IsValid() do
 		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
-			self.CurrentState = "Wander"
+            self.CurrentState = "Wander"
+            PrintMessage(HUD_PRINTTALK, "REACHED GOAL!")
 			return
 		end
 
@@ -41,10 +62,6 @@ function ENT:StateWander()
 		path:Update(self)
 
 		self:ClearObstacles()
-		if self.loco:IsStuck() then
-			self:CustomHandleStuck()
-			return
-		end
 		coroutine.yield()
 	end
 end

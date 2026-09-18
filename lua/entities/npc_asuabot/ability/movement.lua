@@ -6,10 +6,10 @@ function ENT:HandleSpeed(speed, accel)
 	self.loco:SetAcceleration(setAccel)
 end
 
-function ENT:TeleportToDistantNavSpot(minDistance)
+function ENT:TeleportToDistantNavSpot(areas, minDistance)
 	minDistance = minDistance or 1000
 
-	local navAreas = navmesh.GetAllNavAreas()
+	local navAreas = areas
 	if not navAreas or #navAreas == 0 then
 		return false
 	end
