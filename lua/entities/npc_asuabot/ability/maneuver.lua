@@ -98,6 +98,10 @@ function ENT:HandleStuck()
 	coroutine.yield()
 end
 
+--- Computes and updates the NPC's navigation path.
+--- @param targetPos Vector3D Position the NPC should navigate toward.
+--- @param minLookAheadDist number Minimum distance the path looks ahead.
+--- @param goalTolerance number Distance from the goal at which the path is considered complete.
 function ENT:ComputeFollowPath(targetPos, minLookAheadDist, goalTolerance)
 	self.Path:SetMinLookAheadDistance(minLookAheadDist)
 	self.Path:SetGoalTolerance(goalTolerance)
