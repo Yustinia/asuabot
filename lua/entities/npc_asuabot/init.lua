@@ -28,6 +28,11 @@ function ENT:Initialize()
 	self:SetFOV(360)
 	self:SetMaxVisionRange(10000)
 
+	-- NextBot Status
+	self.loco:SetStepHeight(18)
+	self.loco:SetJumpHeight(58)
+	self.loco:SetDeathDropHeight(200)
+
 	-- Navmesh cache
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 

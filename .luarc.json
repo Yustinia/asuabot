@@ -1,5 +1,15 @@
 {
-  "workspace.library": [".glua-api"],
+  "workspace.library": [".glua-api",
+        "${addons}/garrysmod/module/library"],
   "runtime.version": "LuaJIT",
-  "diagnostics.globals": ["hook", "net", "timer", "surface", "render", "GAMEMODE", "ENT", "SWEP"]
+  "diagnostics.globals": ["hook", "net", "timer", "surface", "render", "GAMEMODE", "ENT", "SWEP"],
+    "runtime.nonstandardSymbol": [
+        "continue",
+        "!",
+        "!=",
+        "&&",
+        "||",
+        "//",
+        "/**/"
+    ]
 }
