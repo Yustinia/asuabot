@@ -9,35 +9,10 @@ local WANDER_AHEAD_DIST = 150
 function ENT:StateWander()
 	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
 
-	self.Target = self:GetClosestPlayer()
-	local navs = self.CachedNavAreas
+	self.Target = self:FindClosestPlayer()
+	local targetPos = self:FindWanderSpot(WANDER_SCAN_RAD)
 
-	if #navs == 0 then
-		coroutine.wait(1)
-		return
-	end
-
-	local myPos = self:GetPos()
-	local nearbyNavs = {}
-
-	for i = 1, #navs do
-		local area = navs[i]
-
-		if area:GetCenter():Distance(myPos) <= WANDER_SCAN_RAD then
-			table.insert(nearbyNavs, area)
-		end
-	end
-
-	local candidateNavs = (#nearbyNavs > 0) and nearbyNavs or navs
-
-	local targetArea = candidateNavs[math.random(1, #candidateNavs)]
-	local targetPos = targetArea:GetRandomPoint()
-
-	self.Path = Path("Follow")
-	self:ConfigFollowPath(WANDER_AHEAD_DIST, WANDER_GOAL_THRESH)
-	self.Path:Compute(self, targetPos)
-
-	if not self.Path:IsValid() then
+	if not self:ComputeRoutingPath(targetPos, WANDER_AHEAD_DIST, WANDER_GOAL_THRESH, "Follow") then
 		coroutine.wait(WANDER_RETRY_WAIT)
 		return
 	end
@@ -46,16 +21,16 @@ function ENT:StateWander()
 	self.ProgressTime = CurTime()
 
 	while self.Path:IsValid() do
-		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
+		if self:IsAtPosition(targetPos, WANDER_GOAL_THRESH) then
 			self.CurrentState = "Wander"
 			return
 		end
 
-		if IsValid(self.Target) and self:IsTouchingPlayer(self.Target) then
-			self:DealDmgOnContact(self.Target, 1)
+		if self:IsTouchingPlayer(self.Target) then
+			self:DamageEntity(self.Target, 1)
 		end
 
-		if IsValid(self.Target) and self:IsLineOfSightClear(self.Target) then
+		if self:IsTargetVisible(self.Target) then
 			self.TargetLastSeenPos = self.Target:GetPos()
 			self:RecordLastSeenPosition(self.Target:GetPos())
 		end

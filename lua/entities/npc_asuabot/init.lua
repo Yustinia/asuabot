@@ -8,6 +8,8 @@ include("ability/movement.lua")
 include("ability/perception.lua")
 include("ability/physical.lua")
 
+include("helper/movement.lua")
+
 include("states/state_movement.lua")
 include("states/state_aggresion.lua")
 
