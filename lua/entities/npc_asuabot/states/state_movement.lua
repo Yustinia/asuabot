@@ -28,7 +28,7 @@ function ENT:StateWander()
 		end
 
 		if IsValid(target) and self:IsTouchingPlayer(target) then
-			target:TakeDamage(1, self, self)
+			self:DealDmgOnContact(target, 1)
 			self:PushOnContact(target)
 		end
 
