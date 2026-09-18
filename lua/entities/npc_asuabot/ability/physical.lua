@@ -1,7 +1,3 @@
-local PUSH_INTENSITY = 1500
-local PUSH_CD = 0.5
-local DMG_CD = 0.5
-
 function ENT:IsTouchingPlayer(target, distanceThreshold)
 	if not IsValid(target) or not target:IsPlayer() or not target:Alive() then
 		return false
@@ -34,9 +30,9 @@ function ENT:PushOnContact(target)
 		pushVec.z = 15
 		pushVec:Normalize()
 
-		target:SetVelocity(pushVec * PUSH_INTENSITY)
+		target:SetVelocity(pushVec * self.PushIntensity)
 
-		self.NextPushTime = CurTime() + PUSH_CD
+		self.NextPushTime = CurTime() + self.PushCD
 	end
 end
 
@@ -46,6 +42,6 @@ function ENT:DealDmgOnContact(target, amount)
 	if CurTime() >= self.NextDamageTime then
 		target:TakeDamage(amount, self, self)
 
-		self.NextDamageTime = CurTime() + DMG_CD
+		self.NextDamageTime = CurTime() + self.DamageCD
 	end
 end

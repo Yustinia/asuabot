@@ -79,9 +79,9 @@ function ENT:HandleStuck()
 	end
 	self.LastStuck = CurTime()
 
-	if self.path and self.path:IsValid() then
+	if self.Path and self.Path:IsValid() then
 		local jumpDist = UNSTUCK_DIST * math.pow(2, self.StuckTries or 0)
-		local newPos = self.path:GetPositionOnPath(self.path:GetCursorPosition() + jumpDist)
+		local newPos = self.Path:GetPositionOnPath(self.Path:GetCursorPosition() + jumpDist)
 		self:SetPos(newPos + UNSTUCK_LIFT)
 		self.StuckTries = (self.StuckTries or 0) + 1
 	else

@@ -7,7 +7,7 @@ local WANDER_RETRY_WAIT = 1
 function ENT:StateWander()
 	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
 
-	local target = self:GetClosestPlayer()
+	self.Target = self:GetClosestPlayer()
 	local navs = self.CachedNavAreas
 
 	if #navs == 0 then
@@ -31,12 +31,12 @@ function ENT:StateWander()
 	local targetArea = candidateNavs[math.random(1, #candidateNavs)]
 	local targetPos = targetArea:GetRandomPoint()
 
-	self.path = Path("Follow")
-	self.path:SetMinLookAheadDistance(300)
-	self.path:SetGoalTolerance(WANDER_GOAL_THRESH)
-	self.path:Compute(self, targetPos)
+	self.Path = Path("Follow")
+	self.Path:SetMinLookAheadDistance(300)
+	self.Path:SetGoalTolerance(WANDER_GOAL_THRESH)
+	self.Path:Compute(self, targetPos)
 
-	if not self.path:IsValid() then
+	if not self.Path:IsValid() then
 		coroutine.wait(WANDER_RETRY_WAIT)
 		return
 	end
@@ -44,15 +44,15 @@ function ENT:StateWander()
 	self.ProgressPos = self:GetPos()
 	self.ProgressTime = CurTime()
 
-	while self.path:IsValid() do
+	while self.Path:IsValid() do
 		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
 			self.CurrentState = "Wander"
 			return
 		end
 
-		if IsValid(target) and self:IsTouchingPlayer(target) then
-			self:DealDmgOnContact(target, 1)
-			self:PushOnContact(target)
+		if IsValid(self.Target) and self:IsTouchingPlayer(self.Target) then
+			self:DealDmgOnContact(self.Target, 1)
+			self:PushOnContact(self.Target)
 		end
 
 		-- if IsValid(target) and self:IsLineOfSightClear(target) then
@@ -63,11 +63,14 @@ function ENT:StateWander()
 
 		if self:CheckProgress() then
 			self:HandleStuck()
-			self.ProgressPos = self:GetPos()
-			self.ProgressTime = CurTime()
+
+			if self.StuckTries >= self.StuckMax then
+				self.CurrentState = "Wander"
+				return
+			end
 		end
 
-		self.path:Update(self)
+		self.Path:Update(self)
 
 		self:ClearObstacles()
 		coroutine.yield()
