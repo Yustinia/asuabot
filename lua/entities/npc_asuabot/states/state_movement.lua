@@ -76,7 +76,6 @@ function ENT:StateWander()
 			self.Path:Compute(self, targetPos)
 		end
 
-		self.Path:Draw()
 		self.Path:Update(self)
 
 		self:ClearObstacles()
