@@ -509,3 +509,22 @@ function ENT:FindPointBetween(posA, posB, distance)
 
 	return calculatedPos
 end
+
+--- finds the closest player regardless of sight
+--- @return Player|nil
+function ENT:FindClosestPlayer()
+	local closest = nil
+	local minDist = math.huge
+	local myPos = self:GetPos()
+
+	for _, ply in ipairs(player.GetAll()) do
+		if ply:Alive() and ply:GetObserverMode() == OBS_MODE_NONE then
+			local distSq = myPos:DistToSqr(ply:GetPos())
+			if distSq < minDist then
+				minDist = distSq
+				closest = ply
+			end
+		end
+	end
+	return closest
+end
