@@ -126,3 +126,15 @@ function ENT:ComputeRoutingPath(target, minLookAheadDist, goalTolerance, mode)
 
 	return false
 end
+
+function ENT:RefreshPathIfStale(maxAge, target, mode)
+	if self.Path:GetAge() < maxAge then
+		return
+	end
+
+	if mode == "Follow" then
+		self.Path:Compute(self, target)
+	elseif mode == "Chase" then
+		self.Path:Chase(self, target)
+	end
+end

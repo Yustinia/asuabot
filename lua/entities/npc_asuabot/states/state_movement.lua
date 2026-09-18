@@ -44,9 +44,7 @@ function ENT:StateWander()
 			end
 		end
 
-		if self.Path:GetAge() >= WANDER_PATH_AGE then
-			self.Path:Compute(self, targetPos)
-		end
+		self:RefreshPathIfStale(WANDER_PATH_AGE, targetPos, "Follow")
 
 		self.Path:Update(self)
 
