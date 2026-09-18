@@ -69,6 +69,8 @@ function ENT:Initialize()
 	self.ProgressPos = nil
 	self.ProgressTime = 0
 
+	self.PatrolIndex = 0
+
 	-- Spawn Initialization
 	-- self:TeleportToDistantNavSpot()
 end

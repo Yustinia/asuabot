@@ -393,8 +393,26 @@ function ENT:FindAmbushSpot(scanRadius)
 	return bestSpot
 end
 
+function ENT:FindInvestigateSpot()
+	if not self.TargetLastSeenPos then
+		return nil
+	end
+
+	return self.TargetLastSeenPos
+end
+
 function ENT:FindPatrolSpot()
-	-- Finds a suitable position for patrolling.
+	if #self.LastSeenTargetPositions < 5 then
+		return nil
+	end
+
+	self.PatrolIndex = (self.PatrolIndex or 0) + 1
+
+	if self.PatrolIndex > #self.LastSeenTargetPositions then
+		return nil
+	end
+
+	return self.LastSeenTargetPositions[self.PatrolIndex]
 end
 
 function ENT:FindFlankSpot(target)
