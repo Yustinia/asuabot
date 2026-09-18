@@ -70,6 +70,7 @@ function ENT:StateWander()
 			end
 		end
 
+		self.Path:Draw()
 		self.Path:Update(self)
 
 		self:ClearObstacles()
