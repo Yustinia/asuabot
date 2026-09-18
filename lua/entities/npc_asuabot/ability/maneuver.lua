@@ -1,6 +1,9 @@
 local UNSTUCK_LIFT = Vector(0, 0, 10)
 local UNSTUCK_DIST = 40
-local UNSTUCK_RESET_WINDOW = 2
+local UNSTUCK_RESET_WINDOW = 4
+
+local PROGRESS_CHECK_INTERVAL = 2
+local PROGRESS_MIN_DIST = 60
 
 function ENT:ClearObstacles()
 	local myPos = self:GetPos() + Vector(0, 0, 40)
@@ -41,6 +44,31 @@ function ENT:ClearObstacles()
 			ent:TakeDamage(100, self, self)
 		end
 	end
+end
+
+function ENT:CheckProgress()
+	local now = CurTime()
+
+	if not self.ProgressPos then
+		self.ProgressPos = self:GetPos()
+		self.ProgressTime = now
+		return false
+	end
+
+	if now - self.ProgressTime < PROGRESS_CHECK_INTERVAL then
+		return false
+	end
+
+	local moved = self:GetPos():Distance(self.ProgressPos)
+
+	self.ProgressPos = self:GetPos()
+	self.ProgressTime = now
+
+	if moved < PROGRESS_MIN_DIST then
+		return true
+	end
+
+	return false
 end
 
 function ENT:HandleStuck()

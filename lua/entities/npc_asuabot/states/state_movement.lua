@@ -43,6 +43,8 @@ function ENT:StateWander()
 	end
 
 	self.LastPathRecompute = CurTime()
+	self.ProgressPos = self:GetPos()
+	self.ProgressTime = CurTime()
 
 	while self.path:IsValid() do
 		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
@@ -60,6 +62,12 @@ function ENT:StateWander()
 
 		-- 	return
 		-- end
+
+		if self:CheckProgress() then
+			self:HandleStuck()
+			self.ProgressPos = self:GetPos()
+			self.ProgressTime = CurTime()
+		end
 
 		if self.path:GetAge() > WANDER_PATH_AGE then
 			self.path:Compute(self, targetPos)

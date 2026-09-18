@@ -19,7 +19,7 @@ function ENT:Initialize()
 	self:SetFOV(360)
 	self:SetMaxVisionRange(10000)
 
-	self:SetCollisionBounds(Vector(-1, -1, 0), Vector(1, 1, 1))
+	self:SetCollisionBounds(Vector(-8, -8, 0), Vector(8, 8, 8))
 
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
