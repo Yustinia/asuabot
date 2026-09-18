@@ -15,18 +15,18 @@ function ENT:StateWander()
 		return
 	end
 
-    local myPos = self:GetPos()
-    local nearbyNavs = {}
+	local myPos = self:GetPos()
+	local nearbyNavs = {}
 
-    for i = 1, #navs do
-        local area = navs[i]
+	for i = 1, #navs do
+		local area = navs[i]
 
-        if area:GetCenter():Distance(myPos) <= WANDER_SCAN_RAD then
-            table.insert(nearbyNavs, area)
-        end
-    end
+		if area:GetCenter():Distance(myPos) <= WANDER_SCAN_RAD then
+			table.insert(nearbyNavs, area)
+		end
+	end
 
-    local candidateNavs = (#nearbyNavs > 0) and nearbyNavs or navs
+	local candidateNavs = (#nearbyNavs > 0) and nearbyNavs or navs
 
 	local targetArea = candidateNavs[math.random(1, #candidateNavs)]
 	local targetPos = targetArea:GetRandomPoint()
@@ -36,15 +36,14 @@ function ENT:StateWander()
 	path:SetGoalTolerance(WANDER_GOAL_THRESH)
 	path:Compute(self, targetPos)
 
-    if not path:IsValid() then
-        coroutine.wait(WANDER_RETRY_WAIT)
-        return
-    end
+	if not path:IsValid() then
+		coroutine.wait(WANDER_RETRY_WAIT)
+		return
+	end
 
 	while path:IsValid() do
 		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
-            self.CurrentState = "Wander"
-            PrintMessage(HUD_PRINTTALK, "REACHED GOAL!")
+			self.CurrentState = "Wander"
 			return
 		end
 

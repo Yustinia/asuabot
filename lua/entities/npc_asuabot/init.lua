@@ -18,10 +18,10 @@ function ENT:Initialize()
 
 	self:SetCollisionBounds(Vector(-16, -16, 0), Vector(16, 16, 72))
 
-    self.CachedNavAreas = navmesh.GetAllNavAreas()
+	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	self.NextPushTime = 0
-    self.NextDamageTime = 0
+	self.NextDamageTime = 0
 
 	-- self:TeleportToDistantNavSpot(self.CachedNavAreas)
 	self.CurrentState = "Wander"
