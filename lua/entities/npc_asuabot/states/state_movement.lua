@@ -55,7 +55,7 @@ function ENT:StateWander()
 			self:DealDmgOnContact(self.Target, 1)
 		end
 
-		if IsValid(target) and self:IsLineOfSightClear(self.Target) then
+		if IsValid(self.Target) and self:IsLineOfSightClear(self.Target) then
 			self.TargetLastSeenPos = self.Target:GetPos()
 		end
 
