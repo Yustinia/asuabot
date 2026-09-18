@@ -1,6 +1,6 @@
 local WANDER_SPD = 500
 local WANDER_ACCEL = 500
-local WANDER_GOAL_THRESH = 60
+local WANDER_GOAL_THRESH = 120
 local WANDER_SCAN_RAD = 2000
 local WANDER_RETRY_WAIT = 1
 local WANDER_PATH_AGE = 0.8
@@ -53,7 +53,6 @@ function ENT:StateWander()
 
 		if IsValid(self.Target) and self:IsTouchingPlayer(self.Target) then
 			self:DealDmgOnContact(self.Target, 1)
-			self:PushOnContact(self.Target)
 		end
 
 		-- if IsValid(target) and self:IsLineOfSightClear(target) then
