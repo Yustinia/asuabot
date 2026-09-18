@@ -10,3 +10,17 @@ function ENT:IsObservedBy(ply)
 	local plyAim = ply:GetAimVector()
 	return plyAim:Dot(dirToBot) > 0.5
 end
+
+function ENT:RecordLastSeenPosition(pos)
+	if CurTime() - self.LastSeenRecordTime < self.LastSeenRecordInterval then
+		return
+	end
+
+	table.insert(self.LastSeenTargetPositions, 1, pos)
+
+	if #self.LastSeenTargetPositions > self.LastSeenTargetSize then
+		table.remove(self.LastSeenTargetPositions)
+	end
+
+	self.LastSeenRecordTime = CurTime()
+end

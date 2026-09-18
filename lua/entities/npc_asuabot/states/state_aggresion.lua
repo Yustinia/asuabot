@@ -46,6 +46,7 @@ function ENT:StateChase()
 		if self:IsLineOfSightClear(self.Target) then
 			self.TargetLastSeenTime = CurTime()
 			self.TargetLastSeenPos = self.Target:GetPos()
+			self:RecordLastSeenPosition(self.Target:GetPos())
 		elseif CurTime() - self.TargetLastSeenTime > CHASE_LOST_TARGET_DUR then
 			self.CurrentState = "Wander"
 			return
@@ -97,6 +98,7 @@ function ENT:StateRush()
 		if self:IsLineOfSightClear(self.Target) then
 			self.TargetLastSeenTime = CurTime()
 			self.TargetLastSeenPos = self.Target:GetPos()
+			self:RecordLastSeenPosition(self.Target:GetPos())
 		end
 
 		if CurTime() - chaseStartTime > RUSH_LIFETIME_DUR then

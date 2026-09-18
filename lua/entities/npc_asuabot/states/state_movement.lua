@@ -57,6 +57,7 @@ function ENT:StateWander()
 
 		if IsValid(self.Target) and self:IsLineOfSightClear(self.Target) then
 			self.TargetLastSeenPos = self.Target:GetPos()
+			self:RecordLastSeenPosition(self.Target:GetPos())
 		end
 
 		if self:CheckProgress() then
