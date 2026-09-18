@@ -1,107 +1,84 @@
-include("entities/npc_asuabot/helper.lua")
-
 local WANDER_SPD = 500
 local WANDER_ACCEL = 500
-local WANDER_GOAL_THRESH = 60
-
-local FAKEOUT_SPD = 2000
-local FAKEOUT_ACCEL = 6000
-local FAKEOUT_GOAL_THRESH = 60
+local WANDER_GOAL_THRESH = 120
+local WANDER_SCAN_RAD = 2000
+local WANDER_RETRY_WAIT = 1
+local WANDER_PATH_AGE = 0.8
+local WANDER_AHEAD_DIST = 150
 
 function ENT:StateWander()
 	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
 
-	local target = self:GetClosestPlayer()
-	local navs = navmesh.GetAllNavAreas()
+	self.Target = self:GetClosestPlayer()
+	local navs = self.CachedNavAreas
+
 	if #navs == 0 then
 		coroutine.wait(1)
 		return
 	end
 
-	local targetArea = navs[math.random(1, #navs)]
+	local myPos = self:GetPos()
+	local nearbyNavs = {}
+
+	for i = 1, #navs do
+		local area = navs[i]
+
+		if area:GetCenter():Distance(myPos) <= WANDER_SCAN_RAD then
+			table.insert(nearbyNavs, area)
+		end
+	end
+
+	local candidateNavs = (#nearbyNavs > 0) and nearbyNavs or navs
+
+	local targetArea = candidateNavs[math.random(1, #candidateNavs)]
 	local targetPos = targetArea:GetRandomPoint()
 
-	local path = Path("Follow")
-	path:SetMinLookAheadDistance(300)
-	path:SetGoalTolerance(0)
-	path:Compute(self, targetPos)
+	self.Path = Path("Follow")
+	self.Path:SetMinLookAheadDistance(WANDER_AHEAD_DIST)
+	self.Path:SetGoalTolerance(WANDER_GOAL_THRESH)
+	self.Path:Compute(self, targetPos)
 
-	while path:IsValid() do
-		local randomChance = math.random(1, 500)
+	if not self.Path:IsValid() then
+		coroutine.wait(WANDER_RETRY_WAIT)
+		return
+	end
 
+	self.ProgressPos = self:GetPos()
+	self.ProgressTime = CurTime()
+
+	while self.Path:IsValid() do
 		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
-			-- DO SOMETHING
-
+			self.CurrentState = "Wander"
 			return
 		end
 
-		if IsValid(target) and self:IsTouchingPlayer(target) then
-			target:TakeDamage(1, self, self)
-			self:PushOnContact(target)
+		if IsValid(self.Target) and self:IsTouchingPlayer(self.Target) then
+			self:DealDmgOnContact(self.Target, 1)
+			self:PushOnContact(self.Target)
 		end
 
-		if IsValid(target) and self:IsLineOfSightClear(target) then
-			-- 2%
-			if randomChance <= 2 then
-				self.CurrentState = "FakeOutRush"
-				return
+		-- if IsValid(target) and self:IsLineOfSightClear(target) then
+		-- 	-- DO SOMETHING
 
-			-- 8%
-			elseif randomChance <= 10 then
-				self.CurrentState = "Flickering"
-				return
+		-- 	return
+		-- end
 
-			-- 6%
-			elseif randomChance <= 16 then
-				self.CurrentState = "Chase"
-				return
+		if self:CheckProgress() then
+			self:HandleStuck()
 
-			-- 3%
-			elseif randomChance <= 19 then
-				self.CurrentState = "Rushing"
+			if self.StuckTries >= self.StuckMax then
+				self.CurrentState = "Wander"
 				return
 			end
 		end
 
-		path:Update(self)
+		if self.Path:GetAge() >= WANDER_PATH_AGE then
+			self.Path:Compute(self, targetPos)
+		end
+
+		self.Path:Update(self)
 
 		self:ClearObstacles()
-		if self.loco:IsStuck() then
-			self:HandleStuck()
-			return
-		end
 		coroutine.yield()
 	end
-end
-
-function ENT:FakeRush(target)
-	if not IsValid(target) or not target:Alive() then
-		return false
-	end
-
-	self:HandleSpeed(FAKEOUT_SPD, FAKEOUT_ACCEL)
-
-	local path = Path("Follow")
-	path:SetMinLookAheadDistance(300)
-	path:SetGoalTolerance(FAKEOUT_GOAL_THRESH)
-
-	while IsValid(target) and target:Alive() do
-		if self:GetPos():Distance(target:GetPos()) <= FAKEOUT_GOAL_THRESH then
-			return
-		end
-
-		path:Compute(self, target:GetPos())
-		path:Update(self)
-
-		self:ClearObstacles()
-
-		if self.loco:IsStuck() then
-			self:HandleStuck()
-			return
-		end
-
-		coroutine.yield()
-	end
-
-	return
 end
