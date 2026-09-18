@@ -23,8 +23,7 @@ function ENT:StateWander()
 
 	while path:IsValid() do
 		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
-			-- DO SOMETHING
-
+			self.CurrentState = "Wander"
 			return
 		end
 
@@ -33,17 +32,17 @@ function ENT:StateWander()
 			self:PushOnContact(target)
 		end
 
-		if IsValid(target) and self:IsLineOfSightClear(target) then
-			-- DO SOMETHING
+		-- if IsValid(target) and self:IsLineOfSightClear(target) then
+		-- 	-- DO SOMETHING
 
-			return
-		end
+		-- 	return
+		-- end
 
 		path:Update(self)
 
 		self:ClearObstacles()
 		if self.loco:IsStuck() then
-			self:HandleStuck()
+			self:CustomHandleStuck()
 			return
 		end
 		coroutine.yield()
