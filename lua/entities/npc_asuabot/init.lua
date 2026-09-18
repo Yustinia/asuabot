@@ -38,7 +38,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "Chase"
+	self.CurrentState = "Rush"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
@@ -75,6 +75,8 @@ function ENT:RunBehaviour()
 			self:StateWander()
 		elseif self.CurrentState == "Chase" then
 			self:StateChase()
+		elseif self.CurrentState == "Rush" then
+			self:StateRush()
 		else
 			self.CurrentState = "Wander"
 			self:StateWander()
