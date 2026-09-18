@@ -9,6 +9,7 @@ include("ability/perception.lua")
 include("ability/physical.lua")
 
 include("states/state_movement.lua")
+include("states/state_aggresion.lua")
 
 function ENT:Initialize()
 	-- Model / appearance
@@ -16,8 +17,8 @@ function ENT:Initialize()
 	self:SetSpawnEffect(false)
 
 	-- Health
-	self:SetHealth(99999)
-	self:SetMaxHealth(99999)
+	self:SetHealth(99999999)
+	self:SetMaxHealth(99999999)
 
 	-- Collision / movement
 	self:SetSolid(SOLID_NONE)
@@ -26,7 +27,7 @@ function ENT:Initialize()
 
 	-- NextBot vision
 	self:SetFOV(360)
-	self:SetMaxVisionRange(10000)
+	self:SetMaxVisionRange(99999999)
 
 	-- NextBot Status
 	self.loco:SetStepHeight(18)
@@ -37,7 +38,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "Wander"
+	self.CurrentState = "Chase"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
@@ -64,7 +65,7 @@ function ENT:Initialize()
 	self.ProgressTime = 0
 
 	-- Spawn Initialization
-	-- self:TeleportToDistantNavSpot(self.CachedNavAreas)
+	-- self:TeleportToDistantNavSpot()
 end
 
 -- Nextbot loop
@@ -72,6 +73,8 @@ function ENT:RunBehaviour()
 	while true do
 		if self.CurrentState == "Wander" then
 			self:StateWander()
+		elseif self.CurrentState == "Chase" then
+			self:StateChase()
 		else
 			self.CurrentState = "Wander"
 			self:StateWander()
