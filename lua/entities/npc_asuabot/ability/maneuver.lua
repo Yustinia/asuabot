@@ -1,5 +1,6 @@
-local UNSTUCK_LIFT = Vector(0,0,10)
+local UNSTUCK_LIFT = Vector(0, 0, 10)
 local UNSTUCK_DIST = 40
+local UNSTUCK_RESET_WINDOW = 2
 
 function ENT:ClearObstacles()
 	local myPos = self:GetPos() + Vector(0, 0, 40)
@@ -43,16 +44,28 @@ function ENT:ClearObstacles()
 end
 
 function ENT:HandleStuck()
-    self:ClearObstacles()
-    self.loco:ClearStuck()
+	self:ClearObstacles()
 
-    local currentNav = navmesh.GetNearestNavArea(self:GetPos())
-    if IsValid(currentNav) then
-        local randomPoint = currentNav:GetRandomPoint()
-        self:SetPos(randomPoint + UNSTUCK_LIFT)
-    else
-        self:SetPos(self:GetPos() - (self:GetForward() * UNSTUCK_DIST) + UNSTUCK_LIFT)
-    end
+	if CurTime() - (self.LastStuck or 0) >= UNSTUCK_RESET_WINDOW then
+		self.StuckTries = 0
+	end
+	self.LastStuck = CurTime()
 
-    coroutine.yield()
+	if self.path and self.path:IsValid() then
+		local jumpDist = UNSTUCK_DIST * math.pow(2, self.StuckTries or 0)
+		local newPos = self.path:GetPositionOnPath(self.path:GetCursorPosition() + jumpDist)
+		self:SetPos(newPos + UNSTUCK_LIFT)
+		self.StuckTries = (self.StuckTries or 0) + 1
+	else
+		local currentNav = navmesh.GetNearestNavArea(self:GetPos())
+		if IsValid(currentNav) then
+			local randomPoint = currentNav:GetRandomPoint()
+			self:SetPos(randomPoint + UNSTUCK_LIFT)
+		else
+			self:SetPos(self:GetPos() - (self:GetForward() * UNSTUCK_DIST) + UNSTUCK_LIFT)
+		end
+	end
+
+	self.loco:ClearStuck()
+	coroutine.yield()
 end

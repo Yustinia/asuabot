@@ -17,12 +17,15 @@ function ENT:Initialize()
 	self:SetCollisionGroup(COLLISION_GROUP_NPC)
 	self:SetSolid(SOLID_BBOX)
 
-	self:SetCollisionBounds(Vector(-5, -5, 0), Vector(5, 5, 5))
+	self:SetCollisionBounds(Vector(-1, -1, 0), Vector(1, 1, 1))
 
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	self.NextPushTime = 0
 	self.NextDamageTime = 0
+
+	self.StuckTries = 0
+	self.LastStuck = 0
 
 	-- self:TeleportToDistantNavSpot(self.CachedNavAreas)
 	self.CurrentState = "Wander"

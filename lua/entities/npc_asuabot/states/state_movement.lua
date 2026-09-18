@@ -32,19 +32,19 @@ function ENT:StateWander()
 	local targetArea = candidateNavs[math.random(1, #candidateNavs)]
 	local targetPos = targetArea:GetRandomPoint()
 
-	local path = Path("Follow")
-	path:SetMinLookAheadDistance(300)
-	path:SetGoalTolerance(WANDER_GOAL_THRESH)
-	path:Compute(self, targetPos)
+	self.path = Path("Follow")
+	self.path:SetMinLookAheadDistance(300)
+	self.path:SetGoalTolerance(WANDER_GOAL_THRESH)
+	self.path:Compute(self, targetPos)
 
-	if not path:IsValid() then
+	if not self.path:IsValid() then
 		coroutine.wait(WANDER_RETRY_WAIT)
 		return
 	end
 
 	self.LastPathRecompute = CurTime()
 
-	while path:IsValid() do
+	while self.path:IsValid() do
 		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
 			self.CurrentState = "Wander"
 			return
@@ -61,14 +61,16 @@ function ENT:StateWander()
 		-- 	return
 		-- end
 
-		if CurTime() - self.LastPathRecompute >= WANDER_PATH_AGE then
-			self.LastPathRecompute = CurTime()
-			path:Update(self)
-		else
-			path:Update(self)
+		if self.path:GetAge() > WANDER_PATH_AGE then
+			self.path:Compute(self, targetPos)
 		end
 
-		path:Update(self)
+		if CurTime() - self.LastPathRecompute >= WANDER_PATH_AGE then
+			self.LastPathRecompute = CurTime()
+			self.path:Update(self)
+		else
+			self.path:Update(self)
+		end
 
 		self:ClearObstacles()
 		coroutine.yield()
