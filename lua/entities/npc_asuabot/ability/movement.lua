@@ -1,11 +1,19 @@
 local LIFT_VECTOR = Vector(0, 0, 10)
 
-function ENT:HandleSpeed(speed, accel)
-	local setSpd = speed or 200
-	local setAccel = accel or 400
+function ENT:SetAccel(accel)
+	self.loco:SetAcceleration(accel)
+end
 
-	self.loco:SetDesiredSpeed(setSpd)
-	self.loco:SetAcceleration(setAccel)
+function ENT:SetSpeed(speed)
+	self.loco:SetDesiredSpeed(speed)
+end
+
+function ENT:HandleSpeed(speed, accel)
+	speed = speed or 200
+	accel = accel or 400
+
+	self:SetSpeed(speed)
+	self:SetAccel(accel)
 end
 
 function ENT:TeleportToDistantNavSpot(minDistance)

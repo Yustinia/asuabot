@@ -98,10 +98,31 @@ function ENT:HandleStuck()
 	coroutine.yield()
 end
 
---- Computes and updates the NPC's navigation path.
---- @param minLookAheadDist number Minimum distance the path looks ahead.
---- @param goalTolerance number Distance from the goal at which the path is considered complete.
-function ENT:ConfigFollowPath(minLookAheadDist, goalTolerance)
+function ENT:ConfigRoutingPath(minLookAheadDist, goalTolerance)
 	self.Path:SetMinLookAheadDistance(minLookAheadDist)
 	self.Path:SetGoalTolerance(goalTolerance)
+end
+
+function ENT:ComputeRoutingPath(target, minLookAheadDist, goalTolerance, mode)
+	if not self.Path then
+		if mode == "Follow" then
+			self.Path = Path("Follow")
+		elseif mode == "Chase" then
+			self.Path = Path("Chase")
+		end
+	end
+
+	self:ConfigRoutingPath(minLookAheadDist, goalTolerance)
+
+	if mode == "Follow" then
+		self.Path:Compute(self, target)
+	elseif mode == "Chase" then
+		self.Path:Chase(self, target)
+	end
+
+	if self.Path:IsValid() then
+		return self.Path
+	end
+
+	return false
 end
