@@ -348,13 +348,11 @@ function ENT:FindEscapeSpot(scanRadius)
 end
 
 --- Finds a hidden spot close to the target to wait for an element of surprise.
---
--- Searches navigation areas near the target, filtering for positions that block
--- line-of-sight while selecting the one closest to the target.
---
--- @param target Entity|nil The entity to ambush (defaults to self.Target).
--- @param scanRadius number|nil Radius around the target to search (default 1000).
--- @return Vector|nil Vector position of the ambush spot, or nil if none found.
+---
+--- Searches navigation areas near the target, filtering for positions that block
+--- line-of-sight while selecting the one closest to the target.
+--- @param scanRadius number|nil Radius around the target to search (default 1000).
+--- @return Vector|nil Vector position of the ambush spot, or nil if none found.
 function ENT:FindAmbushSpot(scanRadius)
 	scanRadius = scanRadius or 1000
 
@@ -393,6 +391,8 @@ function ENT:FindAmbushSpot(scanRadius)
 	return bestSpot
 end
 
+--- return the last and most recent player position
+--- @return targetLastPosition
 function ENT:FindInvestigateSpot()
 	if not self.TargetLastSeenPos then
 		return nil
@@ -401,6 +401,8 @@ function ENT:FindInvestigateSpot()
 	return self.TargetLastSeenPos
 end
 
+--- returns various positions the player reached
+--- @return targetLastOldPosition
 function ENT:FindPatrolSpot()
 	if #self.LastSeenTargetPositions < 5 then
 		return nil
@@ -415,18 +417,108 @@ function ENT:FindPatrolSpot()
 	return self.LastSeenTargetPositions[self.PatrolIndex]
 end
 
-function ENT:FindFlankSpot(target)
-	-- Finds a suitable position for flanking a target.
+--- Finds a position behind or to the side of a target outside their field of view.
+---
+--- @param target Entity|nil Target entity (defaults to self.Target).
+--- @return Vector|nil Flanking position, or nil if none found.
+function ENT:FindFlankSpot(distance)
+	local targetPos = self.Target:GetPos()
+	local targetForward = self.Target:GetForward()
+
+	local navs = navmesh.Find(targetPos, distance, 20, 50)
+	if not navs or #navs == 0 then
+		return nil
+	end
+
+	local validFlankSpots = {}
+
+	for i = 1, #navs do
+		local area = navs[i]
+		if IsValid(area) then
+			local center = area:GetCenter()
+			local dirToSpot = (center - targetPos):GetNormalized()
+
+			local dot = targetForward:Dot(dirToSpot)
+
+			if dot <= 0.3 then
+				table.insert(validFlankSpots, center)
+			end
+		end
+	end
+
+	if #validFlankSpots > 0 then
+		return validFlankSpots[math.random(#validFlankSpots)]
+	end
+
+	return nil
 end
 
-function ENT:FindPointNearTarget(target, minDist, maxDist)
-	-- Finds a position within a specified distance range of a target.
+--- Finds a navigation position within a min/max distance ring around a target.
+---
+--- @param minDist number Minimum distance constraint.
+--- @param maxDist number Maximum distance constraint.
+--- @return Vector|nil Random position inside the ring, or nil if none found.
+function ENT:FindPointNearTarget(minDist, maxDist)
+	local targetPos = self.Target:GetPos()
+
+	local navs = navmesh.Find(targetPos, maxDist, 20, 50)
+	if not navs or #navs == 0 then
+		return nil
+	end
+
+	local validSpots = {}
+
+	for i = 1, #navs do
+		local area = navs[i]
+		if IsValid(area) then
+			local center = area:GetCenter()
+			local dist = center:Distance(targetPos)
+
+			if dist >= minDist and dist <= maxDist then
+				table.insert(validSpots, center)
+			end
+		end
+	end
+
+	if #validSpots > 0 then
+		return validSpots[math.random(#validSpots)]
+	end
+
+	return nil
 end
 
-function ENT:FindPointAwayFromTarget(target, distance)
-	-- Finds a position at a specified distance away from a target.
+--- Finds a position at roughly the specified distance away from a target.
+---
+--- @param distance number Desired distance to step away.
+--- @return Vector|nil Position at the specified distance away, or nil.
+function ENT:FindPointAwayFromTarget(distance)
+	local targetPos = self.Target:GetPos()
+
+	local awayDir = (self:GetPos() - targetPos):GetNormalized()
+	local idealPos = targetPos + (awayDir * distance)
+
+	local nearestArea = navmesh.GetNearestNavArea(idealPos)
+	if IsValid(nearestArea) then
+		return nearestArea:GetClosestPointOnArea(idealPos)
+	end
+
+	return nil
 end
 
+--- Calculates a position along the line segment between two points offset by a given distance.
+---
+--- @param posA Vector Starting origin point.
+--- @param posB Vector Destination point facing direction.
+--- @param distance number Units to travel from posA towards posB.
+--- @return Vector|nil Closest navmesh position near the calculated point, or nil.
 function ENT:FindPointBetween(posA, posB, distance)
-	-- Finds a position between two points at the specified offset.
+	local dir = (posB - posA):GetNormalized()
+	local calculatedPos = posA + (dir * distance)
+
+	local nearestArea = navmesh.GetNearestNavArea(calculatedPos)
+	if IsValid(nearestArea) then
+		return nearestArea:GetClosestPointOnArea(calculatedPos)
+	end
+
+	return calculatedPos
 end
