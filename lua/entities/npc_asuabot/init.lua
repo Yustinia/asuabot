@@ -16,6 +16,8 @@ function ENT:Initialize()
 	self:SetHealth(99999)
 	self:SetCollisionGroup(COLLISION_GROUP_NPC)
 	self:SetSolid(SOLID_BBOX)
+	self:SetFOV(360)
+	self:SetMaxVisionRange(10000)
 
 	self:SetCollisionBounds(Vector(-1, -1, 0), Vector(1, 1, 1))
 
