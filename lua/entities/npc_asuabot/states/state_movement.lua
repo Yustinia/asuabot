@@ -3,7 +3,6 @@ local WANDER_ACCEL = 500
 local WANDER_GOAL_THRESH = 120
 local WANDER_SCAN_RAD = 2000
 local WANDER_RETRY_WAIT = 1
-local WANDER_PATH_AGE = 0.1
 
 function ENT:StateWander()
 	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
@@ -42,7 +41,6 @@ function ENT:StateWander()
 		return
 	end
 
-	self.LastPathRecompute = CurTime()
 	self.ProgressPos = self:GetPos()
 	self.ProgressTime = CurTime()
 
@@ -69,16 +67,7 @@ function ENT:StateWander()
 			self.ProgressTime = CurTime()
 		end
 
-		if self.path:GetAge() > WANDER_PATH_AGE then
-			self.path:Compute(self, targetPos)
-		end
-
-		if CurTime() - self.LastPathRecompute >= WANDER_PATH_AGE then
-			self.LastPathRecompute = CurTime()
-			self.path:Update(self)
-		else
-			self.path:Update(self)
-		end
+		self.path:Update(self)
 
 		self:ClearObstacles()
 		coroutine.yield()
