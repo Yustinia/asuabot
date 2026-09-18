@@ -34,9 +34,7 @@ function ENT:StateWander()
 	local targetPos = targetArea:GetRandomPoint()
 
 	self.Path = Path("Follow")
-	self.Path:SetMinLookAheadDistance(WANDER_AHEAD_DIST)
-	self.Path:SetGoalTolerance(WANDER_GOAL_THRESH)
-	self.Path:Compute(self, targetPos)
+	self:ComputeFollowPath(targetPos, WANDER_AHEAD_DIST, WANDER_GOAL_THRESH)
 
 	if not self.Path:IsValid() then
 		coroutine.wait(WANDER_RETRY_WAIT)

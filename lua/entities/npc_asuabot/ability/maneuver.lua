@@ -97,3 +97,9 @@ function ENT:HandleStuck()
 	self.loco:ClearStuck()
 	coroutine.yield()
 end
+
+function ENT:ComputeFollowPath(targetPos, minLookAheadDist, goalTolerance)
+	self.Path:SetMinLookAheadDistance(minLookAheadDist)
+	self.Path:SetGoalTolerance(goalTolerance)
+	self.Path:Compute(self, targetPos)
+end
