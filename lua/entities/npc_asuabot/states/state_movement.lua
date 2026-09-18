@@ -1,8 +1,10 @@
-local WANDER_SPD = 500
-local WANDER_ACCEL = 500
+local WANDER_SPD = 300
+local WANDER_ACCEL = 400
 local WANDER_GOAL_THRESH = 120
 local WANDER_SCAN_RAD = 2000
 local WANDER_RETRY_WAIT = 1
+local WANDER_PATH_AGE = 0.8
+local WANDER_AHEAD_DIST = 150
 
 function ENT:StateWander()
 	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
@@ -32,7 +34,7 @@ function ENT:StateWander()
 	local targetPos = targetArea:GetRandomPoint()
 
 	self.Path = Path("Follow")
-	self.Path:SetMinLookAheadDistance(300)
+	self.Path:SetMinLookAheadDistance(WANDER_AHEAD_DIST)
 	self.Path:SetGoalTolerance(WANDER_GOAL_THRESH)
 	self.Path:Compute(self, targetPos)
 
@@ -68,6 +70,10 @@ function ENT:StateWander()
 				self.CurrentState = "Wander"
 				return
 			end
+		end
+
+		if self.Path:GetAge() >= WANDER_PATH_AGE then
+			self.Path:Compute(self, targetPos)
 		end
 
 		self.Path:Draw()
