@@ -3,6 +3,7 @@ local WANDER_ACCEL = 500
 local WANDER_GOAL_THRESH = 120
 local WANDER_SCAN_RAD = 2000
 local WANDER_RETRY_WAIT = 1
+local WANDER_PATH_AGE = 0.1
 
 function ENT:StateWander()
 	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
@@ -41,6 +42,8 @@ function ENT:StateWander()
 		return
 	end
 
+	self.LastPathRecompute = CurTime()
+
 	while path:IsValid() do
 		if self:GetPos():Distance(targetPos) <= WANDER_GOAL_THRESH then
 			self.CurrentState = "Wander"
@@ -57,6 +60,13 @@ function ENT:StateWander()
 
 		-- 	return
 		-- end
+
+		if CurTime() - self.LastPathRecompute >= WANDER_PATH_AGE then
+			self.LastPathRecompute = CurTime()
+			path:Update(self)
+		else
+			path:Update(self)
+		end
 
 		path:Update(self)
 

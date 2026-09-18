@@ -12,11 +12,12 @@ include("states/state_movement.lua")
 
 function ENT:Initialize()
 	self:SetModel("models/player/kleiner.mdl")
-	self:SetHealth(1000)
+	self:SetSpawnEffect(false)
+	self:SetHealth(99999)
 	self:SetCollisionGroup(COLLISION_GROUP_NPC)
 	self:SetSolid(SOLID_BBOX)
 
-	self:SetCollisionBounds(Vector(-16, -16, 0), Vector(16, 16, 72))
+	self:SetCollisionBounds(Vector(-5, -5, 0), Vector(5, 5, 5))
 
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
