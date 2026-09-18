@@ -358,6 +358,7 @@ function ENT:FindAmbushSpot(scanRadius)
 
 	local targetPos = self.Target:GetPos()
 	local targetEye = self.Target:EyePos()
+	local targetForward = self.Target:GetForward()
 
 	local navs = navmesh.Find(targetPos, scanRadius, 20, 50)
 	if not navs or #navs == 0 then
@@ -371,18 +372,22 @@ function ENT:FindAmbushSpot(scanRadius)
 		local area = navs[i]
 		if IsValid(area) then
 			local center = area:GetCenter()
+			local dirToSpot = (center - targetPos):GetNormalized()
+			local dot = targetForward:Dot(dirToSpot)
 
-			local tr = util.TraceLine({
-				start = center + Vector(0, 0, 64),
-				endpos = targetEye,
-				mask = MASK_OPAQUE,
-			})
+			if dot <= 0.3 then
+				local tr = util.TraceLine({
+					start = center + Vector(0, 0, 64),
+					endpos = targetEye,
+					mask = MASK_OPAQUE,
+				})
 
-			if tr.Hit and tr.Fraction < 1.0 then
-				local dist = center:Distance(targetPos)
-				if dist < shortestDist then
-					shortestDist = dist
-					bestSpot = center
+				if tr.Hit and tr.Fraction < 1.0 then
+					local dist = center:Distance(targetPos)
+					if dist < shortestDist then
+						shortestDist = dist
+						bestSpot = center
+					end
 				end
 			end
 		end
@@ -482,24 +487,6 @@ function ENT:FindPointNearTarget(minDist, maxDist)
 
 	if #validSpots > 0 then
 		return validSpots[math.random(#validSpots)]
-	end
-
-	return nil
-end
-
---- Finds a position at roughly the specified distance away from a target.
----
---- @param distance number Desired distance to step away.
---- @return Vector|nil Position at the specified distance away, or nil.
-function ENT:FindPointAwayFromTarget(distance)
-	local targetPos = self.Target:GetPos()
-
-	local awayDir = (self:GetPos() - targetPos):GetNormalized()
-	local idealPos = targetPos + (awayDir * distance)
-
-	local nearestArea = navmesh.GetNearestNavArea(idealPos)
-	if IsValid(nearestArea) then
-		return nearestArea:GetClosestPointOnArea(idealPos)
 	end
 
 	return nil
