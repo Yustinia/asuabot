@@ -54,12 +54,14 @@ function ENT:Initialize()
 	self.Path = nil
 
 	-- Timing
-	self.PushIntensity = 1500
 	self.PushCD = 0.5
 	self.NextPushTime = 0
 
 	self.DamageCD = 0.5
 	self.NextDamageTime = 0
+
+	self.PullCD = 15
+	self.NextPullTime = 0
 
 	-- Movement
 	self.StuckTries = 0
