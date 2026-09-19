@@ -5,3 +5,6 @@ include("entities/npc_asuabot/states/aggression/blink.lua")
 
 -- Movement
 include("entities/npc_asuabot/states/movement/wander.lua")
+
+-- Evasion
+include("entities/npc_asuabot/states/evasion/flee.lua")

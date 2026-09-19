@@ -31,7 +31,8 @@ end
 function ENT:FindFleeSpot(scanRadius)
 	scanRadius = scanRadius or 1000
 
-	local hideSpots = navmesh.Find(self:GetPos(), scanRadius, 20, 50)
+	local targetPos = self.Target:GetPos()
+	local hideSpots = navmesh.Find(targetPos, scanRadius, 20, 50)
 	if not hideSpots or #hideSpots == 0 then
 		return nil
 	end
@@ -39,13 +40,19 @@ function ENT:FindFleeSpot(scanRadius)
 	local bestSpot = nil
 	local maxDist = 0
 
-	for _, area in ipairs(hideSpots) do
-		local dist = area:GetCenter():Distance(self.Target:GetPos())
+	for i = 1, #hideSpots do
+		local area = hideSpots[i]
+		local center = area:GetCenter()
+		local dist = center:Distance(targetPos)
 
 		if dist > maxDist then
 			maxDist = dist
-			bestSpot = area:GetCenter()
+			bestSpot = center
 		end
+	end
+
+	if not bestSpot then
+		return nil
 	end
 
 	return bestSpot

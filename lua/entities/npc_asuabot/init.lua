@@ -12,7 +12,7 @@ ENT.States = {
 	Chase = ENT.StateChase,
 	Rush = ENT.StateRush,
 	Blink = ENT.StateBlink,
-	-- Flee = ENT.StateFlee,
+	Flee = ENT.StateFlee,
 	-- Hide = ENT.StateHide,
 	-- Stalk = ENT.StateStalk,
 	-- Investigate = ENT.StateInvestigate,
@@ -41,6 +41,10 @@ ENT.StateEnter = {
 	end,
 	Blink = function(self)
 		self.TargetLastSeenTime = CurTime()
+	end,
+	Flee = function(self)
+		self.ProgressPos = self:GetPos()
+		self.ProgressTime = CurTime()
 	end,
 }
 
@@ -73,7 +77,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "Wander"
+	self.CurrentState = "Flee"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
