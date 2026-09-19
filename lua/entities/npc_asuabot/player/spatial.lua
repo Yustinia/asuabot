@@ -104,7 +104,14 @@ function ENT:GetPlayerDirection()
 		return false
 	end
 
-	return (self.Target:GetPos() - self:GetPos()):GetNormalized()
+	local d = self.Target:GetPos() - self:GetPos()
+	d.z = 0
+
+	if d:Length() < 1 then
+		return false
+	end
+
+	return d:GetNormalized()
 end
 
 function ENT:GetPlayerRelativeVelocity()
