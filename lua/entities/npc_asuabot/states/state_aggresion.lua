@@ -18,22 +18,20 @@ local RUSH_PATH_AGE = 0.1
 function ENT:StateChase()
 	self:HandleSpeed(CHASE_SPD, CHASE_ACCEL)
 
-	self.Target = self:GetClosestPlayer()
+	self.Target = self:FindClosestPlayer()
 	if not IsValid(self.Target) then
 		self.CurrentState = "Wander"
 		return
 	end
 
-	self.Path = Path("Chase")
-	self:ConfigFollowPath(CHASE_AHEAD_DIST, CHASE_GOAL_THRESH)
-	self.Path:Chase(self, self.Target)
+	self:ComputeRoutingPath(self.Target, CHASE_AHEAD_DIST, CHASE_GOAL_THRESH, "Chase")
 
 	local chaseStartTime = CurTime()
 	self.TargetLastSeenTime = CurTime()
 
 	while IsValid(self.Target) and self.Target:Alive() do
 		if self:IsTouchingPlayer(self.Target) then
-			self:DealDmgOnContact(self.Target, CHASE_DMG)
+			self:DamageEntity(self.Target, CHASE_DMG)
 
 			if math.random(1, 2) == 1 then
 				self:TeleportToDistantNavSpot()
@@ -43,7 +41,7 @@ function ENT:StateChase()
 			return
 		end
 
-		if self:IsLineOfSightClear(self.Target) then
+		if self:IsTargetVisible(self.Target) then
 			self.TargetLastSeenTime = CurTime()
 			self.TargetLastSeenPos = self.Target:GetPos()
 			self:RecordLastSeenPosition(self.Target:GetPos())
@@ -57,9 +55,7 @@ function ENT:StateChase()
 			return
 		end
 
-		if self.Path:GetAge() >= CHASE_PATH_AGE then
-			self.Path:Chase(self, self.Target)
-		end
+		self:RefreshPathIfStale(CHASE_PATH_AGE, self.Target, "Chase")
 
 		self.Path:Update(self)
 		self:ClearObstacles()

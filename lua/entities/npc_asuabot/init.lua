@@ -40,7 +40,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "Wander"
+	self.CurrentState = "Chase"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
