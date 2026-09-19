@@ -25,6 +25,9 @@ ENT.StateEnter = {
 	Rush = function(self)
 		self.TargetLastSeenTime = CurTime()
 	end,
+	Blink = function(self)
+		self.TargetLastSeenTime = CurTime()
+	end,
 }
 
 function ENT:Initialize()
