@@ -1,3 +1,7 @@
+--- return boolean whether the entity is within tolerated distance
+--- @param pos any
+--- @param tolerance any
+--- @return boolean
 function ENT:IsAtPosition(pos, tolerance)
 	tolerance = tolerance or 60
 
