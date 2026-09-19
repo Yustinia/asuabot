@@ -12,6 +12,12 @@ ENT.States = {
 	Chase = ENT.StateChase,
 	Rush = ENT.StateRush,
 	Blink = ENT.StateBlink,
+	-- Flee = ENT.StateFlee,
+	-- Hide = ENT.StateHide,
+	-- Stalk = ENT.StateStalk,
+	-- Investigate = ENT.StateInvestigate,
+	-- Patrol = ENT.StatePatrol,
+	-- Flank = ENT.StateFlank,
 }
 
 ENT.StateEnter = {
