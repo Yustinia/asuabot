@@ -21,7 +21,7 @@ function ENT:TeleportToDistantNavSpot(minDistance)
 
 	local navAreas = self.CachedNavAreas
 	if not navAreas or #navAreas == 0 then
-		return false
+		return
 	end
 
 	local validSpots = {}
@@ -49,8 +49,5 @@ function ENT:TeleportToDistantNavSpot(minDistance)
 
 	if IsValid(selectedArea) then
 		self:SetPos(selectedArea:GetRandomPoint() + LIFT_VECTOR)
-		return true
 	end
-
-	return false
 end
