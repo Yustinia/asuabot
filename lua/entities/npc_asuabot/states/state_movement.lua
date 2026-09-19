@@ -17,12 +17,9 @@ function ENT:StateWander()
 		return
 	end
 
-	self.ProgressPos = self:GetPos()
-	self.ProgressTime = CurTime()
-
 	while self.Path:IsValid() do
 		if self:IsAtPosition(targetPos, WANDER_GOAL_THRESH) then
-			self.CurrentState = "Wander"
+			self:SetState("Wander")
 			return
 		end
 
@@ -39,7 +36,7 @@ function ENT:StateWander()
 			self:HandleStuck()
 
 			if self.StuckTries >= self.StuckMax then
-				self.CurrentState = "Wander"
+				self:SetState("Wander")
 				return
 			end
 		end

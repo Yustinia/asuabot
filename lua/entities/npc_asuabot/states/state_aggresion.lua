@@ -20,7 +20,7 @@ function ENT:StateChase()
 
 	self.Target = self:FindClosestPlayer()
 	if not IsValid(self.Target) then
-		self.CurrentState = "Wander"
+		self:SetState("Wander")
 		return
 	end
 
@@ -37,7 +37,7 @@ function ENT:StateChase()
 				self:TeleportToDistantNavSpot()
 			end
 
-			self.CurrentState = "Wander"
+			self:SetState("Wander")
 			return
 		end
 
@@ -46,12 +46,12 @@ function ENT:StateChase()
 			self.TargetLastSeenPos = self.Target:GetPos()
 			self:RecordLastSeenPosition(self.Target:GetPos())
 		elseif CurTime() - self.TargetLastSeenTime > CHASE_LOST_TARGET_DUR then
-			self.CurrentState = "Wander"
+			self:SetState("Wander")
 			return
 		end
 
 		if CurTime() - chaseStartTime > CHASE_LIFETIME_DUR then
-			self.CurrentState = "Wander"
+			self:SetState("Wander")
 			return
 		end
 
@@ -68,7 +68,7 @@ function ENT:StateRush()
 
 	self.Target = self:FindClosestPlayer()
 	if not IsValid(self.Target) then
-		self.CurrentState = "Wander"
+		self:SetState("Wander")
 		return
 	end
 
@@ -85,7 +85,7 @@ function ENT:StateRush()
 				self:TeleportToDistantNavSpot()
 			end
 
-			self.CurrentState = "Wander"
+			self:SetState("Wander")
 			return
 		end
 
@@ -96,7 +96,7 @@ function ENT:StateRush()
 		end
 
 		if CurTime() - chaseStartTime > RUSH_LIFETIME_DUR then
-			self.CurrentState = "Wander"
+			self:SetState("Wander")
 			return
 		end
 

@@ -9,9 +9,23 @@ include("ability/perception.lua")
 include("ability/physical.lua")
 
 include("helper/movement.lua")
+include("helper/state.lua")
 
 include("states/state_movement.lua")
 include("states/state_aggresion.lua")
+
+ENT.States = {
+	Wander = ENT.StateWander,
+	Chase = ENT.StateChase,
+	Rush = ENT.StateRush,
+}
+
+ENT.StateEnter = {
+	Wander = function(self)
+		self.ProgressPos = self:GetPos()
+		self.ProgressTime = CurTime()
+	end,
+}
 
 function ENT:Initialize()
 	-- Model / appearance
@@ -40,7 +54,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "Rush"
+	self.CurrentState = "Wander"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
@@ -82,17 +96,14 @@ end
 -- Nextbot loop
 function ENT:RunBehaviour()
 	while true do
-		if self.CurrentState == "Wander" then
-			self:StateWander()
-		elseif self.CurrentState == "Chase" then
-			self:StateChase()
-		elseif self.CurrentState == "Rush" then
-			self:StateRush()
-		else
+		local stateFunc = self.States[self.CurrentState]
+
+		if not stateFunc then
 			self.CurrentState = "Wander"
-			self:StateWander()
+			stateFunc = self.States.Wander
 		end
 
+		stateFunc(self)
 		coroutine.yield()
 	end
 end
