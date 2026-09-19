@@ -14,6 +14,7 @@ ENT.States = {
 	Blink = ENT.StateBlink,
 	Flee = ENT.StateFlee,
 	Hide = ENT.StateHide,
+	Retreat = ENT.StateRetreat,
 	-- Stalk = ENT.StateStalk,
 	-- Investigate = ENT.StateInvestigate,
 	-- Patrol = ENT.StatePatrol,
@@ -80,7 +81,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "Hide"
+	self.CurrentState = "Retreat"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
