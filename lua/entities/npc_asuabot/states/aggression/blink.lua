@@ -10,7 +10,7 @@ local BLINK_DMG = 20
 function ENT:StateBlink()
 	self.Target = self:FindClosestPlayer()
 	if not IsValid(self.Target) then
-		self.CurrentState = "Wander"
+		self:SetState("Wander")
 		return
 	end
 
@@ -54,7 +54,7 @@ function ENT:StateBlink()
 
 			if CurTime() - observedStartTime >= BLINK_STARE_LIFETIME_DUR then
 				self:TeleportToDistantNavSpot()
-				self.CurrentState = "Wander"
+				self:SetState("Wander")
 				return
 			end
 		else
