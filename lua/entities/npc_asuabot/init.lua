@@ -18,6 +18,14 @@ ENT.States = {
 	-- Investigate = ENT.StateInvestigate,
 	-- Patrol = ENT.StatePatrol,
 	-- Flank = ENT.StateFlank,
+	-- Ambush = ENT.StateAmbush,
+	-- Stare = ENT.StateStare,
+	-- Peek = ENT.StatePeek,
+	-- Rage = ENT.StateRage,
+	-- Rear = ENT.StateRear,
+	-- Frontal = ENT.StateFrontal,
+	-- Creeping = ENT.StateCreeping,
+	-- Intercept = ENT.StateIntercept
 }
 
 ENT.StateEnter = {
