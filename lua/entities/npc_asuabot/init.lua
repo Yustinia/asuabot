@@ -2,17 +2,10 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-include("ability/location.lua")
-include("ability/maneuver.lua")
-include("ability/movement.lua")
-include("ability/perception.lua")
-include("ability/physical.lua")
-
-include("helper/movement.lua")
-include("helper/state.lua")
-
-include("states/state_movement.lua")
-include("states/state_aggresion.lua")
+include("entities/npc_asuabot/ability/init.lua")
+include("entities/npc_asuabot/helper/init.lua")
+include("entities/npc_asuabot/states/init.lua")
+-- include("entities/npc_asuabot/player/init.lua")
 
 ENT.States = {
 	Wander = ENT.StateWander,
