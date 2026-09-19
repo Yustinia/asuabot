@@ -18,12 +18,19 @@ ENT.States = {
 	Wander = ENT.StateWander,
 	Chase = ENT.StateChase,
 	Rush = ENT.StateRush,
+	Blink = ENT.StateBlink,
 }
 
 ENT.StateEnter = {
 	Wander = function(self)
 		self.ProgressPos = self:GetPos()
 		self.ProgressTime = CurTime()
+	end,
+	Chase = function(self)
+		self.TargetLastSeenTime = CurTime()
+	end,
+	Rush = function(self)
+		self.TargetLastSeenTime = CurTime()
 	end,
 }
 
@@ -37,18 +44,20 @@ function ENT:Initialize()
 	self:SetMaxHealth(99999999)
 
 	-- Collision / movement
-	self:SetSolid(SOLID_NONE)
-	self:SetCollisionGroup(COLLISION_GROUP_NPC)
+	self:SetSolid(0)
+	self:SetCollisionGroup(10)
 	self:SetCollisionBounds(Vector(-1, -1, 0), Vector(1, 1, 1))
+	self.loco:SetAvoidAllowed(true)
 
 	-- NextBot vision
 	self:SetFOV(360)
 	self:SetMaxVisionRange(99999999)
 
-	-- NextBot Status
-	self.loco:SetStepHeight(18)
-	self.loco:SetJumpHeight(58)
+	-- NextBot ability
+	self.loco:SetStepHeight(40)
+	self.loco:SetJumpHeight(80)
 	self.loco:SetDeathDropHeight(200)
+	self.loco:SetJumpGapsAllowed(true)
 
 	-- Navmesh cache
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
