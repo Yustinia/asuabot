@@ -5,7 +5,7 @@ include("shared.lua")
 include("entities/npc_asuabot/ability/init.lua")
 include("entities/npc_asuabot/helper/init.lua")
 include("entities/npc_asuabot/states/init.lua")
--- include("entities/npc_asuabot/player/init.lua")
+include("entities/npc_asuabot/player/init.lua")
 
 ENT.States = {
 	Wander = ENT.StateWander,
