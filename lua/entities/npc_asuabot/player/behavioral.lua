@@ -44,7 +44,7 @@ function ENT:GetPlayerApproachSpeed()
 	local dir = self:GetPlayerDirection()
 	local rel = self:GetPlayerRelativeVelocity()
 	if not dir and not rel then
-		return false
+		return nil
 	end
 
 	return -rel:Dot(dir)

@@ -85,7 +85,7 @@ end
 
 function ENT:GetPlayerPosition()
 	if not IsValid(self.Target) then
-		return false
+		return nil
 	end
 
 	return self.Target:GetPos()
@@ -93,7 +93,7 @@ end
 
 function ENT:GetPlayerDistance()
 	if not IsValid(self.Target) then
-		return false
+		return nil
 	end
 
 	return self:GetPos():Distance(self.Target:GetPos())
@@ -101,7 +101,7 @@ end
 
 function ENT:GetPlayerDirection()
 	if not IsValid(self.Target) then
-		return false
+		return nil
 	end
 
 	local d = self.Target:GetPos() - self:GetPos()
@@ -116,7 +116,7 @@ end
 
 function ENT:GetPlayerRelativeVelocity()
 	if not IsValid(self.Target) then
-		return false
+		return nil
 	end
 
 	return self.Target:GetVelocity() - self:GetVelocity()
