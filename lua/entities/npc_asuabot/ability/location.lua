@@ -62,7 +62,7 @@ end
 --- @param scanRadius any relative to the player
 --- @return unknown hideSpot random hiding spot
 function ENT:FindHideSpot(scanRadius)
-	scanRadius = scanRadius or 1000
+	scanRadius = scanRadius or 4000
 
 	local areas = navmesh.Find(self.Target:GetPos(), scanRadius, 20, 50)
 	local targetEye = self.Target:EyePos()
@@ -89,6 +89,8 @@ end
 ---@param scanRadius any relative to the player
 ---@return unknown closestSpot hiding spot closest to the player
 function ENT:FindClosestHideSpot(scanRadius)
+	scanRadius = scanRadius or 6000
+
 	local areas = navmesh.Find(self.Target:GetPos(), scanRadius, 20, 50)
 	local targetEye = self.Target:EyePos()
 

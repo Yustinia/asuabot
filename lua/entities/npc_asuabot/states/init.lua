@@ -8,3 +8,6 @@ include("entities/npc_asuabot/states/movement/wander.lua")
 
 -- Evasion
 include("entities/npc_asuabot/states/evasion/flee.lua")
+
+-- Stealth
+include("entities/npc_asuabot/states/stealth/hide.lua")
