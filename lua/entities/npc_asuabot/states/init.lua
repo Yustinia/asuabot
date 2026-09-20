@@ -3,7 +3,6 @@ include("entities/npc_asuabot/states/aggression/chase.lua")
 include("entities/npc_asuabot/states/aggression/rush.lua")
 include("entities/npc_asuabot/states/aggression/blink.lua")
 include("entities/npc_asuabot/states/aggression/pounce.lua")
-include("entities/npc_asuabot/states/aggression/stare.lua")
 
 -- Movement
 include("entities/npc_asuabot/states/movement/wander.lua")
@@ -14,10 +13,13 @@ include("entities/npc_asuabot/states/evasion/retreat.lua")
 
 -- Stealth
 include("entities/npc_asuabot/states/stealth/hide.lua")
-include("entities/npc_asuabot/states/stealth/creep.lua")
 include("entities/npc_asuabot/states/stealth/ambush.lua")
 include("entities/npc_asuabot/states/stealth/peek.lua")
 
 -- Search
 include("entities/npc_asuabot/states/search/investigate.lua")
 include("entities/npc_asuabot/states/search/patrol.lua")
+
+-- Pressure
+include("entities/npc_asuabot/states/stealth/creep.lua")
+include("entities/npc_asuabot/states/aggression/stare.lua")
