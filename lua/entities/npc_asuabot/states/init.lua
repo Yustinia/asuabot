@@ -23,5 +23,5 @@ include("entities/npc_asuabot/states/search/patrol.lua")
 include("entities/npc_asuabot/states/search/sweep.lua")
 
 -- Pressure
-include("entities/npc_asuabot/states/stealth/creep.lua")
+include("entities/npc_asuabot/states/pressure/creep.lua")
 include("entities/npc_asuabot/states/pressure/stare.lua")
