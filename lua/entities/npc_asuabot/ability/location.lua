@@ -317,6 +317,17 @@ function ENT:FindFrontalSpot(distance)
 	return self:FindOffsetApproachPoint(self.Target, 0.5, 1.0, distance)
 end
 
+function ENT:FindInterceptPoint(target, leadDistance)
+	local targetPos = target:GetPos()
+	local moveDir = target:GetVelocity():GetNormalized()
+
+	if moveDir:Length() == 0 then
+		return targetPos
+	end
+
+	return targetPos + (moveDir * leadDistance)
+end
+
 --- finds the closest player regardless of sight
 --- @return Player|nil
 function ENT:FindClosestPlayer()
