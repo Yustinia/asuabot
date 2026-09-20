@@ -12,6 +12,7 @@ function ENT:StateFlee()
 	local targetPos = self:FindFleeSpot(FLEE_SCAN_RAD)
 
 	if not self:ComputeRoutingPath(targetPos, FLEE_AHEAD_DIST, FLEE_GOAL_THRESH, "Follow") then
+		self:SetState("Wander")
 		return
 	end
 
