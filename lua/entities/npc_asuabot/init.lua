@@ -23,9 +23,9 @@ ENT.States = {
 	Patrol = ENT.StatePatrol,
 	Peek = ENT.StatePeek,
 	Stare = ENT.StateStare,
-	-- Stalk = ENT.StateStalk,
-	-- Rage = ENT.StateRage,
 	Sweep = ENT.StateSweep,
+	Stalk = ENT.StateStalk,
+	-- Rage = ENT.StateRage,
 }
 
 ENT.StateEnter = {
@@ -109,7 +109,7 @@ function ENT:Initialize()
 	-- self.Doors = self:FindAllDoors()
 
 	-- AI State
-	self.CurrentState = "Stare"
+	self.CurrentState = "Wander"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
