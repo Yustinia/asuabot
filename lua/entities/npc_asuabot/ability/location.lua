@@ -235,6 +235,51 @@ function ENT:FindNearestNavSpot()
 	return nearestArea:GetRandomPoint()
 end
 
+function ENT:FindOffsetApproachPoint(target, minDot, maxDot, distance)
+	distance = distance or 1000
+
+	local targetPos = target:GetPos()
+	local targetForward = target:GetForward()
+
+	local navs = navmesh.Find(targetPos, distance, 20, 50)
+	if not navs or #navs == 0 then
+		return nil
+	end
+
+	local validSpots = {}
+
+	for i = 1, #navs do
+		local area = navs[i]
+		if IsValid(area) then
+			local center = area:GetCenter()
+			local dirToSpot = (center - targetPos):GetNormalized()
+			local dot = targetForward:Dot(dirToSpot)
+
+			if dot >= minDot and dot <= maxDot then
+				table.insert(validSpots, center)
+			end
+		end
+	end
+
+	if #validSpots > 0 then
+		return validSpots[math.random(#validSpots)]
+	end
+
+	return nil
+end
+
+function ENT:FindFlankSpot(distance)
+	return self:FindOffsetApproachPoint(self.Target, -0.3, 0.3, distance)
+end
+
+function ENT:FindRearSpot(distance)
+	return self:FindOffsetApproachPoint(self.Target, -1.0, -0.5, distance)
+end
+
+function ENT:FindFrontalSpot(distance)
+	return self:FindOffsetApproachPoint(self.Target, 0.5, 1.0, distance)
+end
+
 --- finds the closest player regardless of sight
 --- @return Player|nil
 function ENT:FindClosestPlayer()
