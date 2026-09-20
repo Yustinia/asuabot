@@ -119,6 +119,43 @@ function ENT:FindClosestHideSpot(scanRadius)
 	return closestSpot
 end
 
+function ENT:FindHideSpotInRange(minDist, maxDist)
+	minDist = minDist or 500
+	maxDist = maxDist or 2500
+
+	local areas = navmesh.Find(self.Target:GetPos(), maxDist, 20, 50)
+	local targetEye = self.Target:EyePos()
+	local targetPos = self.Target:GetPos()
+
+	local validSpots = {}
+
+	for i = 1, #areas do
+		local area = areas[i]
+		if IsValid(area) then
+			local center = area:GetCenter()
+			local dist = center:Distance(targetPos)
+
+			if dist >= minDist and dist <= maxDist then
+				local tr = util.TraceLine({
+					start = center + Vector(0, 0, 64),
+					endpos = targetEye,
+					mask = MASK_BLOCKLOS,
+				})
+
+				if tr.Hit and tr.Fraction < 1.0 then
+					table.insert(validSpots, center)
+				end
+			end
+		end
+	end
+
+	if #validSpots > 0 then
+		return validSpots[math.random(#validSpots)]
+	end
+
+	return nil
+end
+
 function ENT:GetNextPatrolSpot()
 	local history = self.LastSeenTargetPositions
 	if not history or #history == 0 then
