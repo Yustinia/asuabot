@@ -102,6 +102,7 @@ function ENT:Initialize()
 	self.LastSeenTargetSize = 5
 	self.LastSeenRecordInterval = 12
 	self.LastSeenRecordTime = 0
+	self.LastSeenRecordMinDist = 1000
 
 	self.PlayerList = {}
 

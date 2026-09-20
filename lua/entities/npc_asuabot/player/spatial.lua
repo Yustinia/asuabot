@@ -74,6 +74,11 @@ function ENT:RecordLastSeenPosition(pos)
 		return
 	end
 
+	local lastPos = self.LastSeenTargetPositions[1]
+	if lastPos and lastPos:Distance(pos) < self.LastSeenRecordMinDist then
+		return
+	end
+
 	table.insert(self.LastSeenTargetPositions, 1, pos)
 
 	if #self.LastSeenTargetPositions > self.LastSeenTargetSize then
