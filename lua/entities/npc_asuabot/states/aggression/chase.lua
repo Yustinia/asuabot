@@ -6,6 +6,7 @@ local CHASE_DMG = 20
 local CHASE_LIFETIME_DUR = 12
 local CHASE_PATH_AGE = 0.1
 local CHASE_LOST_TARGET_DUR = 5
+local INTERCEPT_INTERVAL = 0.1
 
 function ENT:StateChase()
 	self:HandleSpeed(CHASE_SPD, CHASE_ACCEL)
@@ -19,6 +20,7 @@ function ENT:StateChase()
 	self:ComputeRoutingPath(self.Target, CHASE_AHEAD_DIST, CHASE_GOAL_THRESH, "Chase")
 
 	local chaseStartTime = CurTime()
+	local lastPathRecompute = 0
 
 	while IsValid(self.Target) and self.Target:Alive() do
 		if self:IsTouchingPlayer(self.Target) then
@@ -46,9 +48,21 @@ function ENT:StateChase()
 			return
 		end
 
-		self:RefreshPathIfStale(CHASE_PATH_AGE, self.Target, "Chase")
+		if CurTime() - lastPathRecompute > INTERCEPT_INTERVAL then
+			lastPathRecompute = CurTime()
+
+			if self:ShouldIntercept(self.Target) then
+				local interceptPos = self:FindInterceptPoint(self.Target)
+				self:ComputeRoutingPath(interceptPos, CHASE_AHEAD_DIST, CHASE_GOAL_THRESH, "Follow")
+			else
+				self:ComputeRoutingPath(self.Target, CHASE_AHEAD_DIST, CHASE_GOAL_THRESH, "Chase")
+			end
+		else
+			self:RefreshPathIfStale(CHASE_PATH_AGE, self.Target, "Chase")
+		end
 
 		self.Path:Update(self)
+		self.Path:Draw()
 		self:ClearObstacles()
 		coroutine.yield()
 	end

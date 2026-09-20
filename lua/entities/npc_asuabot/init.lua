@@ -108,7 +108,7 @@ function ENT:Initialize()
 	-- self.Doors = self:FindAllDoors()
 
 	-- AI State
-	self.CurrentState = "Wander"
+	self.CurrentState = "Chase"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil

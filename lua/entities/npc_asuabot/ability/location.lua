@@ -317,12 +317,32 @@ function ENT:FindFrontalSpot(distance)
 	return self:FindOffsetApproachPoint(self.Target, 0.5, 1.0, distance)
 end
 
-function ENT:FindInterceptPoint(target, leadTime)
+local INTERCEPT_LEAD_TIME = 0.8
+local INTERCEPT_MIN_SPD = 250
+local INTERCEPT_MIN_DIST = 500
+
+function ENT:FindInterceptPoint(target)
 	local velocity = target:GetVelocity()
 	if velocity:Length() == 0 then
 		return target:GetPos()
 	end
-	return target:GetPos() + (velocity * leadTime)
+	return target:GetPos() + (velocity * INTERCEPT_LEAD_TIME)
+end
+
+function ENT:ShouldIntercept(target)
+	if not IsValid(target) then
+		return false
+	end
+
+	if target:GetVelocity():Length() < INTERCEPT_MIN_SPD then
+		return false
+	end
+
+	if self:GetPos():Distance(target:GetPos()) < INTERCEPT_MIN_DIST then
+		return false
+	end
+
+	return true
 end
 
 local DOOR_CLASSES = { "prop_door_rotating", "func_door", "func_door_rotating" }
