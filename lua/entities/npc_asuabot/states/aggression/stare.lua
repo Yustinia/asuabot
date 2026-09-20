@@ -1,0 +1,1 @@
+function ENT:StateStare() end

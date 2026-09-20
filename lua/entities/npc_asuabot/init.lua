@@ -22,10 +22,9 @@ ENT.States = {
 	Investigate = ENT.StateInvestigate,
 	Patrol = ENT.StatePatrol,
 	Peek = ENT.StatePeek,
-	Stare = ENT.StateStare,
 	-- Stalk = ENT.StateStalk,
 	-- Rage = ENT.StateRage,
-	-- Intercept = ENT.StateIntercept
+	Stare = ENT.StateStare,
 }
 
 ENT.StateEnter = {
