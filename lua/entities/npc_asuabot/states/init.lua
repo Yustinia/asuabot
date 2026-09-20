@@ -18,3 +18,4 @@ include("entities/npc_asuabot/states/stealth/ambush.lua")
 
 -- Search
 include("entities/npc_asuabot/states/search/investigate.lua")
+include("entities/npc_asuabot/states/search/patrol.lua")

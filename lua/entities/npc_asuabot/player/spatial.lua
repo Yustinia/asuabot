@@ -70,6 +70,11 @@ function ENT:CanSee(target)
 end
 
 function ENT:RecordLastSeenPosition(pos)
+	-- PrintMessage(HUD_PRINTTALK, "RealTime: " .. tostring(self.TargetLastSeenPos))
+	-- for i = 1, #self.LastSeenTargetPositions do
+	-- 	PrintMessage(HUD_PRINTTALK, "[" .. i .. "]: " .. tostring(self.LastSeenTargetPositions[i]))
+	-- end
+
 	if CurTime() - self.LastSeenRecordTime < self.LastSeenRecordInterval then
 		return
 	end

@@ -119,6 +119,16 @@ function ENT:FindClosestHideSpot(scanRadius)
 	return closestSpot
 end
 
+function ENT:GetNextPatrolSpot()
+	local history = self.LastSeenTargetPositions
+	if not history or #history == 0 then
+		return nil
+	end
+
+	self.PatrolIndex = (self.PatrolIndex or 0) % #history + 1
+	return history[self.PatrolIndex]
+end
+
 --- finds a random point in the entire navmesh
 --- @return unknown randomArea randomly selected point in a navmesh
 function ENT:FindRandomNavSpot()
