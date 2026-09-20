@@ -27,7 +27,9 @@ end
 --- checks whether the bot is observed by a given entity player
 --- @param entity any
 --- @return boolean
-function ENT:IsObservedBy(entity)
+function ENT:IsObservedBy(entity, threshold)
+	threshold = threshold or 0.5
+
 	if not IsValid(entity) then
 		return false
 	end
@@ -39,7 +41,7 @@ function ENT:IsObservedBy(entity)
 	local dirToBot = (self:GetPos() - entity:GetPos()):GetNormalized()
 	local entityForward = entity:GetForward()
 
-	return entityForward:Dot(dirToBot) > 0.5
+	return entityForward:Dot(dirToBot) > threshold
 end
 
 --- checks if the player is visible to the bot

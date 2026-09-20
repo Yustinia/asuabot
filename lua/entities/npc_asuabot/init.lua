@@ -21,9 +21,9 @@ ENT.States = {
 	AmbushTP = ENT.StateAmbushTP,
 	Investigate = ENT.StateInvestigate,
 	Patrol = ENT.StatePatrol,
+	Peek = ENT.StatePeek,
 	-- Stalk = ENT.StateStalk,
 	-- Stare = ENT.StateStare,
-	-- Peek = ENT.StatePeek,
 	-- Rage = ENT.StateRage,
 	-- Intercept = ENT.StateIntercept
 }
@@ -97,7 +97,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "Wander"
+	self.CurrentState = "Peek"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
