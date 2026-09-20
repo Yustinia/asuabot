@@ -19,6 +19,7 @@ include("entities/npc_asuabot/states/stealth/peek.lua")
 -- Search
 include("entities/npc_asuabot/states/search/investigate.lua")
 include("entities/npc_asuabot/states/search/patrol.lua")
+include("entities/npc_asuabot/states/search/sweep.lua")
 
 -- Pressure
 include("entities/npc_asuabot/states/stealth/creep.lua")

@@ -25,6 +25,7 @@ ENT.States = {
 	-- Stalk = ENT.StateStalk,
 	-- Rage = ENT.StateRage,
 	Stare = ENT.StateStare,
+	Sweep = ENT.StateSweep,
 }
 
 ENT.StateEnter = {
