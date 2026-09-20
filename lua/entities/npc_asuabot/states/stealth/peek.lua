@@ -4,7 +4,7 @@ local PEEK_GOAL_THRESH = 0
 local PEEK_AHEAD_DIST = 20
 local PEEK_PATH_AGE = 0.08
 local PEEK_HIDE_SCAN_MIN_DIST = 800
-local PEEK_HIDE_SCAN_MAX_DIST = 3200
+local PEEK_HIDE_SCAN_MAX_DIST = 1600
 local PEEK_DIRECT_THRESHOLD = math.cos(math.rad(30))
 local PEEK_HOLD_MAX_DUR = 20
 
@@ -40,7 +40,6 @@ function ENT:StatePeek()
 
 		self:RefreshPathIfStale(PEEK_PATH_AGE, self.Target, "Chase")
 		self.Path:Update(self)
-		self.Path:Draw()
 		self:ClearObstacles()
 
 		coroutine.yield()
