@@ -66,6 +66,10 @@ ENT.StateEnter = {
 		self.ProgressPos = self:GetPos()
 		self.ProgressTime = CurTime()
 	end,
+	Peek = function(self)
+		self.ProgressPos = self:GetPos()
+		self.ProgressTime = CurTime()
+	end,
 }
 
 function ENT:Initialize()
