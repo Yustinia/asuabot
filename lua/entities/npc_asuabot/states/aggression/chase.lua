@@ -62,7 +62,6 @@ function ENT:StateChase()
 		end
 
 		self.Path:Update(self)
-		self.Path:Draw()
 		self:ClearObstacles()
 		coroutine.yield()
 	end
