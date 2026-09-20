@@ -33,6 +33,12 @@ function ENT:StateAmbushApproach()
 			break -- reached concealment, move to waiting phase
 		end
 
+		if self:IsTargetVisible(self.Target) then
+			self.TargetLastSeenTime = CurTime()
+			self.TargetLastSeenPos = self.Target:GetPos()
+			self:RecordLastSeenPosition(self.Target:GetPos())
+		end
+
 		if self:IsObservedBy(self.Target) then
 			-- DO SOMETHING
 		end
