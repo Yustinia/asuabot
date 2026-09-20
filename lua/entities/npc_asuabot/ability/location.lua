@@ -317,15 +317,12 @@ function ENT:FindFrontalSpot(distance)
 	return self:FindOffsetApproachPoint(self.Target, 0.5, 1.0, distance)
 end
 
-function ENT:FindInterceptPoint(target, leadDistance)
-	local targetPos = target:GetPos()
-	local moveDir = target:GetVelocity():GetNormalized()
-
-	if moveDir:Length() == 0 then
-		return targetPos
+function ENT:FindInterceptPoint(target, leadTime)
+	local velocity = target:GetVelocity()
+	if velocity:Length() == 0 then
+		return target:GetPos()
 	end
-
-	return targetPos + (moveDir * leadDistance)
+	return target:GetPos() + (velocity * leadTime)
 end
 
 local DOOR_CLASSES = { "prop_door_rotating", "func_door", "func_door_rotating" }
