@@ -44,7 +44,6 @@ function ENT:StateWander()
 		self:RefreshPathIfStale(WANDER_PATH_AGE, targetPos, "Follow")
 
 		self.Path:Update(self)
-
 		self:ClearObstacles()
 		coroutine.yield()
 	end

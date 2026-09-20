@@ -15,3 +15,6 @@ include("entities/npc_asuabot/states/evasion/retreat.lua")
 include("entities/npc_asuabot/states/stealth/hide.lua")
 include("entities/npc_asuabot/states/stealth/creep.lua")
 include("entities/npc_asuabot/states/stealth/ambush.lua")
+
+-- Search
+include("entities/npc_asuabot/states/search/investigate.lua")
