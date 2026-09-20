@@ -3,7 +3,7 @@ local WANDER_ACCEL = 500
 local WANDER_GOAL_THRESH = 120
 local WANDER_SCAN_RAD = 2000
 local WANDER_RETRY_WAIT = 1
-local WANDER_PATH_AGE = 0.8
+local WANDER_PATH_AGE = 0.08
 local WANDER_AHEAD_DIST = 150
 
 function ENT:StateWander()
