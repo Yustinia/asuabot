@@ -12,3 +12,4 @@ include("entities/npc_asuabot/states/evasion/retreat.lua")
 
 -- Stealth
 include("entities/npc_asuabot/states/stealth/hide.lua")
+include("entities/npc_asuabot/states/stealth/creep.lua")
