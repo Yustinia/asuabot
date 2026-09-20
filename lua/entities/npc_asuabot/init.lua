@@ -58,6 +58,9 @@ ENT.StateEnter = {
 	Pounce = function(self)
 		self.TargetLastSeenTime = CurTime()
 	end,
+	AmbushApproach = function(self)
+		self.TargetLastSeenTime = CurTime()
+	end,
 }
 
 function ENT:Initialize()
@@ -89,7 +92,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "AmbushTP"
+	self.CurrentState = "Wander"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
