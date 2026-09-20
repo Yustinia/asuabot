@@ -22,9 +22,9 @@ ENT.States = {
 	Investigate = ENT.StateInvestigate,
 	Patrol = ENT.StatePatrol,
 	Peek = ENT.StatePeek,
+	Stare = ENT.StateStare,
 	-- Stalk = ENT.StateStalk,
 	-- Rage = ENT.StateRage,
-	Stare = ENT.StateStare,
 	Sweep = ENT.StateSweep,
 }
 
@@ -72,6 +72,13 @@ ENT.StateEnter = {
 	end,
 }
 
+ENT.StateExit = {
+	Stare = function(self)
+		self.Path = nil
+		self.PathMode = nil
+	end,
+}
+
 function ENT:Initialize()
 	-- Model / appearance
 	self:SetModel("models/player/kleiner.mdl")
@@ -102,7 +109,7 @@ function ENT:Initialize()
 	-- self.Doors = self:FindAllDoors()
 
 	-- AI State
-	self.CurrentState = "Wander"
+	self.CurrentState = "Stare"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
