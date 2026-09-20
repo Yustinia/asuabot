@@ -2,6 +2,7 @@
 include("entities/npc_asuabot/states/aggression/chase.lua")
 include("entities/npc_asuabot/states/aggression/rush.lua")
 include("entities/npc_asuabot/states/aggression/blink.lua")
+include("entities/npc_asuabot/states/aggression/pounce.lua")
 
 -- Movement
 include("entities/npc_asuabot/states/movement/wander.lua")

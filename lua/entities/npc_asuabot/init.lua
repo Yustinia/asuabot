@@ -16,6 +16,7 @@ ENT.States = {
 	Hide = ENT.StateHide,
 	Retreat = ENT.StateRetreat,
 	Creep = ENT.StateCreep,
+	Pounce = ENT.StatePounce,
 	-- Ambush = ENT.StateAmbush,
 	-- Stalk = ENT.StateStalk,
 	-- Investigate = ENT.StateInvestigate,
@@ -53,6 +54,9 @@ ENT.StateEnter = {
 	Creep = function(self)
 		self.TargetLastSeenTime = CurTime()
 	end,
+	Pounce = function(self)
+		self.TargetLastSeenTime = CurTime()
+	end,
 }
 
 function ENT:Initialize()
@@ -84,7 +88,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "Creep"
+	self.CurrentState = "Pounce"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
