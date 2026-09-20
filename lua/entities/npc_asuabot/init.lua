@@ -17,7 +17,8 @@ ENT.States = {
 	Retreat = ENT.StateRetreat,
 	Creep = ENT.StateCreep,
 	Pounce = ENT.StatePounce,
-	-- Ambush = ENT.StateAmbush,
+	AmbushApproach = ENT.StateAmbushApproach,
+	AmbushTP = ENT.StateAmbushTP,
 	-- Stalk = ENT.StateStalk,
 	-- Investigate = ENT.StateInvestigate,
 	-- Patrol = ENT.StatePatrol,
@@ -88,7 +89,7 @@ function ENT:Initialize()
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
 
 	-- AI State
-	self.CurrentState = "Pounce"
+	self.CurrentState = "AmbushTP"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
@@ -102,6 +103,7 @@ function ENT:Initialize()
 	self.PlayerList = {}
 
 	self.Path = nil
+	self.PathMode = nil
 
 	-- Timing
 	self.PushCD = 0.5

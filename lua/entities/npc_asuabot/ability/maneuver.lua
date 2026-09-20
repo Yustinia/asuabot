@@ -104,12 +104,14 @@ function ENT:ConfigRoutingPath(minLookAheadDist, goalTolerance)
 end
 
 function ENT:ComputeRoutingPath(target, minLookAheadDist, goalTolerance, mode)
-	if not self.Path then
+	if not self.Path or self.PathMode ~= mode then
 		if mode == "Follow" then
 			self.Path = Path("Follow")
 		elseif mode == "Chase" then
 			self.Path = Path("Chase")
 		end
+
+		self.PathMode = mode
 	end
 
 	self:ConfigRoutingPath(minLookAheadDist, goalTolerance)
