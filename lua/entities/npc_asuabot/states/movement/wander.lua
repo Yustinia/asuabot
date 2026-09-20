@@ -32,13 +32,8 @@ function ENT:StateWander()
 			self:RecordLastSeenPosition(self.Target:GetPos())
 		end
 
-		if self:CheckProgress() then
-			self:HandleStuck()
-
-			if self.StuckTries >= self.StuckMax then
-				self:SetState("Wander")
-				return
-			end
+		if self:HandleStuckCheck() then
+			return
 		end
 
 		self:RefreshPathIfStale(WANDER_PATH_AGE, targetPos, "Follow")

@@ -61,6 +61,14 @@ ENT.StateEnter = {
 	AmbushApproach = function(self)
 		self.TargetLastSeenTime = CurTime()
 	end,
+	Investigate = function(self)
+		self.ProgressPos = self:GetPos()
+		self.ProgressTime = CurTime()
+	end,
+	Patrol = function(self)
+		self.ProgressPos = self:GetPos()
+		self.ProgressTime = CurTime()
+	end,
 }
 
 function ENT:Initialize()

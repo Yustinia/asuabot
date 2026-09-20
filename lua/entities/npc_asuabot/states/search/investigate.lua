@@ -28,6 +28,10 @@ function ENT:StateInvestigate()
 			-- DO SOMETHING
 		end
 
+		if self:HandleStuckCheck() then
+			return
+		end
+
 		self:RefreshPathIfStale(INVESTIGATE_PATH_AGE, targetPos, "Follow")
 		self.Path:Update(self)
 		self:ClearObstacles()

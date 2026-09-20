@@ -20,6 +20,10 @@ function ENT:StateFlee()
 			return
 		end
 
+		if self:HandleStuckCheck() then
+			return
+		end
+
 		self:RefreshPathIfStale(FLEE_PATH_AGE, targetPos, "Follow")
 		self.Path:Update(self)
 		self:ClearObstacles()

@@ -30,6 +30,10 @@ function ENT:StatePatrol()
 			-- DO SOMETHING
 		end
 
+		if self:HandleStuckCheck() then
+			return
+		end
+
 		self:RefreshPathIfStale(PATROL_PATH_AGE, targetPos, "Follow")
 		self.Path:Update(self)
 		self:ClearObstacles()

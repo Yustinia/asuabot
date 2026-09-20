@@ -98,6 +98,21 @@ function ENT:HandleStuck()
 	coroutine.yield()
 end
 
+function ENT:HandleStuckCheck()
+	if not self:CheckProgress() then
+		return false
+	end
+
+	self:HandleStuck()
+
+	if self.StuckTries >= self.StuckMax then
+		self:SetState("Wander")
+		return true
+	end
+
+	return false
+end
+
 function ENT:ConfigRoutingPath(minLookAheadDist, goalTolerance)
 	self.Path:SetMinLookAheadDistance(minLookAheadDist)
 	self.Path:SetGoalTolerance(goalTolerance)
