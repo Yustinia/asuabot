@@ -60,8 +60,8 @@ function ENT:StatePeek()
 		end
 
 		if self:IsObservedBy(self.Target, PEEK_DIRECT_THRESHOLD) then
-			self:SetState("Wander")
-			return
+			-- DO SOMETHING
+			break
 		end
 
 		if CurTime() - holdStartTime > PEEK_HOLD_MAX_DUR then

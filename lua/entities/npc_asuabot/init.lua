@@ -108,7 +108,7 @@ function ENT:Initialize()
 	-- self.Doors = self:FindAllDoors()
 
 	-- AI State
-	self.CurrentState = "Chase"
+	self.CurrentState = "Wander"
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
@@ -160,6 +160,7 @@ function ENT:RunBehaviour()
 		end
 
 		stateFunc(self)
+
 		coroutine.yield()
 	end
 end
