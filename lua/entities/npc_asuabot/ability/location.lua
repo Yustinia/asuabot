@@ -328,6 +328,19 @@ function ENT:FindInterceptPoint(target, leadDistance)
 	return targetPos + (moveDir * leadDistance)
 end
 
+local DOOR_CLASSES = { "prop_door_rotating", "func_door", "func_door_rotating" }
+function ENT:FindAllDoors()
+	local allDoors = {}
+
+	for _, class in ipairs(DOOR_CLASSES) do
+		for _, door in ipairs(ents.FindByClass(class)) do
+			table.insert(allDoors, door)
+		end
+	end
+
+	return allDoors
+end
+
 --- finds the closest player regardless of sight
 --- @return Player|nil
 function ENT:FindClosestPlayer()

@@ -98,6 +98,7 @@ function ENT:Initialize()
 
 	-- Navmesh cache
 	self.CachedNavAreas = navmesh.GetAllNavAreas()
+	-- self.Doors = self:FindAllDoors()
 
 	-- AI State
 	self.CurrentState = "Wander"
