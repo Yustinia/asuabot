@@ -108,7 +108,10 @@ function ENT:Initialize()
 	-- self.Doors = self:FindAllDoors()
 
 	-- AI State
-	self.CurrentState = "Wander"
+	self.CurrentState = self:WeightedRoll({
+		{ chance = 0.80, value = "Wander" },
+		{ chance = 0.20, value = "Hide" },
+	})
 
 	self.Target = nil
 	self.TargetLastSeenPos = nil
@@ -152,6 +155,8 @@ end
 -- Nextbot loop
 function ENT:RunBehaviour()
 	while true do
+		PrintMessage(HUD_PRINTTALK, "State: " .. self.CurrentState)
+
 		local stateFunc = self.States[self.CurrentState]
 
 		if not stateFunc then
