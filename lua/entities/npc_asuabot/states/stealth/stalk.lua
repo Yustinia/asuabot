@@ -18,7 +18,7 @@ function ENT:StateStalk()
 
 	while IsValid(self.Target) and self.Target:Alive() do
 		if self:IsObservedBy(self.Target, STALK_DIRECT_DOT) then
-			if math.random(1, 2) == 1 then
+			if math.random() <= 0.70 then
 				self:SetState("Retreat")
 			else
 				self:SetState("Chase")
