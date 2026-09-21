@@ -121,19 +121,7 @@ if SERVER then
 		-- self.Doors = self:FindAllDoors()
 
 		-- AI State
-		self.CurrentState = self:WeightedRoll({
-			{ chance = 0.62, value = "Wander" },
-			{ chance = 0.12, value = "Chase" },
-			{ chance = 0.12, value = "Stalk" },
-			{ chance = 0.08, value = "Hide" },
-			{
-				chance = 0.06,
-				value = self:WeightedRoll({
-					{ chance = 0.75, value = "AmbushTP" },
-					{ chance = 0.25, value = "AmbushApproach" },
-				}),
-			},
-		})
+		self.CurrentState = "Stare"
 
 		self.Target = nil
 		self.TargetLastSeenPos = nil

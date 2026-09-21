@@ -1,7 +1,5 @@
 local STARE_SPAWN_DIST = 700
 local STARE_LIFETIME_DIR = 15
-local STARE_HALF_ANGLE = 20
-local STARE_DIRECT_DOT = math.cos(math.rad(STARE_HALF_ANGLE))
 local STARE_LIFT = Vector(0, 0, 10)
 
 function ENT:StateStare()
@@ -23,10 +21,17 @@ function ENT:StateStare()
 	self:HandleSpeed(0, 0)
 
 	local stareStartTime = CurTime()
+	local hasSeenBot = false
 
 	while IsValid(self.Target) and self.Target:Alive() do
-		if self:IsObservedBy(self.Target, STARE_DIRECT_DOT) and self:IsTargetVisible(self.Target) then
-			self:SetState("Pounce")
+		if self:IsObservedBy(self.Target) then
+			hasSeenBot = true
+		elseif hasSeenBot then
+			self:SetState(self:WeightedRoll({
+				{ chance = 0.50, value = "Wander" },
+				{ chance = 0.30, value = "Peek" },
+				{ chance = 0.20, value = "Pounce" },
+			}))
 			return
 		end
 
