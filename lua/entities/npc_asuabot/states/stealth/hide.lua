@@ -10,7 +10,7 @@ function ENT:StateHide()
 
 	local targetPos = nil
 
-	if math.random(1, 2) == 1 then
+	if math.random() <= 0.40 then
 		targetPos = self:FindHideSpot()
 	else
 		targetPos = self:FindClosestHideSpot()
