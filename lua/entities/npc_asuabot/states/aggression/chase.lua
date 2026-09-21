@@ -1,5 +1,5 @@
-local CHASE_SPD = 600
-local CHASE_ACCEL = 300
+local CHASE_SPD = 800
+local CHASE_ACCEL = 800
 local CHASE_GOAL_THRESH = 0
 local CHASE_AHEAD_DIST = 140
 local CHASE_DMG = 20

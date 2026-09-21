@@ -1,4 +1,4 @@
-local RUSH_SPD = 1200
+local RUSH_SPD = 1400
 local RUSH_ACCEL = 1200
 local RUSH_GOAL_THRESH = 0
 local RUSH_AHEAD_DIST = 300
