@@ -3,6 +3,6 @@
 .vscode
 .glua-api
 .luarc.json
-guide.md
-lua/entities/npc_asuabot/ability_legacy
-lua/entities/npc_asuabot/states_legacy
+domains.md
+behavioral_domain.md
+context_domain.md
