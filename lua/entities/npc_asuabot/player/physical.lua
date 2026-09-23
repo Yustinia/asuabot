@@ -1,0 +1,8 @@
+-- function ENT:IsPlayerAlive()
+-- function ENT:IsPlayerGrounded()
+-- function ENT:IsPlayerCrouching()
+-- function ENT:IsPlayerJumping()
+-- function ENT:IsPlayerSwimming()
+-- function ENT:IsPlayerInVehicle()
+-- function ENT:GetPlayerVelocity()
+-- function ENT:GetPlayerSpeed()

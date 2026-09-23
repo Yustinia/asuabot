@@ -1,0 +1,7 @@
+-- function ENT:IsPlayerLookingAtBot()
+-- function ENT:IsPlayerAimingAtBot()
+-- function ENT:IsPlayerLookingTowardBotLastPosition()
+-- function ENT:GetPlayerViewDirection()
+-- function ENT:GetPlayerViewTurnRate()
+-- function ENT:IsPlayerUsingFlashlight()
+-- function ENT:IsPlayerCameraErratic()

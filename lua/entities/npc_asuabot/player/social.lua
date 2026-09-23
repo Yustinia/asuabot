@@ -1,0 +1,4 @@
+-- function ENT:IsPlayerAlone()
+-- function ENT:IsPlayerSeparated
+-- function ENT:IsPlayerNearTeammate()
+-- function ENT:GetPlayerGroupSize()

@@ -1,0 +1,3 @@
+-- function ENT:GetActiveWeapon()
+-- function ENT:IsPlayerHoldingMelee()
+-- function ENT:IsPlayerHoldingRanged()

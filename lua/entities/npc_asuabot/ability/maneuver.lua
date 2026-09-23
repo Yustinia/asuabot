@@ -49,20 +49,20 @@ end
 function ENT:CheckProgress()
 	local now = CurTime()
 
-	if not self.ProgressPos then
-		self.ProgressPos = self:GetPos()
-		self.ProgressTime = now
+	if not self.GlobalContext.ProgressPosition then
+		self.GlobalContext.ProgressPosition = self:GetPos()
+		self.GlobalContext.ProgressTime = now
 		return false
 	end
 
-	if now - self.ProgressTime < PROGRESS_CHECK_INTERVAL then
+	if now - self.GlobalContext.ProgressTime < PROGRESS_CHECK_INTERVAL then
 		return false
 	end
 
-	local moved = self:GetPos():Distance(self.ProgressPos)
+	local moved = self:GetPos():Distance(self.GlobalContext.ProgressPosition)
 
-	self.ProgressPos = self:GetPos()
-	self.ProgressTime = now
+	self.GlobalContext.ProgressPosition = self:GetPos()
+	self.GlobalContext.ProgressTime = now
 
 	if moved < PROGRESS_MIN_DIST then
 		return true
@@ -74,16 +74,16 @@ end
 function ENT:HandleStuck()
 	self:ClearObstacles()
 
-	if CurTime() - (self.LastStuck or 0) >= UNSTUCK_RESET_WINDOW then
-		self.StuckTries = 0
+	if CurTime() - (self.GlobalContext.LastStuckTime or 0) >= UNSTUCK_RESET_WINDOW then
+		self.GlobalContext.StuckTries = 0
 	end
-	self.LastStuck = CurTime()
+	self.GlobalContext.LastStuckTime = CurTime()
 
-	if self.Path and self.Path:IsValid() then
-		local jumpDist = UNSTUCK_DIST * math.pow(2, self.StuckTries or 0)
-		local newPos = self.Path:GetPositionOnPath(self.Path:GetCursorPosition() + jumpDist)
+	if self.GlobalContext.Path and self.GlobalContext.Path:IsValid() then
+		local jumpDist = UNSTUCK_DIST * math.pow(2, self.GlobalContext.StuckTries or 0)
+		local newPos = self.GlobalContext.Path:GetPositionOnPath(self.GlobalContext.Path:GetCursorPosition() + jumpDist)
 		self:SetPos(newPos + UNSTUCK_LIFT)
-		self.StuckTries = (self.StuckTries or 0) + 1
+		self.GlobalContext.StuckTries = (self.GlobalContext.StuckTries or 0) + 1
 	else
 		local currentNav = navmesh.GetNearestNavArea(self:GetPos())
 		if IsValid(currentNav) then
@@ -105,8 +105,8 @@ function ENT:HandleStuckCheck()
 
 	self:HandleStuck()
 
-	if self.StuckTries >= self.StuckMax then
-		self:SetState("Wander")
+	if self.GlobalContext.StuckTries >= self.GlobalContext.StuckMaxAttempts then
+		self:TeleportToDistantNavSpot(800)
 		return true
 	end
 
@@ -114,44 +114,44 @@ function ENT:HandleStuckCheck()
 end
 
 function ENT:ConfigRoutingPath(minLookAheadDist, goalTolerance)
-	self.Path:SetMinLookAheadDistance(minLookAheadDist)
-	self.Path:SetGoalTolerance(goalTolerance)
+	self.GlobalContext.Path:SetMinLookAheadDistance(minLookAheadDist)
+	self.GlobalContext.Path:SetGoalTolerance(goalTolerance)
 end
 
 function ENT:ComputeRoutingPath(target, minLookAheadDist, goalTolerance, mode)
-	if not self.Path or self.PathMode ~= mode then
+	if not self.GlobalContext.Path or self.GlobalContext.PathMode ~= mode then
 		if mode == "Follow" then
-			self.Path = Path("Follow")
+			self.GlobalContext.Path = Path("Follow")
 		elseif mode == "Chase" then
-			self.Path = Path("Chase")
+			self.GlobalContext.Path = Path("Chase")
 		end
 
-		self.PathMode = mode
+		self.GlobalContext.PathMode = mode
 	end
 
 	self:ConfigRoutingPath(minLookAheadDist, goalTolerance)
 
 	if mode == "Follow" then
-		self.Path:Compute(self, target)
+		self.GlobalContext.Path:Compute(self, target)
 	elseif mode == "Chase" then
-		self.Path:Chase(self, target)
+		self.GlobalContext.Path:Chase(self, target)
 	end
 
-	if self.Path:IsValid() then
-		return self.Path
+	if self.GlobalContext.Path:IsValid() then
+		return self.GlobalContext.Path
 	end
 
 	return false
 end
 
 function ENT:RefreshPathIfStale(maxAge, target, mode)
-	if self.Path:GetAge() < maxAge then
+	if self.GlobalContext.Path:GetAge() < maxAge then
 		return
 	end
 
 	if mode == "Follow" then
-		self.Path:Compute(self, target)
+		self.GlobalContext.Path:Compute(self, target)
 	elseif mode == "Chase" then
-		self.Path:Chase(self, target)
+		self.GlobalContext.Path:Chase(self, target)
 	end
 end

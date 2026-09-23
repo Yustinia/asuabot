@@ -1,0 +1,4 @@
+-- function ENT:IsPlayeUsingDoor()
+-- function ENT:IsPlayerCarryingObject()
+-- function ENT:IsPlayerManipulatingProp()
+-- function ENT:GetPlayerInteractionTarget()
