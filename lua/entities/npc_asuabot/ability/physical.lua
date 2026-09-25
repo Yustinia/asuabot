@@ -1,3 +1,5 @@
+local PushCD, PullCD, DamageCD = 0.5, 0.5, 0.5
+
 function ENT:PushEntity(target, force)
 	force = force or 1500
 
@@ -15,7 +17,7 @@ function ENT:PushEntity(target, force)
 
 	target:SetVelocity(pushVec * force)
 
-	self.NextPushTime = CurTime() + self.PushCD
+	self.NextPushTime = CurTime() + PushCD
 end
 
 function ENT:DamageEntity(target, amount)
@@ -31,7 +33,7 @@ function ENT:DamageEntity(target, amount)
 
 	target:TakeDamage(amount, self, self)
 
-	self.GlobalContext.NextDamageTime = CurTime() + self.GlobalContext.DamageCD
+	self.GlobalContext.NextDamageTime = CurTime() + DamageCD
 end
 
 function ENT:PullEntity(target, force)
@@ -51,5 +53,5 @@ function ENT:PullEntity(target, force)
 
 	target:SetVelocity(pullVec * force)
 
-	self.NextPullTime = CurTime() + self.PullCD
+	self.NextPullTime = CurTime() + PullCD
 end

@@ -10,7 +10,6 @@ ENT.StateUpdate = {}
 ENT.StateExit = {}
 ENT.UtilityScores = {}
 ENT.GlobalContext = {}
-ENT.StateContext = {}
 
 if CLIENT then
 	local botMaterial = Material("vgui/entities/npc_asuabot")
@@ -64,8 +63,8 @@ if SERVER then
 		self:SetMaxHealth(99999999)
 
 		-- Collision / movement
-		self:SetSolid(0)
-		self:SetCollisionGroup(10)
+		self:SetSolid(SOLID_NONE)
+		self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 		self:SetCollisionBounds(Vector(-1, -1, 0), Vector(1, 1, 1))
 		self.loco:SetAvoidAllowed(true)
 
@@ -76,7 +75,7 @@ if SERVER then
 		-- NextBot ability
 		self.loco:SetStepHeight(40)
 		self.loco:SetJumpHeight(60)
-		self.loco:SetDeathDropHeight(200)
+		self.loco:SetDeathDropHeight(800)
 		self.loco:SetJumpGapsAllowed(true)
 
 		self.GlobalContext = {
@@ -99,13 +98,8 @@ if SERVER then
 			Path = nil,
 			PathMode = nil,
 
-			PushCD = 0.5,
 			NextPushTime = 0,
-
-			DamageCD = 0.5,
 			NextDamageTime = 0,
-
-			PullCD = 0.5,
 			NextPullTime = 0,
 
 			StuckTries = 0,
@@ -115,8 +109,6 @@ if SERVER then
 			ProgressPosition = nil,
 			ProgressTime = 0,
 		}
-
-		self.StateContext = {}
 	end
 
 	-- Nextbot loop
