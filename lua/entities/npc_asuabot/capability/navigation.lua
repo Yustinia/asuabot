@@ -1,0 +1,6 @@
+-- function ENT:FindNearestNavArea() end
+-- function ENT:FindRandomNavArea() end
+-- function ENT:FindNavAreaByCondition() end
+-- function ENT:CheckNavReachability() end
+-- function ENT:GetNavAreaConnections() end
+-- function ENT:GetNavAreaSize() end

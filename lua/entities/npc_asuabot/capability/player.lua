@@ -1,0 +1,6 @@
+-- function ENT:FindNearestPlayer() end
+-- function ENT:FindPlayersInRad() end
+-- function ENT:FindPlayerByCondition() end
+-- function ENT:GetPlayerLastKnownPos() end
+-- function ENT:GetPlayerNavArea() end
+-- function ENT:SelectPlayerCandid() end

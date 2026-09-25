@@ -1,0 +1,4 @@
+-- function ENT:CheckLOS() end
+-- function ENT:FindVisibleEntities() end
+-- function ENT:FindVisiblePlayers() end
+-- function ENT:CheckFOV() end

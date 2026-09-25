@@ -1,0 +1,7 @@
+-- function ENT:FindHidePosition() end
+-- function ENT:FindCoverPosition() end
+-- function ENT:FindElevatedPosition() end
+-- function ENT:FindPositionBetweenEntities() end
+-- function ENT:FindPositionWithLOS() end
+-- function ENT:FindPositionWithoutLOS() end
+-- function ENT:FindAmbushPosition() end

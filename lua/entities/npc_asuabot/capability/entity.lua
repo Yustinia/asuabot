@@ -1,0 +1,6 @@
+-- function ENT:FindEntitiesByClass() end
+-- function ENT:FindNearestEntity() end
+-- function ENT:GetEntityPos() end
+-- function ENT:GetEntityBounds() end
+-- function ENT:CheckEntityValidity() end
+-- function ENT:GetEntityVelocity() end

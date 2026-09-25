@@ -1,0 +1,4 @@
+-- function ENT:FindDoors() end
+-- function ENT:FindLadders() end
+-- function ENT:FindHazards() end
+-- function ENT:FindChokePoint() end

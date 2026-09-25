@@ -1,0 +1,3 @@
+-- function ENT:Teleport() end
+-- function ENT:PlaySound() end
+-- function ENT:SetCollisionState() end
