@@ -50,19 +50,6 @@ function ENT:SelectState(ctx)
 		end
 	end
 
-	-- debug data
-	self.GlobalContext.DebugScores = scores
-	self.GlobalContext.DebugBest = bestName
-	self.GlobalContext.DebugTraces = traces
-	self.GlobalContext.DebugCD = self.GlobalContext.CooldownUntil
-
-	local sweep = self.StateContext.Sweep
-	self.GlobalContext.DebugSweepIndex = sweep and sweep.CurrentIndex or 0
-	self.GlobalContext.DebugSweepTotal = sweep and #sweep.SweepPoints or 0
-
-	self.GlobalContext.DebugLastSeenPositions = self.GlobalContext.LastSeenTargetPositions
-	-- debug data
-
 	local candidates = {}
 	for name, score in pairs(scores) do
 		if score >= bestScore - STATE_MARGIN then
