@@ -3,7 +3,62 @@
 -- function ENT:UseEntity() end
 -- function ENT:PickUpEntity() end
 -- function ENT:DropEntity() end
--- function ENT:PushEntity() end
--- function ENT:PullEntity() end
--- function ENT:DamageEntity() end
 -- function ENT:GetInteractionResult() end
+
+local PushCD, PullCD, DamageCD = 0.5, 0.5, 0.5
+
+function ENT:PushEntity(target, force)
+	force = force or 1500
+
+	if CurTime() < self.NextPushTime then
+		return
+	end
+
+	if not IsValid(target) then
+		return
+	end
+
+	local pushVec = target:GetPos() - self:GetPos()
+	pushVec.z = 15
+	pushVec:Normalize()
+
+	target:SetVelocity(pushVec * force)
+
+	self.NextPushTime = CurTime() + PushCD
+end
+
+function ENT:DamageEntity(target, amount)
+	amount = amount or 1
+
+	if CurTime() < self.GlobalContext.NextDamageTime then
+		return
+	end
+
+	if not IsValid(target) then
+		return
+	end
+
+	target:TakeDamage(amount, self, self)
+
+	self.GlobalContext.NextDamageTime = CurTime() + DamageCD
+end
+
+function ENT:PullEntity(target, force)
+	force = force or 800
+
+	if CurTime() < (self.NextPullTime or 0) then
+		return
+	end
+
+	if not IsValid(target) then
+		return
+	end
+
+	local pullVec = self:GetPos() - target:GetPos()
+	pullVec.z = 0
+	pullVec:Normalize()
+
+	target:SetVelocity(pullVec * force)
+
+	self.NextPullTime = CurTime() + PullCD
+end

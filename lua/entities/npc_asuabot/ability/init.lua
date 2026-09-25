@@ -1,5 +1,0 @@
-include("entities/npc_asuabot/ability/location.lua")
-include("entities/npc_asuabot/ability/maneuver.lua")
-include("entities/npc_asuabot/ability/movement.lua")
-include("entities/npc_asuabot/ability/perception.lua")
-include("entities/npc_asuabot/ability/physical.lua")

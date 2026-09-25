@@ -5,3 +5,9 @@
 -- function ENT:FindPositionWithLOS() end
 -- function ENT:FindPositionWithoutLOS() end
 -- function ENT:FindAmbushPosition() end
+
+function ENT:IsAtPosition(pos, tolerance)
+	tolerance = tolerance or 60
+
+	return self:GetPos():Distance(pos) <= tolerance
+end
