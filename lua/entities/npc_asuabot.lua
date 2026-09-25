@@ -28,28 +28,10 @@ if CLIENT then
 			return
 		end
 
-		local scores = net.ReadTable()
-		local traces = net.ReadTable()
-		local best = net.ReadString()
-		local cooldowns = net.ReadTable()
-		local sweepIndex = net.ReadUInt(8)
-		local sweepTotal = net.ReadUInt(8)
-
-		local posCount = net.ReadUInt(8)
-		local positions = {}
-		for i = 1, posCount do
-			positions[i] = net.ReadVector()
-		end
+		local time = CurTime()
 
 		debugData[ent] = {
-			scores = scores,
-			traces = traces,
-			best = best,
-			cooldowns = cooldowns,
-			sweepIndex = sweepIndex,
-			sweepTotal = sweepTotal,
-			positions = positions,
-			time = CurTime(),
+			time = time,
 		}
 	end)
 	hook.Add("HUDPaint", "TestHUD", function()
@@ -58,71 +40,6 @@ if CLIENT then
 			if not IsValid(ent) or CurTime() - data.time > 1 then
 				debugData[ent] = nil
 				continue
-			end
-
-			for name, score in pairs(data.scores) do
-				local color = (name == data.best) and Color(225, 220, 80) or color_white
-				draw.SimpleText(
-					name .. " : " .. string.format("%.2f", score),
-					"DermaDefault",
-					20,
-					y,
-					color,
-					TEXT_ALIGN_LEFT
-				)
-				y = y + 16
-
-				if name == "Sweep" and data.sweepTotal > 0 then
-					draw.SimpleText(
-						"  Point " .. data.sweepIndex .. "/" .. data.sweepTotal,
-						"DermaDefault",
-						40,
-						y,
-						Color(150, 200, 255),
-						TEXT_ALIGN_LEFT
-					)
-					y = y + 16
-				end
-
-				if name == "Patrol" and #data.positions > 0 then
-					for i, pos in ipairs(data.positions) do
-						draw.SimpleText(
-							"  [" .. i .. "] " .. tostring(pos),
-							"DermaDefault",
-							40,
-							y,
-							Color(150, 255, 180),
-							TEXT_ALIGN_LEFT
-						)
-						y = y + 16
-					end
-				end
-
-				for key, val in pairs(data.traces[name] or {}) do
-					draw.SimpleText(
-						"  " .. key .. " : " .. string.format("%.2f", val),
-						"DermaDefault",
-						40,
-						y,
-						Color(180, 180, 180),
-						TEXT_ALIGN_LEFT
-					)
-					y = y + 16
-				end
-
-				local cdUntil = data.cooldowns[name]
-				if cdUntil and cdUntil > CurTime() then
-					local remaining = cdUntil - CurTime()
-					draw.SimpleText(
-						"  CD: " .. string.format("%.2f", remaining) .. "s",
-						"DermaDefault",
-						40,
-						y,
-						Color(255, 100, 100),
-						TEXT_ALIGN_LEFT
-					)
-					y = y + 16
-				end
 			end
 		end
 	end)
@@ -162,17 +79,10 @@ if SERVER then
 		self.loco:SetDeathDropHeight(200)
 		self.loco:SetJumpGapsAllowed(true)
 
-		-- Navmesh cache
-		-- self.Doors = self:FindAllDoors()
-
-		-- Spawn Initialization
-		-- self:TeleportToDistantNavSpot()
-
 		self.GlobalContext = {
 			CurrentState = nil,
 			PreviousState = nil,
 			StateStartTime = 0,
-			CooldownUntil = {},
 			CachedNavmesh = navmesh.GetAllNavAreas(),
 
 			Target = nil,
