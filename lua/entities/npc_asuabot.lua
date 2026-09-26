@@ -34,6 +34,21 @@ if CLIENT then
 
 	CreateClientConVar("asuabot_debug_hud", "1", true, false, "Show Asuabot UtilityAI Debug HUD")
 
+	hook.Add("PopulateToolMenu", "AsuabotOptionsMenu", function()
+		spawnmenu.AddToolMenuOption(
+			"Options",
+			"Asuabot",
+			"AsuabotControlPanel",
+			"Control Panel",
+			"",
+			"",
+			function(panel)
+				panel:ClearControls()
+				panel:CheckBox("Show Utility AI Debug HUD", "asuabot_debug_hud")
+			end
+		)
+	end)
+
 	-- debug data
 	local debugData = {}
 	net.Receive("AsuabotDebug", function()
