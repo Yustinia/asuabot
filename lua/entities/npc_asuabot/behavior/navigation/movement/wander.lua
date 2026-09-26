@@ -4,8 +4,9 @@ local WANDER_GOAL_THRESH = 120
 local WANDER_SCAN_RAD = 2000
 local WANDER_PATH_AGE = 0.08
 local WANDER_AHEAD_DIST = 150
-local WANDER_LIFETIME_DUR = 20
 local WANDER_DAMAGE = 1
+local WANDER_LIFETIME_DUR = 20
+local WANDER_COOLDOWN_DUR = 10
 
 ENT.UtilityScores.Wander = function(self, ctx, trace)
 	if not ctx.TargetValid then
@@ -16,12 +17,19 @@ ENT.UtilityScores.Wander = function(self, ctx, trace)
 		return Curves.PowerOut(x, 3)
 	end)
 
+	local wanderTime = (ctx.CurrentState == "Wander") and ctx.StateTime or 0
+	local stamina = Consider(wanderTime, 0, WANDER_LIFETIME_DUR, function(x)
+		return Curves.PowerInverseIn(x, 2)
+	end)
+
 	if trace then
 		trace.Far = far
+		trace.Stamina = stamina
 	end
 
 	local score = WeightedGeoMean({
 		{ score = far, weight = 0.5 },
+		{ score = stamina, weight = 1 },
 	})
 
 	return math.max(score, 0.1)
@@ -62,7 +70,11 @@ ENT.StateUpdate.Wander = function(self, ctx)
 		return
 	end
 
-	self:RefreshPathIfStale(WANDER_PATH_AGE, self.StateContext.Wander.TargetPosition, "Follow")
+	self:RefreshPathIfStale(WANDER_PATH_AGE, ctxWander.TargetPosition, "Follow")
 	self.GlobalContext.Path:Update(self)
 	self:ClearObstacles()
+end
+
+ENT.StateExit.Wander = function(self)
+	self.GlobalContext.CooldownUntil["Wander"] = CurTime() + WANDER_COOLDOWN_DUR
 end
