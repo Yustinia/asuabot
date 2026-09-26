@@ -6,7 +6,7 @@ local WANDER_PATH_AGE = 0.08
 local WANDER_AHEAD_DIST = 150
 local WANDER_DAMAGE = 1
 local WANDER_LIFETIME_DUR = 20
-local WANDER_COOLDOWN_DUR = 10
+local WANDER_COOLDOWN_DUR = 40
 
 ENT.UtilityScores.Wander = function(self, ctx, trace)
 	if not ctx.TargetValid then

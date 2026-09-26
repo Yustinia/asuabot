@@ -6,7 +6,7 @@ local DRIFT_PATH_AGE = 0.08
 local DRIFT_AHEAD_DIST = 150
 local DRIFT_DAMAGE = 1
 local DRIFT_LIFETIME_DUR = 30
-local DRIFT_LIFETIME_DUR = 12
+local DRIFT_COOLDOWN_DUR = 50
 
 ENT.UtilityScores.Drift = function(self, ctx, trace)
 	if not ctx.TargetValid then
@@ -75,4 +75,6 @@ ENT.StateUpdate.Drift = function(self, ctx)
 	self:ClearObstacles()
 end
 
-ENT.StateExit.Drift = function(self) end
+ENT.StateExit.Drift = function(self)
+	self.GlobalContext.CooldownUntil["Drift"] = CurTime() + DRIFT_COOLDOWN_DUR
+end
