@@ -1,23 +1,34 @@
-function ENT:GetPlayerPosition()
-	return self.GlobalContext.Target:GetPos()
+function ENT:GetPlayerPosition(target)
+	return target:GetPos()
 end
 
-function ENT:GetPlayerDistance()
-	return self:Distance(self.GlobalContext.Target:GetPos())
+function ENT:GetPlayerDistance(target)
+	return self:Distance(target:GetPos())
 end
 
-function ENT:GetPlayerOccupiedNavArea()
-	return navmesh.GetNearestNavArea(self.Target:GetPos())
+function ENT:GetPlayerOccupiedNavArea(target)
+	return navmesh.GetNearestNavArea(target:GetPos())
 end
 
--- function ENT:GetPlayerDirection()
--- function ENT:IsPlayerAboveBot()
--- function ENT:IsPlayerBelowBot()
--- function ENT:IsPlayerOnHighGround()
--- function ENT:IsPlayerOnLowGround()
--- function ENT:IsPlayerBehindBot()
--- function ENT:IsPlayerFrontBot()
--- function ENT:GetPlayerRelativeVelocity()
+function ENT:GetPlayerDirection(target)
+	return target:GetForward()
+end
+
+function ENT:IsPlayerBehindBot(target)
+	local dirToPlayer = (target:GetPos() - self:GetPos()):GetNormalized()
+
+	return self:GetForward():Dot(dirToPlayer) < 0
+end
+
+function ENT:IsPlayerFrontBot(target)
+	local dirToPlayer = (target:GetPos() - self:GetPos()):GetNormalized()
+
+	return self:GetForward():Dot(dirToPlayer) > 0
+end
+
+function ENT:GetPlayerRelativeVelocity(target)
+	return target:GetVelocity() - self:GetVelocity()
+end
 
 function ENT:IsTouchingPlayer(target, distanceThreshold)
 	if not IsValid(target) or not target:IsPlayer() or not target:Alive() then
