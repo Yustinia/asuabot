@@ -79,7 +79,7 @@ if CLIENT then
 			end
 
 			draw.SimpleText("BUCKETS", "DermaDefaultBold", 20, y, Color(255, 255, 255), TEXT_ALIGN_LEFT)
-			y = y + 24
+			y = y + 20
 
 			for name, score in pairs(data.bucketScores) do
 				local color = (name == data.bestBucket) and Color(255, 220, 80) or color_white
@@ -102,11 +102,11 @@ if CLIENT then
 						Color(180, 180, 180),
 						TEXT_ALIGN_LEFT
 					)
-					y = y + 8
+					y = y + 12
 				end
 			end
 
-			y = y + 32
+			y = y + 24
 
 			draw.SimpleText(
 				"STATES (" .. data.bestBucket .. ")",
@@ -116,7 +116,7 @@ if CLIENT then
 				Color(255, 255, 255),
 				TEXT_ALIGN_LEFT
 			)
-			y = y + 24
+			y = y + 20
 
 			for name, score in pairs(data.scores) do
 				local color = (name == data.best) and Color(255, 220, 80) or color_white
@@ -139,11 +139,11 @@ if CLIENT then
 						Color(180, 180, 180),
 						TEXT_ALIGN_LEFT
 					)
-					y = y + 8
+					y = y + 12
 				end
 			end
 
-			y = y + 32
+			y = y + 24
 		end
 	end)
 	-- debug data
