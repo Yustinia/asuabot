@@ -1,5 +1,5 @@
 -- behavior
-include("entities/npc_asuabot/behavior/navigation/exploration/bounary.lua")
+include("entities/npc_asuabot/behavior/navigation/exploration/boundary.lua")
 include("entities/npc_asuabot/behavior/navigation/exploration/scout.lua")
 include("entities/npc_asuabot/behavior/navigation/exploration/survery.lua")
 
