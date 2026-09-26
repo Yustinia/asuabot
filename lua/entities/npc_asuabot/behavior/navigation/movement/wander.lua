@@ -36,7 +36,7 @@ ENT.UtilityScores.Wander = function(self, ctx, trace)
 		{ score = stamina, weight = 1 },
 	})
 
-	return math.max(score, 0.1)
+	return score
 end
 
 ENT.StateEnter.Wander = function(self)
