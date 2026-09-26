@@ -1,7 +1,5 @@
-function ENT:Teleport()
-	local selectedNav = self:FindRandomNavArea()
-
-	self:SetPos(selectedNav)
+function ENT:Teleport(vectorPos)
+	self:SetPos(vectorPos)
 end
 -- function ENT:PlaySound() end
 -- function ENT:SetCollisionState() end

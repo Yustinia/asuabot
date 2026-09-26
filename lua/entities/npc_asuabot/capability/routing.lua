@@ -112,7 +112,9 @@ function ENT:HandleStuckCheck()
 	self:HandleStuck()
 
 	if self.GlobalContext.StuckTries >= self.GlobalContext.StuckMaxAttempts then
-		self:Teleport()
+		local selectedNav = self:FindRandomNavArea()
+		self:Teleport(selectedNav)
+
 		return true
 	end
 
