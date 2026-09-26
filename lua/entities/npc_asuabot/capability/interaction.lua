@@ -5,12 +5,12 @@
 -- function ENT:DropEntity() end
 -- function ENT:GetInteractionResult() end
 
-local PushCD, PullCD, DamageCD, PunchCD = 0.5, 0.5, 0.5, 2.0
+local PushCD, PullCD, DamageCD = 0.5, 0.5, 0.5
 
 function ENT:PushEntity(target, force)
 	force = force or 1500
 
-	if CurTime() < self.NextPushTime then
+	if CurTime() < self.GlobalContext.NextPushTime then
 		return
 	end
 
@@ -24,7 +24,7 @@ function ENT:PushEntity(target, force)
 
 	target:SetVelocity(pushVec * force)
 
-	self.NextPushTime = CurTime() + PushCD
+	self.GlobalContext.NextPushTime = CurTime() + PushCD
 end
 
 function ENT:DamageEntity(target, amount)
@@ -46,7 +46,7 @@ end
 function ENT:PullEntity(target, force)
 	force = force or 800
 
-	if CurTime() < (self.NextPullTime or 0) then
+	if CurTime() < (self.GlobalContext.NextPullTime or 0) then
 		return
 	end
 
@@ -60,23 +60,5 @@ function ENT:PullEntity(target, force)
 
 	target:SetVelocity(pullVec * force)
 
-	self.NextPullTime = CurTime() + PullCD
-end
-
-function ENT:PunchEntity(target)
-	if CurTime() < (self.NextPunchTime or 0) then
-		return
-	end
-
-	if not IsValid(target) then
-		return
-	end
-
-	target:ViewPunch(
-		Angle(
-			(math.random(0, 1) == 0) and -10 or 10,
-			(math.random(0, 1) == 0) and -30 or 30,
-			(math.random(0, 1) == 0) and -20 or 20
-		)
-	)
+	self.GlobalContext.NextPullTime = CurTime() + PullCD
 end

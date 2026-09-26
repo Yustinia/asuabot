@@ -19,3 +19,23 @@ function ENT:HandleSpeed(speed, accel)
 	self:SetSpeed(speed)
 	self:SetAccel(accel)
 end
+
+function ENT:PunchEntity(target)
+	if CurTime() < (self.GlobalContext.NextPunchTime or 0) then
+		return
+	end
+
+	if not IsValid(target) then
+		return
+	end
+
+	target:ViewPunch(
+		Angle(
+			(math.random(0, 1) == 0) and -10 or 10,
+			(math.random(0, 1) == 0) and -30 or 30,
+			(math.random(0, 1) == 0) and -20 or 20
+		)
+	)
+
+	self.GlobalContext.NextPunchTime = CurTime() + 2.0
+end
