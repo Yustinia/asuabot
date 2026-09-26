@@ -31,9 +31,11 @@ function ENT:SampleContext()
 end
 
 function ENT:SelectState(ctx)
+	local bucketTraces = {}
 	local bestBucketScore, bestBucketName = -math.huge, nil
 	for name, scoreFunc in pairs(self.UtilityBuckets) do
-		local score = scoreFunc(self, ctx)
+		bucketTraces[name] = {}
+		local score = scoreFunc(self, ctx, bucketTraces[name])
 		if score > bestBucketScore then
 			bestBucketScore, bestBucketName = score, name
 		end
