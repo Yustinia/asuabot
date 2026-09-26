@@ -23,9 +23,12 @@ function ENT:SampleContext()
 		end
 	end
 
+	-- used for minimum state runtime duration (memory)
 	ctx.LastSeenAge = CurTime() - self.GlobalContext.TargetLastSeenTime
-	ctx.CurrentState = self.GlobalContext.CurrentState
+	-- used for maximum state runtime duration (stamina)
 	ctx.StateTime = CurTime() - self.GlobalContext.StateStartTime
+
+	ctx.CurrentState = self.GlobalContext.CurrentState
 
 	return ctx
 end
