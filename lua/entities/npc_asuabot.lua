@@ -40,12 +40,17 @@ if CLIENT then
 			return
 		end
 
-		local time = CurTime()
-
 		debugData[ent] = {
-			time = time,
+			bucketScores = net.ReadTable(),
+			bucketTraces = net.ReadTable(),
+			bestBucket = net.ReadString(),
+			scores = net.ReadTable(),
+			traces = net.ReadTable(),
+			best = net.ReadString(),
+			time = CurTime(),
 		}
 	end)
+
 	hook.Add("HUDPaint", "TestHUD", function()
 		local y = 100
 		for ent, data in pairs(debugData) do
@@ -53,6 +58,73 @@ if CLIENT then
 				debugData[ent] = nil
 				continue
 			end
+
+			draw.SimpleText("BUCKETS", "DermaDefaultBold", 20, y, Color(255, 255, 255), TEXT_ALIGN_LEFT)
+			y = y + 24
+
+			for name, score in pairs(data.bucketScores) do
+				local color = (name == data.bestBucket) and Color(255, 220, 80) or color_white
+				draw.SimpleText(
+					name .. ": " .. string.format("%.2f", score),
+					"DermaDefault",
+					30,
+					y,
+					color,
+					TEXT_ALIGN_LEFT
+				)
+				y = y + 16
+
+				for key, val in pairs(data.bucketTraces[name] or {}) do
+					draw.SimpleText(
+						"  " .. key .. ": " .. string.format("%.2f", val),
+						"DermaDefault",
+						40,
+						y,
+						Color(180, 180, 180),
+						TEXT_ALIGN_LEFT
+					)
+					y = y + 8
+				end
+			end
+
+			y = y + 32
+
+			draw.SimpleText(
+				"STATES (" .. data.bestBucket .. ")",
+				"DermaDefaultBold",
+				20,
+				y,
+				Color(255, 255, 255),
+				TEXT_ALIGN_LEFT
+			)
+			y = y + 24
+
+			for name, score in pairs(data.scores) do
+				local color = (name == data.best) and Color(255, 220, 80) or color_white
+				draw.SimpleText(
+					name .. ": " .. string.format("%.2f", score),
+					"DermaDefault",
+					30,
+					y,
+					color,
+					TEXT_ALIGN_LEFT
+				)
+				y = y + 16
+
+				for key, val in pairs(data.traces[name] or {}) do
+					draw.SimpleText(
+						"  " .. key .. ": " .. string.format("%.2f", val),
+						"DermaDefault",
+						40,
+						y,
+						Color(180, 180, 180),
+						TEXT_ALIGN_LEFT
+					)
+					y = y + 8
+				end
+			end
+
+			y = y + 32
 		end
 	end)
 	-- debug data
@@ -138,6 +210,20 @@ if SERVER then
 		while true do
 			local ctx = self:SampleContext()
 			local nextState = self:SelectState(ctx)
+
+			if self.GlobalContext.DebugScores and CurTime() - (self.NextDebugSend or 0) > 0.2 then
+				self.NextDebugSend = CurTime()
+
+				net.Start("AsuabotDebug")
+				net.WriteEntity(self)
+				net.WriteTable(self.GlobalContext.DebugBucketScores or {})
+				net.WriteTable(self.GlobalContext.DebugBucketTraces or {})
+				net.WriteString(self.GlobalContext.DebugBestBucket or "")
+				net.WriteTable(self.GlobalContext.DebugScores or {})
+				net.WriteTable(self.GlobalContext.DebugTraces or {})
+				net.WriteString(self.GlobalContext.DebugBest or "")
+				net.Broadcast()
+			end
 
 			if nextState ~= self.GlobalContext.CurrentState then
 				local onExit = self.StateExit[self.GlobalContext.CurrentState]
