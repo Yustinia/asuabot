@@ -1,7 +1,7 @@
 -- behavior
 include("entities/npc_asuabot/behavior/navigation/exploration/boundary.lua")
 include("entities/npc_asuabot/behavior/navigation/exploration/scout.lua")
-include("entities/npc_asuabot/behavior/navigation/exploration/survery.lua")
+include("entities/npc_asuabot/behavior/navigation/exploration/survey.lua")
 
 include("entities/npc_asuabot/behavior/navigation/movement/drift.lua")
 include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
