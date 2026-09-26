@@ -4,7 +4,7 @@ function ENT:SampleContext()
 	local ctx = {}
 
 	if not IsValid(self.GlobalContext.Target) then
-		self.GlobalContext.Target = self:FindClosestPlayer()
+		self.GlobalContext.Target = self:FindNearestPlayer()
 	end
 
 	ctx.Target = self.GlobalContext.Target
@@ -23,7 +23,7 @@ function ENT:SampleContext()
 		end
 	end
 
-	ctx.SeenAge = CurTime() - self.GlobalContext.TargetLastSeenTime
+	ctx.LastSeenAge = CurTime() - self.GlobalContext.TargetLastSeenTime
 	ctx.CurrentState = self.GlobalContext.CurrentState
 	ctx.StateTime = CurTime() - self.GlobalContext.StateStartTime
 
@@ -31,21 +31,26 @@ function ENT:SampleContext()
 end
 
 function ENT:SelectState(ctx)
+	local bestBucketScore, bestBucketName = -math.huge, nil
+	for name, scoreFunc in pairs(self.UtilityBuckets) do
+		local score = scoreFunc(self, ctx)
+		if score > bestBucketScore then
+			bestBucketScore, bestBucketName = score, name
+		end
+	end
+
+	local bucketMembers = self.BucketStates[bestBucketName]
+
 	local scores, traces = {}, {}
 	local bestScore, bestName = -math.huge, nil
+	for _, name in ipairs(bucketMembers) do
+		traces[name] = {}
 
-	for name, scoreFunc in pairs(self.UtilityScores) do
-		local onCooldown = CurTime() < (self.GlobalContext.CooldownUntil[name] or 0)
+		local score = self.UtilityScores[name](self, ctx, traces[name])
+		scores[name] = score
 
-		if onCooldown then
-			scores[name] = 0
-		else
-			traces[name] = {}
-			scores[name] = scoreFunc(self, ctx, traces[name])
-		end
-
-		if scores[name] > bestScore then
-			bestScore = scores[name]
+		if score > bestScore then
+			bestScore = score
 			bestName = name
 		end
 	end
@@ -57,6 +62,7 @@ function ENT:SelectState(ctx)
 		end
 	end
 
+	-- persist to use the same state if it's still inside the table
 	if #candidates > 1 and table.HasValue(candidates, self.GlobalContext.CurrentState) then
 		return self.GlobalContext.CurrentState
 	end

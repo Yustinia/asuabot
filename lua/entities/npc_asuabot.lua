@@ -5,11 +5,24 @@ ENT.PrintName = "Asuabot"
 ENT.Category = "Nextbot"
 ENT.Spawnable = true
 
+-- state transitions
 ENT.StateEnter = {}
 ENT.StateUpdate = {}
 ENT.StateExit = {}
-ENT.UtilityScores = {}
+
+-- state scores
+ENT.UtilityScores = {
+	Chase = function(self, ctx, trace) end,
+}
+
+-- persistent memory
 ENT.GlobalContext = {}
+
+-- bucket-level scores
+ENT.UtilityBuckets = { Aggresion = function(self, ctx, trace) end }
+
+-- which state belong to which bucket
+ENT.BucketStates = { Aggresion = { "Chase" } }
 
 if CLIENT then
 	local botMaterial = Material("vgui/entities/npc_asuabot")
