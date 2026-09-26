@@ -34,11 +34,13 @@ function ENT:SampleContext()
 end
 
 function ENT:SelectState(ctx)
-	local bucketTraces = {}
+	local bucketScores, bucketTraces = {}, {}
 	local bestBucketScore, bestBucketName = -math.huge, nil
 	for name, scoreFunc in pairs(self.UtilityBuckets) do
 		bucketTraces[name] = {}
 		local score = scoreFunc(self, ctx, bucketTraces[name])
+		bucketScores[name] = score
+
 		if score > bestBucketScore then
 			bestBucketScore, bestBucketName = score, name
 		end
@@ -49,13 +51,19 @@ function ENT:SelectState(ctx)
 	local scores, traces = {}, {}
 	local bestScore, bestName = -math.huge, nil
 	for _, name in ipairs(bucketMembers) do
+		local onCooldown = CurTime() < (self.GlobalContext.CooldownUntil[name] or 0)
+
 		traces[name] = {}
 
-		local score = self.UtilityScores[name](self, ctx, traces[name])
-		scores[name] = score
+		if onCooldown then
+			scores[name] = 0
+		else
+			local score = self.UtilityScores[name](self, ctx, traces[name])
+			scores[name] = score
+		end
 
-		if score > bestScore then
-			bestScore = score
+		if scores[name] > bestScore then
+			bestScore = scores[name]
 			bestName = name
 		end
 	end
@@ -66,6 +74,16 @@ function ENT:SelectState(ctx)
 			table.insert(candidates, name)
 		end
 	end
+
+	-- store bucket scores to debug
+	self.GlobalContext.DebugBucketScores = bucketScores
+	self.GlobalContext.DebugBucketTraces = bucketTraces
+	self.GlobalContext.DebugBestBucket = bestBucketName
+
+	-- store state scores to debug
+	self.GlobalContext.DebugScores = scores
+	self.GlobalContext.DebugTraces = traces
+	self.GlobalContext.DebugBest = bestName
 
 	-- persist to use the same state if it's still inside the table
 	if #candidates > 1 and table.HasValue(candidates, self.GlobalContext.CurrentState) then

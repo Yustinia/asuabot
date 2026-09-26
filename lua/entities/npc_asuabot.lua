@@ -95,6 +95,7 @@ if SERVER then
 			CurrentState = nil,
 			PreviousState = nil,
 			StateStartTime = 0,
+			CooldownUntil = {},
 			CachedNavmesh = navmesh.GetAllNavAreas(),
 
 			Target = nil,
@@ -121,6 +122,14 @@ if SERVER then
 
 			ProgressPosition = nil,
 			ProgressTime = 0,
+
+			-- debug
+			DebugBucketScores = nil,
+			DebugBucketTraces = nil,
+			DebugBestBucket = nil,
+			DebugScores = nil,
+			DebugTraces = nil,
+			DebugBest = nil,
 		}
 	end
 
