@@ -218,6 +218,7 @@ if SERVER then
 			NextPushTime = 0,
 			NextDamageTime = 0,
 			NextPullTime = 0,
+			NextPunchTime = 0,
 
 			StuckTries = 0,
 			StuckMaxAttempts = 3,
