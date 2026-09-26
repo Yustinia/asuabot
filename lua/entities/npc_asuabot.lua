@@ -224,6 +224,8 @@ if SERVER then
 			DebugTraces = nil,
 			DebugBest = nil,
 		}
+
+		self.StateContext = {}
 	end
 
 	-- Nextbot loop
