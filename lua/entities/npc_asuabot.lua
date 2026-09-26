@@ -32,6 +32,8 @@ if CLIENT then
 		render.DrawSprite(self:GetPos() + Vector(0, 0, 50), 100, 100, color_white)
 	end
 
+	CreateClientConVar("asuabot_debug_hud", "1", true, false, "Show Asuabot UtilityAI Debug HUD")
+
 	-- debug data
 	local debugData = {}
 	net.Receive("AsuabotDebug", function()
@@ -52,6 +54,10 @@ if CLIENT then
 	end)
 
 	hook.Add("HUDPaint", "TestHUD", function()
+		if not GetConVar("asuabot_debug_hud"):GetBool() then
+			return
+		end
+
 		local y = 100
 		for ent, data in pairs(debugData) do
 			if not IsValid(ent) or CurTime() - data.time > 1 then
