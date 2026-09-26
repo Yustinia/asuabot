@@ -21,7 +21,7 @@ end
 function ENT:DamageEntity(target, amount)
 	amount = amount or 1
 
-	if CurTime() < self.NextDamageTime then
+	if CurTime() < self.GlobalContext.NextDamageTime then
 		return
 	end
 
@@ -31,7 +31,7 @@ function ENT:DamageEntity(target, amount)
 
 	target:TakeDamage(amount, self, self)
 
-	self.NextDamageTime = CurTime() + self.DamageCD
+	self.GlobalContext.NextDamageTime = CurTime() + self.GlobalContext.DamageCD
 end
 
 function ENT:PullEntity(target, force)

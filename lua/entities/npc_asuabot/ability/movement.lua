@@ -19,7 +19,7 @@ end
 function ENT:TeleportToDistantNavSpot(minDistance)
 	minDistance = minDistance or 1000
 
-	local navAreas = self.CachedNavAreas
+	local navAreas = self.GlobalContext.CachedNavmesh
 	if not navAreas or #navAreas == 0 then
 		return
 	end

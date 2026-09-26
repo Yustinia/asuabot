@@ -1,13 +1,15 @@
--- function ENT:IsPlayerHoldingMeleeWeapon() end
--- function ENT:IsPlayerHoldingRangedWeapon() end
 -- function ENT:IsPlayerReloading() end
 -- function ENT:IsPlayerAttacking() end
--- function ENT:IsPlayerStunned() end
--- function ENT:IsPlayerImmobilized() end
--- function ENT:IsPlayerInvulnerable() end
 -- function ENT:IsPlayerAbleToDamageBot() end
--- function ENT:GetPlayerEffectiveAttackRange() end
--- function ENT:GetPlayerThreatLevel() end
+-- function ENT:IsPlayerVulnerable()
+-- function ENT:IsPlayerHealthy()
+-- function ENT:IsPlayerWounded()
+-- function ENT:IsPlayerCritical()
+-- function ENT:IsPlayerNearDeath()
+-- function ENT:GetPlayerHealth()
+-- function ENT:GetPlayerCombatCapability()
+-- function ENT:GetPlayerThreatLevel()
+-- function ENT:GetPlayerAmmoStatus()
 
 function ENT:GetPlayerHealth()
 	if not IsValid(self.Target) then

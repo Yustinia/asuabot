@@ -1,10 +1,10 @@
 --- finds a random spot in a scan radius to wander to
 --- @param scanRadius number relative to the bot to scan candidate spots
---- @return CNavArea targetArea random point in the candidate area
+--- @return nil
 function ENT:FindWanderSpot(scanRadius)
 	scanRadius = scanRadius or 1000
 
-	local navs = self.CachedNavAreas
+	local navs = self.GlobalContext.CachedNavmesh
 	if not navs or #navs == 0 then
 		return nil
 	end
@@ -31,7 +31,7 @@ end
 function ENT:FindFleeSpot(scanRadius)
 	scanRadius = scanRadius or 1000
 
-	local targetPos = self.Target:GetPos()
+	local targetPos = self.GlobalContext.Target:GetPos()
 	local hideSpots = navmesh.Find(targetPos, scanRadius, 20, 50)
 	if not hideSpots or #hideSpots == 0 then
 		return nil
@@ -91,8 +91,8 @@ end
 function ENT:FindClosestHideSpot(scanRadius)
 	scanRadius = scanRadius or 6000
 
-	local areas = navmesh.Find(self.Target:GetPos(), scanRadius, 20, 50)
-	local targetEye = self.Target:EyePos()
+	local areas = navmesh.Find(self.GlobalContext.Target:GetPos(), scanRadius, 20, 50)
+	local targetEye = self.GlobalContext.Target:EyePos()
 
 	local closestSpot = nil
 	local closestDist = math.huge
@@ -107,7 +107,7 @@ function ENT:FindClosestHideSpot(scanRadius)
 		})
 
 		if tr.Hit and tr.Fraction < 1.0 then
-			local dist = center:Distance(self.Target:GetPos())
+			local dist = center:Distance(self.GlobalContext.Target:GetPos())
 
 			if dist < closestDist then
 				closestDist = dist
@@ -154,16 +154,6 @@ function ENT:FindHideSpotInRange(minDist, maxDist)
 	end
 
 	return nil
-end
-
-function ENT:GetNextPatrolSpot()
-	local history = self.LastSeenTargetPositions
-	if not history or #history == 0 then
-		return nil
-	end
-
-	self.PatrolIndex = (self.PatrolIndex or 0) % #history + 1
-	return history[self.PatrolIndex]
 end
 
 --- finds a random point in the entire navmesh
@@ -306,15 +296,15 @@ function ENT:FindOffsetApproachPoint(target, minDot, maxDot, distance)
 end
 
 function ENT:FindFlankSpot(distance)
-	return self:FindOffsetApproachPoint(self.Target, -0.3, 0.3, distance)
+	return self:FindOffsetApproachPoint(self.GlobalContext.Target, -0.3, 0.3, distance)
 end
 
 function ENT:FindRearSpot(distance)
-	return self:FindOffsetApproachPoint(self.Target, -1.0, -0.5, distance)
+	return self:FindOffsetApproachPoint(self.GlobalContext.Target, -1.0, -0.5, distance)
 end
 
 function ENT:FindFrontalSpot(distance)
-	return self:FindOffsetApproachPoint(self.Target, 0.5, 1.0, distance)
+	return self:FindOffsetApproachPoint(self.GlobalContext.Target, 0.5, 1.0, distance)
 end
 
 local INTERCEPT_LEAD_TIME = 0.8

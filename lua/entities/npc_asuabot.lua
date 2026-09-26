@@ -5,6 +5,13 @@ ENT.PrintName = "Asuabot"
 ENT.Category = "Nextbot"
 ENT.Spawnable = true
 
+ENT.StateEnter = {}
+ENT.StateUpdate = {}
+ENT.StateExit = {}
+ENT.UtilityScores = {}
+ENT.GlobalContext = {}
+ENT.StateContext = {}
+
 if CLIENT then
 	local botMaterial = Material("vgui/entities/npc_asuabot")
 
@@ -12,84 +19,123 @@ if CLIENT then
 		render.SetMaterial(botMaterial)
 		render.DrawSprite(self:GetPos() + Vector(0, 0, 50), 100, 100, color_white)
 	end
+
+	-- debug data
+	local debugData = {}
+	net.Receive("AsuabotDebug", function()
+		local ent = net.ReadEntity()
+		if not IsValid(ent) then
+			return
+		end
+
+		local scores = net.ReadTable()
+		local traces = net.ReadTable()
+		local best = net.ReadString()
+		local cooldowns = net.ReadTable()
+		local sweepIndex = net.ReadUInt(8)
+		local sweepTotal = net.ReadUInt(8)
+
+		local posCount = net.ReadUInt(8)
+		local positions = {}
+		for i = 1, posCount do
+			positions[i] = net.ReadVector()
+		end
+
+		debugData[ent] = {
+			scores = scores,
+			traces = traces,
+			best = best,
+			cooldowns = cooldowns,
+			sweepIndex = sweepIndex,
+			sweepTotal = sweepTotal,
+			positions = positions,
+			time = CurTime(),
+		}
+	end)
+	hook.Add("HUDPaint", "TestHUD", function()
+		local y = 100
+		for ent, data in pairs(debugData) do
+			if not IsValid(ent) or CurTime() - data.time > 1 then
+				debugData[ent] = nil
+				continue
+			end
+
+			for name, score in pairs(data.scores) do
+				local color = (name == data.best) and Color(225, 220, 80) or color_white
+				draw.SimpleText(
+					name .. " : " .. string.format("%.2f", score),
+					"DermaDefault",
+					20,
+					y,
+					color,
+					TEXT_ALIGN_LEFT
+				)
+				y = y + 16
+
+				if name == "Sweep" and data.sweepTotal > 0 then
+					draw.SimpleText(
+						"  Point " .. data.sweepIndex .. "/" .. data.sweepTotal,
+						"DermaDefault",
+						40,
+						y,
+						Color(150, 200, 255),
+						TEXT_ALIGN_LEFT
+					)
+					y = y + 16
+				end
+
+				if name == "Patrol" and #data.positions > 0 then
+					for i, pos in ipairs(data.positions) do
+						draw.SimpleText(
+							"  [" .. i .. "] " .. tostring(pos),
+							"DermaDefault",
+							40,
+							y,
+							Color(150, 255, 180),
+							TEXT_ALIGN_LEFT
+						)
+						y = y + 16
+					end
+				end
+
+				for key, val in pairs(data.traces[name] or {}) do
+					draw.SimpleText(
+						"  " .. key .. " : " .. string.format("%.2f", val),
+						"DermaDefault",
+						40,
+						y,
+						Color(180, 180, 180),
+						TEXT_ALIGN_LEFT
+					)
+					y = y + 16
+				end
+
+				local cdUntil = data.cooldowns[name]
+				if cdUntil and cdUntil > CurTime() then
+					local remaining = cdUntil - CurTime()
+					draw.SimpleText(
+						"  CD: " .. string.format("%.2f", remaining) .. "s",
+						"DermaDefault",
+						40,
+						y,
+						Color(255, 100, 100),
+						TEXT_ALIGN_LEFT
+					)
+					y = y + 16
+				end
+			end
+		end
+	end)
+	-- debug data
 end
 
 if SERVER then
+	util.AddNetworkString("AsuabotDebug")
+
 	include("entities/npc_asuabot/ability/init.lua")
 	include("entities/npc_asuabot/helper/init.lua")
 	include("entities/npc_asuabot/states/init.lua")
 	include("entities/npc_asuabot/player/init.lua")
-
-	ENT.States = {
-		Wander = ENT.StateWander,
-		Chase = ENT.StateChase,
-		Rush = ENT.StateRush,
-		Blink = ENT.StateBlink,
-		Flee = ENT.StateFlee,
-		Hide = ENT.StateHide,
-		Retreat = ENT.StateRetreat,
-		Creep = ENT.StateCreep,
-		Pounce = ENT.StatePounce,
-		AmbushApproach = ENT.StateAmbushApproach,
-		AmbushTP = ENT.StateAmbushTP,
-		Investigate = ENT.StateInvestigate,
-		Patrol = ENT.StatePatrol,
-		Peek = ENT.StatePeek,
-		Stare = ENT.StateStare,
-		Sweep = ENT.StateSweep,
-		Stalk = ENT.StateStalk,
-	}
-
-	ENT.StateEnter = {
-		Wander = function(self)
-			self.ProgressPos = self:GetPos()
-			self.ProgressTime = CurTime()
-		end,
-		Chase = function(self)
-			self.TargetLastSeenTime = CurTime()
-		end,
-		Rush = function(self)
-			self.TargetLastSeenTime = CurTime()
-		end,
-		Blink = function(self)
-			self.TargetLastSeenTime = CurTime()
-		end,
-		Flee = function(self)
-			self.ProgressPos = self:GetPos()
-			self.ProgressTime = CurTime()
-		end,
-		Hide = function(self)
-			self.TargetLastSeenTime = CurTime()
-		end,
-		Creep = function(self)
-			self.TargetLastSeenTime = CurTime()
-		end,
-		Pounce = function(self)
-			self.TargetLastSeenTime = CurTime()
-		end,
-		AmbushApproach = function(self)
-			self.TargetLastSeenTime = CurTime()
-		end,
-		Investigate = function(self)
-			self.ProgressPos = self:GetPos()
-			self.ProgressTime = CurTime()
-		end,
-		Patrol = function(self)
-			self.ProgressPos = self:GetPos()
-			self.ProgressTime = CurTime()
-		end,
-		Peek = function(self)
-			self.ProgressPos = self:GetPos()
-			self.ProgressTime = CurTime()
-		end,
-	}
-
-	ENT.StateExit = {
-		Stare = function(self)
-			self.Path = nil
-			self.PathMode = nil
-		end,
-	}
 
 	function ENT:Initialize()
 		-- Model / appearance
@@ -112,81 +158,117 @@ if SERVER then
 
 		-- NextBot ability
 		self.loco:SetStepHeight(40)
-		self.loco:SetJumpHeight(80)
+		self.loco:SetJumpHeight(60)
 		self.loco:SetDeathDropHeight(200)
 		self.loco:SetJumpGapsAllowed(true)
 
 		-- Navmesh cache
-		self.CachedNavAreas = navmesh.GetAllNavAreas()
 		-- self.Doors = self:FindAllDoors()
-
-		-- AI State
-		self.CurrentState = self:WeightedRoll({
-			{ chance = 0.62, value = "Wander" },
-			{ chance = 0.12, value = "Chase" },
-			{ chance = 0.12, value = "Stalk" },
-			{ chance = 0.08, value = "Hide" },
-			{
-				chance = 0.06,
-				value = self:WeightedRoll({
-					{ chance = 0.75, value = "AmbushTP" },
-					{ chance = 0.25, value = "AmbushApproach" },
-				}),
-			},
-		})
-
-		self.Target = nil
-		self.TargetLastSeenPos = nil
-		self.TargetLastSeenTime = 0
-
-		self.LastSeenTargetPositions = {}
-		self.LastSeenTargetSize = 5
-		self.LastSeenRecordInterval = 12
-		self.LastSeenRecordTime = 0
-		self.LastSeenRecordMinDist = 1000
-
-		self.PlayerList = {}
-
-		self.Path = nil
-		self.PathMode = nil
-
-		-- Timing
-		self.PushCD = 0.5
-		self.NextPushTime = 0
-
-		self.DamageCD = 0.5
-		self.NextDamageTime = 0
-
-		self.PullCD = 15
-		self.NextPullTime = 0
-
-		-- Movement
-		self.StuckTries = 0
-		self.StuckMax = 3
-		self.LastStuck = 0
-
-		self.ProgressPos = nil
-		self.ProgressTime = 0
-
-		self.PatrolIndex = 0
 
 		-- Spawn Initialization
 		-- self:TeleportToDistantNavSpot()
+
+		self.GlobalContext = {
+			CurrentState = nil,
+			PreviousState = nil,
+			StateStartTime = 0,
+			CooldownUntil = {},
+			CachedNavmesh = navmesh.GetAllNavAreas(),
+
+			Target = nil,
+			TargetList = {},
+			TargetLastSeenPos = nil,
+			TargetLastSeenTime = 0,
+
+			LastSeenTargetPositions = {},
+			LastSeenTargetSize = 5,
+			LastSeenRecordInterval = 12,
+			LastSeenRecordTime = 0,
+			LastSeenRecordMinDist = 1000,
+
+			Path = nil,
+			PathMode = nil,
+
+			PushCD = 0.5,
+			NextPushTime = 0,
+
+			DamageCD = 0.5,
+			NextDamageTime = 0,
+
+			PullCD = 0.5,
+			NextPullTime = 0,
+
+			StuckTries = 0,
+			StuckMaxAttempts = 3,
+			LastStuckTime = 0,
+
+			ProgressPosition = nil,
+			ProgressTime = 0,
+
+			InterceptLastRecompute = 0,
+			PatrolIndex = 0,
+
+			-- debug
+			DebugScores = nil,
+			DebugBest = nil,
+			DebugTraces = nil,
+			DebugCD = {},
+		}
+
+		self.StateContext = {}
 	end
 
 	-- Nextbot loop
 	function ENT:RunBehaviour()
 		while true do
-			PrintMessage(HUD_PRINTTALK, "State: " .. self.CurrentState)
+			local ctx = self:SampleContext()
+			local nextState = self:SelectState(ctx)
 
-			local stateFunc = self.States[self.CurrentState]
+			-- debug data
+			if self.GlobalContext.DebugScores and CurTime() - (self.NextDebugSent or 0) > 0.2 then
+				self.NextDebugSent = CurTime()
 
-			if not stateFunc then
-				self.CurrentState = "Wander"
-				stateFunc = self.States.Wander
+				net.Start("AsuabotDebug")
+				net.WriteEntity(self)
+				net.WriteTable(self.GlobalContext.DebugScores)
+				net.WriteTable(self.GlobalContext.DebugTraces)
+				net.WriteString(self.GlobalContext.DebugBest or "")
+				net.WriteTable(self.GlobalContext.DebugCD or {})
+				net.WriteUInt(self.GlobalContext.DebugSweepIndex, 8)
+				net.WriteUInt(self.GlobalContext.DebugSweepTotal, 8)
+
+				local positions = self.GlobalContext.DebugLastSeenPositions or {}
+				net.WriteUInt(#positions, 8)
+				for i = 1, #positions do
+					net.WriteVector(positions[i])
+				end
+
+				net.Broadcast()
+			end
+			-- debug data
+
+			if nextState ~= self.GlobalContext.CurrentState then
+				local onExit = self.StateExit[self.GlobalContext.CurrentState]
+				if onExit then
+					onExit(self)
+				end
+
+				self.GlobalContext.PreviousState = self.GlobalContext.CurrentState
+				self.GlobalContext.CurrentState = nextState
+				self.GlobalContext.StateStartTime = CurTime()
+
+				local onEnter = self.StateEnter[self.GlobalContext.CurrentState]
+				if onEnter then
+					onEnter(self)
+				end
 			end
 
-			stateFunc(self)
+			local onUpdate = self.StateUpdate[self.GlobalContext.CurrentState]
+			if onUpdate then
+				onUpdate(self, ctx)
+			end
+
+			self.GlobalContext.Path:Draw()
 
 			coroutine.yield()
 		end
