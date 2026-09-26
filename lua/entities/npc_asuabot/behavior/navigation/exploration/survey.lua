@@ -59,7 +59,7 @@ ENT.StateUpdate.Survey = function(self, ctx)
 			return
 		end
 
-		ctxSurvey.TargetPosition = self:FindNearbyNavSpot(SURVEY_SCAN_RAD)
+		ctxSurvey.TargetPosition = self:FindNearbyNavArea(SURVEY_SCAN_RAD)
 		ctxSurvey.WaitUntil = 0
 		self:ComputeRoutingPath(ctxSurvey.TargetPosition, SURVEY_AHEAD_DIST, SURVEY_GOAL_THRESH, "Follow")
 		return

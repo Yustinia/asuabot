@@ -13,8 +13,8 @@ function ENT:SampleContext()
 	if ctx.TargetValid then
 		ctx.Distance = self:GetPos():Distance(ctx.Target:GetPos())
 		ctx.Touching = self.IsTouchingPlayer(self, ctx.Target)
-		ctx.Visible = self:IsTargetVisible(ctx.Target)
-		ctx.Observe = self:IsObservedBy(ctx.Target)
+		ctx.Visible = self:IsTargetVisibleFromBot(ctx.Target)
+		ctx.Observe = self:IsPlayerLookingAtBot(ctx.Target)
 		ctx.PlayerSpeed = ctx.Target:GetVelocity():Length2D()
 		if ctx.Visible then
 			self.GlobalContext.TargetLastSeenTime = CurTime()
