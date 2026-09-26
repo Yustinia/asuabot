@@ -57,7 +57,7 @@ end
 -- @param x number: The current progress or input value.
 -- @return number: The original value clamped between 0 and 1.
 -- [Source: Standard definition in computer graphics / easing functions]
-function Curves.LinearIn(x)
+function Curves.Linear(x)
 	return Clamp01(x)
 end
 
@@ -65,7 +65,7 @@ end
 -- Ensures the input stays safely between 0 and 1, then flips the direction.
 -- @param x number: The current progress or input value.
 -- @return number: The reversed value moving from 1 down to 0.
-function Curves.LinearOut(x)
+function Curves.LinearInverse(x)
 	return 1 - Clamp01(x)
 end
 
