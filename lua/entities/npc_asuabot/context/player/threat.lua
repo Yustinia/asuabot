@@ -18,19 +18,3 @@ function ENT:GetPlayerHealth(target)
 
 	return target:Health()
 end
-
-function ENT:IsPlayerHealthy(target)
-	return self:GetPlayerHealth(target) >= 65
-end
-
-function ENT:IsPlayerWounded(target)
-	return self:GetPlayerHealth(target) < 65
-end
-
-function ENT:IsPlayerCritical(target)
-	return self:GetPlayerHealth(target) <= 25
-end
-
-function ENT:IsPlayerNearDeath(target)
-	return self:GetPlayerHealth(target) <= 10
-end

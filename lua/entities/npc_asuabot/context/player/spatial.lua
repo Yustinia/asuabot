@@ -1,5 +1,15 @@
--- function ENT:GetPlayerPosition()
--- function ENT:GetPlayerDistance()
+function ENT:GetPlayerPosition()
+	return self.GlobalContext.Target:GetPos()
+end
+
+function ENT:GetPlayerDistance()
+	return self:Distance(self.GlobalContext.Target:GetPos())
+end
+
+function ENT:GetPlayerOccupiedNavArea()
+	return navmesh.GetNearestNavArea(self.Target:GetPos())
+end
+
 -- function ENT:GetPlayerDirection()
 -- function ENT:IsPlayerAboveBot()
 -- function ENT:IsPlayerBelowBot()
@@ -8,7 +18,6 @@
 -- function ENT:IsPlayerBehindBot()
 -- function ENT:IsPlayerFrontBot()
 -- function ENT:GetPlayerRelativeVelocity()
--- function ENT:GetPlayerOccupiedNavArea()
 
 function ENT:IsTouchingPlayer(target, distanceThreshold)
 	if not IsValid(target) or not target:IsPlayer() or not target:Alive() then
