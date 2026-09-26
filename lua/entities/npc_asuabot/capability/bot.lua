@@ -31,9 +31,9 @@ function ENT:PunchEntity(target)
 
 	target:ViewPunch(
 		Angle(
-			(math.random(0, 1) == 0) and -10 or 10,
 			(math.random(0, 1) == 0) and -30 or 30,
-			(math.random(0, 1) == 0) and -20 or 20
+			(math.random(0, 1) == 0) and -60 or 60,
+			(math.random(0, 1) == 0) and -45 or 45
 		)
 	)
 
