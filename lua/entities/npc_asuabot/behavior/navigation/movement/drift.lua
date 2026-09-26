@@ -1,7 +1,7 @@
 local DRIFT_SPD = 200
 local DRIFT_ACCEL = 300
 local DRIFT_GOAL_THRESH = 120
-local DRIFT_SCAN_RAD = 1000
+local DRIFT_SCAN_RAD = 800
 local DRIFT_PATH_AGE = 0.08
 local DRIFT_AHEAD_DIST = 150
 local DRIFT_DAMAGE = 1
@@ -10,7 +10,11 @@ local DRIFT_COOLDOWN_DUR = 50
 
 ENT.UtilityScores.Drift = function(self, ctx, trace)
 	if not ctx.TargetValid then
-		return 1.0
+		return 0.0
+	end
+
+	if self:GetPlayerHealth(ctx.Target) >= 30 then
+		return 0.0
 	end
 
 	local far = Consider(ctx.Distance, 0, DRIFT_SCAN_RAD, function(x)

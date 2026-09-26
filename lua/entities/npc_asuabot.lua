@@ -62,6 +62,7 @@ if CLIENT then
 			scores = net.ReadTable(),
 			traces = net.ReadTable(),
 			best = net.ReadString(),
+			cooldown = net.ReadTable(),
 			time = CurTime(),
 		}
 	end)
@@ -79,7 +80,7 @@ if CLIENT then
 			end
 
 			draw.SimpleText("BUCKETS", "DermaDefaultBold", 20, y, Color(255, 255, 255), TEXT_ALIGN_LEFT)
-			y = y + 20
+			y = y + 16
 
 			for name, score in pairs(data.bucketScores) do
 				local color = (name == data.bestBucket) and Color(255, 220, 80) or color_white
@@ -102,11 +103,11 @@ if CLIENT then
 						Color(180, 180, 180),
 						TEXT_ALIGN_LEFT
 					)
-					y = y + 12
+					y = y + 16
 				end
 			end
 
-			y = y + 24
+			y = y + 16
 
 			draw.SimpleText(
 				"STATES (" .. data.bestBucket .. ")",
@@ -116,7 +117,7 @@ if CLIENT then
 				Color(255, 255, 255),
 				TEXT_ALIGN_LEFT
 			)
-			y = y + 20
+			y = y + 16
 
 			for name, score in pairs(data.scores) do
 				local color = (name == data.best) and Color(255, 220, 80) or color_white
@@ -130,6 +131,20 @@ if CLIENT then
 				)
 				y = y + 16
 
+				local cdUntil = data.cooldown[name]
+				if cdUntil and cdUntil > CurTime() then
+					local remaining = cdUntil - CurTime()
+					draw.SimpleText(
+						"  CD: " .. string.format("%.1f", remaining) .. "s",
+						"DermaDefault",
+						40,
+						y,
+						Color(255, 100, 100),
+						TEXT_ALIGN_LEFT
+					)
+					y = y + 16
+				end
+
 				for key, val in pairs(data.traces[name] or {}) do
 					draw.SimpleText(
 						"  " .. key .. ": " .. string.format("%.2f", val),
@@ -139,11 +154,11 @@ if CLIENT then
 						Color(180, 180, 180),
 						TEXT_ALIGN_LEFT
 					)
-					y = y + 12
+					y = y + 16
 				end
 			end
 
-			y = y + 24
+			y = y + 16
 		end
 	end)
 	-- debug data
@@ -218,6 +233,7 @@ if SERVER then
 			DebugScores = nil,
 			DebugTraces = nil,
 			DebugBest = nil,
+			DebugCooldown = nil,
 		}
 
 		self.StateContext = {}
@@ -240,6 +256,7 @@ if SERVER then
 				net.WriteTable(self.GlobalContext.DebugScores or {})
 				net.WriteTable(self.GlobalContext.DebugTraces or {})
 				net.WriteString(self.GlobalContext.DebugBest or "")
+				net.WriteTable(self.GlobalContext.DebugCooldown or {})
 				net.Broadcast()
 			end
 

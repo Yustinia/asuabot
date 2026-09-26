@@ -10,7 +10,11 @@ local WANDER_COOLDOWN_DUR = 40
 
 ENT.UtilityScores.Wander = function(self, ctx, trace)
 	if not ctx.TargetValid then
-		return 1.0
+		return 0.0
+	end
+
+	if self:GetPlayerHealth(ctx.Target) < 30 then
+		return 0.0
 	end
 
 	local far = Consider(ctx.Distance, 0, 2000, function(x)

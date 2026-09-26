@@ -86,6 +86,9 @@ function ENT:SelectState(ctx)
 	self.GlobalContext.DebugTraces = traces
 	self.GlobalContext.DebugBest = bestName
 
+	-- debug timers
+	self.GlobalContext.DebugCooldown = self.GlobalContext.CooldownUntil
+
 	-- persist to use the same state if it's still inside the table
 	if #candidates > 1 and table.HasValue(candidates, self.GlobalContext.CurrentState) then
 		return self.GlobalContext.CurrentState

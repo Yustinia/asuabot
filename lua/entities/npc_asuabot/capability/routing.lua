@@ -112,7 +112,7 @@ function ENT:HandleStuckCheck()
 	self:HandleStuck()
 
 	if self.GlobalContext.StuckTries >= self.GlobalContext.StuckMaxAttempts then
-		self:TeleportToDistantNavSpot(800)
+		self:Teleport()
 		return true
 	end
 

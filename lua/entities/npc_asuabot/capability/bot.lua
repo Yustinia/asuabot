@@ -1,4 +1,8 @@
--- function ENT:Teleport() end
+function ENT:Teleport()
+	local selectedNav = self:FindRandomNavArea()
+
+	self:SetPos(selectedNav)
+end
 -- function ENT:PlaySound() end
 -- function ENT:SetCollisionState() end
 
