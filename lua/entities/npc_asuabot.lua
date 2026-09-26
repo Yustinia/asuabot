@@ -264,7 +264,9 @@ if SERVER then
 				onUpdate(self, ctx)
 			end
 
-			self.GlobalContext.Path:Draw()
+			if GetConVar("asuabot_debug_hud"):GetBool() then
+				self.GlobalContext.Path:Draw()
+			end
 
 			coroutine.yield()
 		end
