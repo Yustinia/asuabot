@@ -5,6 +5,7 @@ local WANDER_SCAN_RAD = 2000
 local WANDER_PATH_AGE = 0.08
 local WANDER_AHEAD_DIST = 150
 local WANDER_LIFETIME_DUR = 20
+local WANDER_DAMAGE = 1
 
 ENT.UtilityScores.Wander = function(self, ctx, trace)
 	if not ctx.TargetValid then
@@ -33,29 +34,28 @@ ENT.StateEnter.Wander = function(self)
 	self.GlobalContext.ProgressTime = CurTime()
 
 	self.StateContext.Wander = {
-		TargetPosition = self:FindWanderSpot(WANDER_SCAN_RAD),
+		TargetPosition = self:FindDistantNavArea(WANDER_SCAN_RAD),
 	}
-	self:ComputeRoutingPath(self.StateContext.Wander.TargetPosition, WANDER_AHEAD_DIST, WANDER_GOAL_THRESH, "Follow")
+
+	local ctxWander = self.StateContext.Wander
+	self:ComputeRoutingPath(ctxWander.TargetPosition, WANDER_AHEAD_DIST, WANDER_GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Wander = function(self, ctx)
+	local ctxWander = self.StateContext.Wander
+
 	if not self.GlobalContext.Path or not self.GlobalContext.Path:IsValid() then
 		return
 	end
 
 	if self:IsAtPosition(self.StateContext.Wander.TargetPosition, WANDER_GOAL_THRESH) then
-		self.StateContext.Wander.TargetPosition = self:FindWanderSpot(WANDER_SCAN_RAD)
-		self:ComputeRoutingPath(
-			self.StateContext.Wander.TargetPosition,
-			WANDER_AHEAD_DIST,
-			WANDER_GOAL_THRESH,
-			"Follow"
-		)
+		ctxWander.TargetPosition = self:FindDistantNavArea(WANDER_SCAN_RAD)
+		self:ComputeRoutingPath(ctxWander.TargetPosition, WANDER_AHEAD_DIST, WANDER_GOAL_THRESH, "Follow")
 		return
 	end
 
 	if ctx.Touching then
-		self:DamageEntity(ctx.Target, 1)
+		self:DamageEntity(ctx.Target, WANDER_DAMAGE)
 	end
 
 	if self:HandleStuckCheck() then

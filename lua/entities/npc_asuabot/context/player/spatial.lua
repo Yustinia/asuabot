@@ -15,7 +15,7 @@ function ENT:IsTouchingPlayer(target, distanceThreshold)
 		return false
 	end
 
-	distanceThreshold = distanceThreshold or 60
+	distanceThreshold = distanceThreshold or 30
 
 	local dist = self:GetPos():Distance(target:GetPos())
 	if dist <= distanceThreshold then

@@ -6,6 +6,8 @@ include("entities/npc_asuabot/behavior/navigation/exploration/survery.lua")
 include("entities/npc_asuabot/behavior/navigation/movement/drift.lua")
 include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
 
+include("entities/npc_asuabot/behavior/navigation/bucket.lua")
+
 include("entities/npc_asuabot/behavior/player/aggression/ambush.lua")
 include("entities/npc_asuabot/behavior/player/aggression/blink.lua")
 include("entities/npc_asuabot/behavior/player/aggression/charge.lua")

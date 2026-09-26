@@ -42,7 +42,8 @@ function ENT:SelectState(ctx)
 		bucketScores[name] = score
 
 		if score > bestBucketScore then
-			bestBucketScore, bestBucketName = score, name
+			bestBucketScore = score
+			bestBucketName = name
 		end
 	end
 

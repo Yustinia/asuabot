@@ -11,18 +11,16 @@ ENT.StateUpdate = {}
 ENT.StateExit = {}
 
 -- state scores
-ENT.UtilityScores = {
-	Chase = function(self, ctx, trace) end,
-}
+ENT.UtilityScores = {}
 
 -- persistent memory
 ENT.GlobalContext = {}
 
 -- bucket-level scores
-ENT.UtilityBuckets = { Aggresion = function(self, ctx, trace) end }
+ENT.UtilityBuckets = {}
 
 -- which state belong to which bucket
-ENT.BucketStates = { Aggresion = { "Chase" } }
+ENT.BucketStates = {}
 
 if CLIENT then
 	local botMaterial = Material("vgui/entities/npc_asuabot")
@@ -154,10 +152,7 @@ end
 if SERVER then
 	util.AddNetworkString("AsuabotDebug")
 
-	include("entities/npc_asuabot/ability/init.lua")
-	include("entities/npc_asuabot/helper/init.lua")
-	include("entities/npc_asuabot/states/init.lua")
-	include("entities/npc_asuabot/player/init.lua")
+	include("entities/npc_asuabot/init.lua")
 
 	function ENT:Initialize()
 		-- Model / appearance
