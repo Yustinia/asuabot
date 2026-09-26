@@ -1,4 +1,4 @@
--- bahvior/navigation
+-- behavior
 include("entities/npc_asuabot/behavior/navigation/exploration/bounary.lua")
 include("entities/npc_asuabot/behavior/navigation/exploration/scout.lua")
 include("entities/npc_asuabot/behavior/navigation/exploration/survery.lua")
@@ -6,7 +6,6 @@ include("entities/npc_asuabot/behavior/navigation/exploration/survery.lua")
 include("entities/npc_asuabot/behavior/navigation/movement/drift.lua")
 include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
 
--- behavior/player
 include("entities/npc_asuabot/behavior/player/aggression/ambush.lua")
 include("entities/npc_asuabot/behavior/player/aggression/blink.lua")
 include("entities/npc_asuabot/behavior/player/aggression/charge.lua")
@@ -32,7 +31,6 @@ include("entities/npc_asuabot/behavior/player/stealth/peek.lua")
 include("entities/npc_asuabot/behavior/player/stealth/shadow.lua")
 include("entities/npc_asuabot/behavior/player/stealth/stalk.lua")
 
--- behavior/psychological
 include("entities/npc_asuabot/behavior/psychological/deception/decoy.lua")
 include("entities/npc_asuabot/behavior/psychological/deception/fakeretreat.lua")
 
@@ -43,11 +41,10 @@ include("entities/npc_asuabot/behavior/psychological/intimidation/stare.lua")
 include("entities/npc_asuabot/behavior/psychological/uncertainty/reappear.lua")
 include("entities/npc_asuabot/behavior/psychological/uncertainty/vanish.lua")
 
--- behavior/spatial
 include("entities/npc_asuabot/behavior/spatial/control/chokehold.lua")
 include("entities/npc_asuabot/behavior/spatial/control/corner.lua")
 
--- capability
+--capability
 include("entities/npc_asuabot/capability/bot.lua")
 include("entities/npc_asuabot/capability/entity.lua")
 include("entities/npc_asuabot/capability/environment.lua")
@@ -61,7 +58,7 @@ include("entities/npc_asuabot/capability/player.lua")
 include("entities/npc_asuabot/capability/routing.lua")
 include("entities/npc_asuabot/capability/spatial.lua")
 
--- context/player
+-- context
 include("entities/npc_asuabot/context/player/behavioral.lua")
 include("entities/npc_asuabot/context/player/environmental.lua")
 include("entities/npc_asuabot/context/player/equipment.lua")
@@ -74,5 +71,4 @@ include("entities/npc_asuabot/context/player/threat.lua")
 
 -- helper
 include("entities/npc_asuabot/helper/curves.lua")
-include("entities/npc_asuabot/helper/movement.lua")
 include("entities/npc_asuabot/helper/state.lua")
