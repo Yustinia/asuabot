@@ -1,4 +1,3 @@
--- function ENT:FindNearestNavArea() end
 function ENT:FindRandomNavArea()
 	local navs = self.GlobalContext.CachedNavmesh
 	if not navs or #navs == 0 then

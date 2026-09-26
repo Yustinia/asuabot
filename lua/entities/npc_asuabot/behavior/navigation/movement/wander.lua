@@ -56,7 +56,7 @@ ENT.StateUpdate.Wander = function(self, ctx)
 		return
 	end
 
-	if self:IsAtPosition(self.StateContext.Wander.TargetPosition, WANDER_GOAL_THRESH) then
+	if self:IsAtPosition(ctxWander.TargetPosition, WANDER_GOAL_THRESH) then
 		ctxWander.TargetPosition = self:FindDistantNavArea(WANDER_SCAN_RAD)
 		self:ComputeRoutingPath(ctxWander.TargetPosition, WANDER_AHEAD_DIST, WANDER_GOAL_THRESH, "Follow")
 		return
