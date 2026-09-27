@@ -1,5 +1,3 @@
--- survey finds a location inside a 3000 scan radius, goes to it, and stays for 5 seconds
-
 local SURVEY_SPEED = 600
 local SURVEY_ACCEL = 600
 local SURVEY_GOAL_THRESH = 120

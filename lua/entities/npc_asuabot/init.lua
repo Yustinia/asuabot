@@ -36,7 +36,7 @@ include("entities/npc_asuabot/behavior/player/stealth/shadow.lua")
 include("entities/npc_asuabot/behavior/player/stealth/stalk.lua")
 
 -- player bucket
--- include("entities/npc_asuabot/behavior/player/aggression.lua")
+include("entities/npc_asuabot/behavior/player/aggression.lua")
 
 include("entities/npc_asuabot/behavior/psychological/deception/decoy.lua")
 include("entities/npc_asuabot/behavior/psychological/deception/fakeretreat.lua")
