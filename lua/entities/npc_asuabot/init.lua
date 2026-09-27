@@ -6,6 +6,7 @@ include("entities/npc_asuabot/behavior/navigation/exploration/survey.lua")
 include("entities/npc_asuabot/behavior/navigation/movement/drift.lua")
 include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
 
+-- navigation bucket
 include("entities/npc_asuabot/behavior/navigation/bucket.lua")
 
 include("entities/npc_asuabot/behavior/player/aggression/ambush.lua")
@@ -32,6 +33,9 @@ include("entities/npc_asuabot/behavior/player/stealth/hide.lua")
 include("entities/npc_asuabot/behavior/player/stealth/peek.lua")
 include("entities/npc_asuabot/behavior/player/stealth/shadow.lua")
 include("entities/npc_asuabot/behavior/player/stealth/stalk.lua")
+
+-- player bucket
+include("entities/npc_asuabot/behavior/player/bucket.lua")
 
 include("entities/npc_asuabot/behavior/psychological/deception/decoy.lua")
 include("entities/npc_asuabot/behavior/psychological/deception/fakeretreat.lua")

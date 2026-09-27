@@ -1,3 +1,5 @@
+-- drift finds a location inside an 800 scan radius
+
 local DRIFT_SPD = 200
 local DRIFT_ACCEL = 300
 local DRIFT_GOAL_THRESH = 120

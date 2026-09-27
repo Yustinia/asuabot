@@ -1,6 +1,10 @@
 local NAVIGATION_MIN_DIST = 4000
 
-ENT.BucketStates.Navigation = { "Wander", "Drift", "Survey" }
+ENT.BucketStates.Navigation = {
+	"Wander",
+	"Drift",
+	"Survey",
+}
 
 ENT.UtilityBuckets.Navigation = function(self, ctx, trace)
 	local far = Consider(ctx.Distance, 0, NAVIGATION_MIN_DIST, function(x)

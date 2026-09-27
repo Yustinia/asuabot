@@ -1,3 +1,5 @@
+-- wander finds a location outside of the 2000 scan radius
+
 local WANDER_SPD = 500
 local WANDER_ACCEL = 500
 local WANDER_GOAL_THRESH = 120
