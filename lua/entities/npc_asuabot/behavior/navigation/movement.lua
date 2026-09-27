@@ -3,7 +3,6 @@ local NAVIGATION_MIN_DIST = 4000
 ENT.BucketStates.Navigation = {
 	"Wander",
 	"Drift",
-	"Survey",
 }
 
 ENT.UtilityBuckets.Navigation = function(self, ctx, trace)
