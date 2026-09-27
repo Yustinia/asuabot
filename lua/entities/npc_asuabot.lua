@@ -10,6 +10,11 @@ ENT.StateEnter = {}
 ENT.StateUpdate = {}
 ENT.StateExit = {}
 
+-- bucket transitions
+ENT.BucketEnter = {}
+ENT.BucketUpdate = {}
+ENT.BucketExit = {}
+
 -- state scores
 ENT.UtilityScores = {}
 
@@ -63,6 +68,7 @@ if CLIENT then
 			traces = net.ReadTable(),
 			best = net.ReadString(),
 			cooldown = net.ReadTable(),
+			bucketCooldown = net.ReadTable(),
 			time = CurTime(),
 		}
 	end)
@@ -93,6 +99,20 @@ if CLIENT then
 					TEXT_ALIGN_LEFT
 				)
 				y = y + 16
+
+				local cdUntil = data.bucketCooldown[name]
+				if cdUntil and cdUntil > CurTime() then
+					local remaining = cdUntil - CurTime()
+					draw.SimpleText(
+						"  CD: " .. string.format("%.1f", remaining) .. "s",
+						"DermaDefault",
+						40,
+						y,
+						Color(255, 100, 100),
+						TEXT_ALIGN_LEFT
+					)
+					y = y + 16
+				end
 
 				for key, val in pairs(data.bucketTraces[name] or {}) do
 					draw.SimpleText(
@@ -199,6 +219,12 @@ if SERVER then
 			PreviousState = nil,
 			StateStartTime = 0,
 			CooldownUntil = {},
+
+			CurrentBucket = nil,
+			PreviousBucket = nil,
+			BucketStartTime = 0,
+			BucketCooldownUntil = {},
+
 			CachedNavmesh = navmesh.GetAllNavAreas(),
 
 			Target = nil,
@@ -246,6 +272,22 @@ if SERVER then
 			local ctx = self:SampleContext()
 			local nextState = self:SelectState(ctx)
 
+			if self.GlobalContext.DebugBestBucket ~= self.GlobalContext.CurrentBucket then
+				local onBucketExit = self.BucketExit[self.GlobalContext.CurrentBucket]
+				if onBucketExit then
+					onBucketExit(self)
+				end
+
+				self.GlobalContext.PreviousBucket = self.GlobalContext.CurrentBucket
+				self.GlobalContext.CurrentBucket = self.GlobalContext.DebugBestBucket
+				self.GlobalContext.BucketStartTime = CurTime()
+
+				local onBucketEnter = self.BucketEnter[self.GlobalContext.CurrentBucket]
+				if onBucketEnter then
+					onBucketEnter(self)
+				end
+			end
+
 			if self.GlobalContext.DebugScores and CurTime() - (self.NextDebugSend or 0) > 0.2 then
 				self.NextDebugSend = CurTime()
 
@@ -258,6 +300,7 @@ if SERVER then
 				net.WriteTable(self.GlobalContext.DebugTraces or {})
 				net.WriteString(self.GlobalContext.DebugBest or "")
 				net.WriteTable(self.GlobalContext.DebugCooldown or {})
+				net.WriteTable(self.GlobalContext.DebugBucketCooldown or {})
 				net.Broadcast()
 			end
 

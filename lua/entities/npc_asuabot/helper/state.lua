@@ -27,8 +27,11 @@ function ENT:SampleContext()
 	ctx.LastSeenAge = CurTime() - self.GlobalContext.TargetLastSeenTime
 	-- used for maximum state runtime duration (stamina)
 	ctx.StateTime = CurTime() - self.GlobalContext.StateStartTime
+	-- used for maximum bucket runtime duration (stamina, one layer up)
+	ctx.BucketTime = CurTime() - self.GlobalContext.BucketStartTime
 
 	ctx.CurrentState = self.GlobalContext.CurrentState
+	ctx.CurrentBucket = self.GlobalContext.CurrentBucket
 
 	return ctx
 end
@@ -37,8 +40,17 @@ function ENT:SelectState(ctx)
 	local bucketScores, bucketTraces = {}, {}
 	local bestBucketScore, bestBucketName = -math.huge, nil
 	for name, scoreFunc in pairs(self.UtilityBuckets) do
+		local onCooldown = CurTime() < (self.GlobalContext.BucketCooldownUntil[name] or 0)
+
 		bucketTraces[name] = {}
-		local score = scoreFunc(self, ctx, bucketTraces[name])
+
+		local score
+		if onCooldown then
+			score = 0
+		else
+			score = scoreFunc(self, ctx, bucketTraces[name])
+		end
+
 		bucketScores[name] = score
 
 		if score > bestBucketScore then
@@ -88,6 +100,7 @@ function ENT:SelectState(ctx)
 
 	-- debug timers
 	self.GlobalContext.DebugCooldown = self.GlobalContext.CooldownUntil
+	self.GlobalContext.DebugBucketCooldown = self.GlobalContext.BucketCooldownUntil
 
 	-- persist to use the same state if it's still inside the table
 	if #candidates > 1 and table.HasValue(candidates, self.GlobalContext.CurrentState) then
