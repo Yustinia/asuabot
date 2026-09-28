@@ -27,6 +27,9 @@ ENT.UtilityBuckets = {}
 -- which state belong to which bucket
 ENT.BucketStates = {}
 
+-- state memory
+ENT.StateContext = {}
+
 if CLIENT then
 	local botMaterial = Material("vgui/entities/npc_asuabot")
 
