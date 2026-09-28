@@ -30,12 +30,11 @@ end
 ENT.StateEnter.Survey = function(self)
 	self:HandleSpeed(SURVEY_SPEED, SURVEY_ACCEL)
 
-	self.StateContext.Survey = {
-		TargetPosition = self:FindNearbyNavArea(SURVEY_SCAN_RAD),
-		WaitUntil = 0,
-	}
-
+	self.StateContext.Survey = self.StateContext.Survey or {}
 	local ctxSurvey = self.StateContext.Survey
+	ctxSurvey.TargetPosition = self:FindNearbyNavArea(SURVEY_SCAN_RAD)
+	ctxSurvey.WaitUntil = 0
+
 	self:ComputeRoutingPath(ctxSurvey.TargetPosition, SURVEY_AHEAD_DIST, SURVEY_GOAL_THRESH, "Follow")
 end
 

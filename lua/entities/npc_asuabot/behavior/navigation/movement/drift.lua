@@ -44,11 +44,10 @@ end
 ENT.StateEnter.Drift = function(self)
 	self:HandleSpeed(DRIFT_SPD, DRIFT_ACCEL)
 
-	self.StateContext.Drift = {
-		TargetPosition = self:FindNearbyNavArea(DRIFT_SCAN_RAD),
-	}
-
+	self.StateContext.Drift = self.StateContext.Drift or {}
 	local ctxDrift = self.StateContext.Drift
+	ctxDrift.TargetPosition = self:FindNearbyNavArea(DRIFT_SCAN_RAD)
+
 	self:ComputeRoutingPath(ctxDrift.TargetPosition, DRIFT_AHEAD_DIST, DRIFT_GOAL_THRESH, "Follow")
 end
 

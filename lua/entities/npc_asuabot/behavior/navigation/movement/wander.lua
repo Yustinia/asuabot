@@ -44,11 +44,10 @@ end
 ENT.StateEnter.Wander = function(self)
 	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
 
-	self.StateContext.Wander = {
-		TargetPosition = self:FindDistantNavArea(WANDER_SCAN_RAD),
-	}
-
+	self.StateContext.Wander = self.StateContext.Wander or {}
 	local ctxWander = self.StateContext.Wander
+	ctxWander.TargetPosition = self:FindDistantNavArea(WANDER_SCAN_RAD)
+
 	self:ComputeRoutingPath(ctxWander.TargetPosition, WANDER_AHEAD_DIST, WANDER_GOAL_THRESH, "Follow")
 end
 
