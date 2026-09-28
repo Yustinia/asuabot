@@ -44,9 +44,6 @@ end
 ENT.StateEnter.Wander = function(self)
 	self:HandleSpeed(WANDER_SPD, WANDER_ACCEL)
 
-	self.GlobalContext.ProgressPosition = self:GetPos()
-	self.GlobalContext.ProgressTime = CurTime()
-
 	self.StateContext.Wander = {
 		TargetPosition = self:FindDistantNavArea(WANDER_SCAN_RAD),
 	}

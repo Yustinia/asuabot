@@ -317,6 +317,10 @@ if SERVER then
 				self.GlobalContext.CurrentState = nextState
 				self.GlobalContext.StateStartTime = CurTime()
 
+				-- reset stuck baseline for all state enter
+				self.GlobalContext.ProgressPosition = self:GetPos()
+				self.GlobalContext.ProgressTime = CurTime()
+
 				local onEnter = self.StateEnter[self.GlobalContext.CurrentState]
 				if onEnter then
 					onEnter(self)

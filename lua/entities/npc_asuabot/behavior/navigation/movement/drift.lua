@@ -44,9 +44,6 @@ end
 ENT.StateEnter.Drift = function(self)
 	self:HandleSpeed(DRIFT_SPD, DRIFT_ACCEL)
 
-	self.GlobalContext.ProgressPosition = self:GetPos()
-	self.GlobalContext.ProgressTime = CurTime()
-
 	self.StateContext.Drift = {
 		TargetPosition = self:FindNearbyNavArea(DRIFT_SCAN_RAD),
 	}

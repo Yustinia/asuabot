@@ -30,9 +30,6 @@ end
 ENT.StateEnter.Survey = function(self)
 	self:HandleSpeed(SURVEY_SPEED, SURVEY_ACCEL)
 
-	self.GlobalContext.ProgressPosition = self:GetPos()
-	self.GlobalContext.ProgressTime = CurTime()
-
 	self.StateContext.Survey = {
 		TargetPosition = self:FindNearbyNavArea(SURVEY_SCAN_RAD),
 		WaitUntil = 0,
