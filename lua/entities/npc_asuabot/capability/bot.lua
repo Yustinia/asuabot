@@ -1,8 +1,15 @@
 function ENT:Teleport(vectorPos)
 	self:SetPos(vectorPos)
 end
--- function ENT:PlaySound() end
--- function ENT:SetCollisionState() end
+
+--- Plays a sound from the bot's own position.
+-- @param soundPath string: sound file path
+-- @param volume number|nil: 0-1, defaults to engine default if omitted
+-- @param pitch number|nil: 0-255, defaults to 100 if omitted
+-- @return nil
+function ENT:PlaySound(soundPath, volume, pitch)
+	self:EmitSound(soundPath, volume and (volume * 100) or 75, pitch or 100)
+end
 
 function ENT:SetAccel(accel)
 	self.loco:SetAcceleration(accel)

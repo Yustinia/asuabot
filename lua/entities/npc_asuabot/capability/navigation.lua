@@ -56,7 +56,28 @@ function ENT:FindNearbyNavArea(scanRadius)
 
 	return candidateNavs[math.random(#candidateNavs)]:GetRandomPoint()
 end
+
+--- Returns the nav areas directly connected to the given area.
+-- Thin wrapper, kept for naming consistency with the rest of the capability list.
+-- @param area CNavArea
+-- @return table: list of adjacent CNavArea objects
+function ENT:GetNavAreaConnections(area)
+	if not IsValid(area) then
+		return {}
+	end
+	return area:GetAdjacentAreas()
+end
+
+--- Returns a nav area's flat footprint size (width * length).
+-- Useful for distinguishing large open rooms from small/narrow areas (chokepoints, hallways).
+-- @param area CNavArea
+-- @return number
+function ENT:GetNavAreaSize(area)
+	if not IsValid(area) then
+		return 0
+	end
+	return area:GetSizeX() * area:GetSizeY()
+end
+
 -- function ENT:FindNavAreaByCondition() end
 -- function ENT:CheckNavReachability() end
--- function ENT:GetNavAreaConnections() end
--- function ENT:GetNavAreaSize() end

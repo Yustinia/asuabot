@@ -15,7 +15,23 @@ function ENT:FindNearestPlayer()
 
 	return closest
 end
--- function ENT:FindPlayersInRad() end
+
+--- Finds all players within a given radius of a position.
+-- @param pos Vector: center point
+-- @param radius number: search radius
+-- @return table: list of Player entities within range
+function ENT:FindPlayersInRad(pos, radius)
+	local found = {}
+
+	for _, ply in ipairs(player.GetAll()) do
+		if IsValid(ply) and ply:Alive() and ply:GetPos():Distance(pos) <= radius then
+			table.insert(found, ply)
+		end
+	end
+
+	return found
+end
+
 -- function ENT:FindPlayerByCondition() end
 -- function ENT:GetPlayerLastKnownPos() end
 -- function ENT:GetPlayerNavArea() end

@@ -1,8 +1,27 @@
 -- function ENT:FindAlternativePath() end
 -- function ENT:ComparePaths() end
--- function ENT:GetPathLength() end
 -- function ENT:GetPathCost() end
--- function ENT:EstimateTravelTime() end
+
+--- Rough estimate of how long a path will take to traverse at a given speed.
+-- @param path PathFollower
+-- @param speed number: units per second
+-- @return number: estimated seconds, or math.huge if speed is 0 or invalid
+function ENT:EstimateTravelTime(path, speed)
+	if not speed or speed <= 0 then
+		return math.huge
+	end
+	return self:GetPathLength(path) / speed
+end
+
+--- Returns the total length of a path, in world units.
+-- @param path PathFollower
+-- @return number
+function ENT:GetPathLength(path)
+	if not path or not path:IsValid() then
+		return 0
+	end
+	return path:GetLength()
+end
 
 local UNSTUCK_LIFT = Vector(0, 0, 10)
 local UNSTUCK_DIST = 40
