@@ -11,9 +11,7 @@ ENT.UtilityBuckets.Aggression = function(self, ctx, trace)
 	end
 
 	local bucketTime = (ctx.CurrentBucket == "Aggression") and ctx.BucketTime or 0
-	local stamina = Consider(bucketTime, 0, AGGRESSION_LIFETIME_DUR, function(x)
-		return Curves.PowerInverseIn(x, 3)
-	end)
+	local stamina = Consider(bucketTime, 0, AGGRESSION_LIFETIME_DUR, Curves.LinearInverse)
 
 	local close = Consider(ctx.Distance, 0, 2000, function(x)
 		return Curves.PowerInverseIn(x, 3)
