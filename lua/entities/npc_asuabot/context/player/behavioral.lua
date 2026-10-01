@@ -1,6 +1,0 @@
--- function ENT:IsPlayerApproaching()
--- function ENT:IsPlayerFleeing()
--- function ENT:IsPlayerCirclingBot()
--- function ENT:IsPlayerStationary()
--- function ENT:IsPlayerCamping()
--- function ENT:IsPlayerSearching()

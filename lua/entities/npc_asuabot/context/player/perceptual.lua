@@ -1,14 +1,5 @@
--- function ENT:IsPlayerAimingAtBot()
--- function ENT:IsPlayerLookingTowardBotLastPosition()
--- function ENT:GetPlayerViewTurnRate()
--- function ENT:IsPlayerCameraErratic()
-
 function ENT:GetPlayerViewDirection(target)
 	return target:EyeAngles():Forward()
-end
-
-function ENT:IsPlayerUsingFlashlight(target)
-	return target:FlashlightIsOn()
 end
 
 function ENT:CanBotSeeTarget(target)

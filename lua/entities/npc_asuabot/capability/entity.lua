@@ -1,6 +1,3 @@
--- function ENT:GetEntityPos() end
--- function ENT:GetEntityBounds() end
-
 --- Finds all entities of a given class.
 -- @param class string
 -- @return table

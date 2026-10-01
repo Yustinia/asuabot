@@ -52,3 +52,7 @@ function ENT:IsPlayerHoldingRanged(target)
 
 	return false
 end
+
+function ENT:IsPlayerUsingFlashlight(target)
+	return target:FlashlightIsOn()
+end
