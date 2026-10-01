@@ -1,5 +1,0 @@
--- function ENT:EvaluatePosition() end
--- function ENT:EvaluateRoute() end
--- function ENT:EvaluateAccessbility() end
--- function ENT:EvaluateExposure() end
--- function ENT:CompareLocations() end

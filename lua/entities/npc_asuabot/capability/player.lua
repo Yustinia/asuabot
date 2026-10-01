@@ -31,8 +31,3 @@ function ENT:FindPlayersInRad(pos, radius)
 
 	return found
 end
-
--- function ENT:FindPlayerByCondition() end
--- function ENT:GetPlayerLastKnownPos() end
--- function ENT:GetPlayerNavArea() end
--- function ENT:SelectPlayerCandid() end

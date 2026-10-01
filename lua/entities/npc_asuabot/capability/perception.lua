@@ -31,5 +31,37 @@ function ENT:CheckFOV(viewerPos, viewerForward, targetPos, fovAngle)
 	return dot >= fovCos
 end
 
--- function ENT:FindVisibleEntities() end
--- function ENT:FindVisiblePlayers() end
+--- Finds all entities of a given class currently visible to the bot.
+-- @param class string
+-- @param maxDist number
+-- @return table
+function ENT:FindVisibleEntities(class, maxDist)
+	local visible = {}
+
+	for _, ent in ipairs(ents.FindByClass(class)) do
+		if IsValid(ent) and ent:GetPos():Distance(self:GetPos()) <= maxDist then
+			if self:CheckLOS(self:GetPos(), ent:GetPos()) then
+				table.insert(visible, ent)
+			end
+		end
+	end
+
+	return visible
+end
+
+--- Finds all players currently visible to the bot.
+-- @param maxDist number
+-- @return table
+function ENT:FindVisiblePlayers(maxDist)
+	local visible = {}
+
+	for _, ply in ipairs(player.GetAll()) do
+		if IsValid(ply) and ply:Alive() and ply:GetPos():Distance(self:GetPos()) <= maxDist then
+			if self:IsTargetVisibleFromBot(ply) then
+				table.insert(visible, ply)
+			end
+		end
+	end
+
+	return visible
+end

@@ -1,10 +1,3 @@
--- function ENT:OpenEntity() end
--- function ENT:CloseEntity() end
--- function ENT:UseEntity() end
--- function ENT:PickUpEntity() end
--- function ENT:DropEntity() end
--- function ENT:GetInteractionResult() end
-
 local PushCD, PullCD, DamageCD = 0.5, 0.5, 0.5
 
 function ENT:PushEntity(target, force)

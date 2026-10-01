@@ -1,3 +1,0 @@
--- function ENT:MoveToPosition() end
--- function ENT:MoveAlongPath() end
--- function ENT:AdjustPosition() end

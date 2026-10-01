@@ -78,6 +78,3 @@ function ENT:GetNavAreaSize(area)
 	end
 	return area:GetSizeX() * area:GetSizeY()
 end
-
--- function ENT:FindNavAreaByCondition() end
--- function ENT:CheckNavReachability() end

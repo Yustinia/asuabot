@@ -1,5 +1,0 @@
--- function ENT:RememberPosition() end
--- function ENT:RememberEntity() end
--- function ENT:FindMemory() end
--- function ENT:UpdateMemory() end
--- function ENT:ForgetMemory() end

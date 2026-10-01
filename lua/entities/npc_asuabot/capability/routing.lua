@@ -1,7 +1,3 @@
--- function ENT:FindAlternativePath() end
--- function ENT:ComparePaths() end
--- function ENT:GetPathCost() end
-
 --- Rough estimate of how long a path will take to traverse at a given speed.
 -- @param path PathFollower
 -- @param speed number: units per second
