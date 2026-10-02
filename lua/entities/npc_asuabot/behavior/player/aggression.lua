@@ -3,6 +3,7 @@ local AGGRESSION_COOLDOWN_DUR = 120
 
 ENT.BucketStates.Aggression = {
 	"Chase",
+	"Rush",
 }
 
 ENT.UtilityBuckets.Aggression = function(self, ctx, trace)
