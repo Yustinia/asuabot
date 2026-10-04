@@ -213,7 +213,7 @@ if SERVER then
 
 		-- NextBot ability
 		self.loco:SetStepHeight(40)
-		self.loco:SetJumpHeight(60)
+		self.loco:SetJumpHeight(30)
 		self.loco:SetDeathDropHeight(800)
 		self.loco:SetJumpGapsAllowed(true)
 

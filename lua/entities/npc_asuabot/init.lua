@@ -1,3 +1,18 @@
+-- buckets
+include("entities/npc_asuabot/behavior/navigation/movement.lua")
+-- include("entities/npc_asuabot/behavior/navigation/exploration.lua")
+
+-- include("entities/npc_asuabot/behavior/player/aggression.lua")
+-- include("entities/npc_asuabot/behavior/player/evasion.lua")
+-- include("entities/npc_asuabot/behavior/player/pressure.lua")
+-- include("entities/npc_asuabot/behavior/player/search.lua")
+-- include("entities/npc_asuabot/behavior/player/stealth.lua")
+
+-- include("entities/npc_asuabot/behavior/psychological/deception.lua")
+-- include("entities/npc_asuabot/behavior/psychological/intimidation.lua")
+
+-- include("entities/npc_asuabot/behavior/spatial/control.lua")
+
 -- behavior
 include("entities/npc_asuabot/behavior/navigation/exploration/perimeter.lua")
 include("entities/npc_asuabot/behavior/navigation/exploration/scout.lua")
@@ -5,10 +20,6 @@ include("entities/npc_asuabot/behavior/navigation/exploration/survey.lua")
 
 include("entities/npc_asuabot/behavior/navigation/movement/drift.lua")
 include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
-
--- navigation bucket
-include("entities/npc_asuabot/behavior/navigation/movement.lua")
-include("entities/npc_asuabot/behavior/navigation/exploration.lua")
 
 include("entities/npc_asuabot/behavior/player/aggression/ambush.lua")
 include("entities/npc_asuabot/behavior/player/aggression/blink.lua")
@@ -35,12 +46,7 @@ include("entities/npc_asuabot/behavior/player/stealth/peek.lua")
 include("entities/npc_asuabot/behavior/player/stealth/shadow.lua")
 include("entities/npc_asuabot/behavior/player/stealth/stalk.lua")
 
--- player bucket
-include("entities/npc_asuabot/behavior/player/aggression.lua")
--- include("entities/npc_asuabot/behavior/player/evasion.lua")
--- include("entities/npc_asuabot/behavior/player/pressure.lua")
--- include("entities/npc_asuabot/behavior/player/search.lua")
--- include("entities/npc_asuabot/behavior/player/stealth.lua")
+-- psyschological
 
 include("entities/npc_asuabot/behavior/psychological/deception/decoy.lua")
 include("entities/npc_asuabot/behavior/psychological/deception/fakeretreat.lua")
@@ -49,15 +55,8 @@ include("entities/npc_asuabot/behavior/psychological/intimidation/circling.lua")
 include("entities/npc_asuabot/behavior/psychological/intimidation/mirror.lua")
 include("entities/npc_asuabot/behavior/psychological/intimidation/stare.lua")
 
--- psychological bucket
--- include("entities/npc_asuabot/behavior/psychological/deception.lua")
--- include("entities/npc_asuabot/behavior/psychological/intimidation.lua")
-
 include("entities/npc_asuabot/behavior/spatial/control/chokehold.lua")
 include("entities/npc_asuabot/behavior/spatial/control/corner.lua")
-
--- spatial bucket
--- include("entities/npc_asuabot/behavior/spatial/control.lua")
 
 --capability
 include("entities/npc_asuabot/capability/bot.lua")
