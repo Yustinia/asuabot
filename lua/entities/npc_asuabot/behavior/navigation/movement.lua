@@ -6,6 +6,10 @@ ENT.BucketStates.Navigation = {
 }
 
 ENT.UtilityBuckets.Navigation = function(self, ctx, trace)
+	if self.GlobalContext.PreviousBucket == "Navigation" then
+		return 0.0
+	end
+
 	local far = Consider(ctx.Distance, 0, NAVIGATION_MIN_DIST, function(x)
 		return Curves.PowerOut(x, 4)
 	end)
