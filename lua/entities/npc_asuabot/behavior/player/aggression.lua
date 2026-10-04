@@ -7,6 +7,10 @@ ENT.BucketStates.Aggression = {
 }
 
 ENT.UtilityBuckets.Aggression = function(self, ctx, trace)
+	if not ctx.TargetValid then
+		return 0.0
+	end
+
 	if self.GlobalContext.PreviousBucket == "Aggression" then
 		return 0.0
 	end

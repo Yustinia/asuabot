@@ -1,7 +1,7 @@
 local CHASE_SPD = 800
 local CHASE_ACCEL = 800
 local CHASE_GOAL_THRESH = 0
-local CHASE_AHEAD_DIST = 140
+local CHASE_AHEAD_DIST = 200
 local CHASE_DMG = 20
 local CHASE_PATH_AGE = 0.1
 local CHASE_LOST_TARGET_DUR = 5
@@ -9,10 +9,6 @@ local CHASE_LIFETIME_DUR = 12
 local CHASE_COOLDOWN_DUR = 30
 
 ENT.UtilityScores.Chase = function(self, ctx, trace)
-	if not ctx.TargetValid then
-		return 0.0
-	end
-
 	local distance = Consider(ctx.Distance, 0, 2000, Curves.LinearInverse)
 
 	local memory = Consider(ctx.LastSeenAge, 0, CHASE_LOST_TARGET_DUR, function(x)

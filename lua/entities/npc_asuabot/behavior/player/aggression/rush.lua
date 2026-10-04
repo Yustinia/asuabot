@@ -1,17 +1,13 @@
 local RUSH_SPD = 2000
 local RUSH_ACCEL = 2000
 local RUSH_GOAL_THRESH = 0
-local RUSH_AHEAD_DIST = 0
+local RUSH_AHEAD_DIST = 100
 local RUSH_DMG = 20
 local RUSH_PATH_AGE = 0.1
 local RUSH_LIFETIME_DUR = 10
 local RUSH_COOLDOWN_DUR = 30
 
 ENT.UtilityScores.Rush = function(self, ctx, trace)
-	if not ctx.TargetValid then
-		return 0.0
-	end
-
 	local distance = Consider(ctx.Distance, 0, 4000, Curves.LinearInverse)
 
 	local rushTime = (ctx.CurrentState == "Rush") and ctx.StateTime or 0
