@@ -50,7 +50,6 @@ ENT.StateUpdate.Chase = function(self, ctx)
 	if ctx.Touching then
 		self:DamageEntity(ctx.Target, CHASE_DMG)
 		self:PunchEntity(ctx.Target)
-		return
 	end
 
 	self:RefreshPathIfStale(CHASE_PATH_AGE, ctx.Target, "Chase")

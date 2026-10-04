@@ -43,7 +43,6 @@ ENT.StateUpdate.Rush = function(self, ctx)
 	if ctx.Touching then
 		self:DamageEntity(ctx.Target, RUSH_DMG)
 		self:PunchEntity(ctx.Target)
-		return
 	end
 
 	self:RefreshPathIfStale(RUSH_PATH_AGE, ctx.Target, "Chase")
