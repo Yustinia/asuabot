@@ -4,6 +4,20 @@ local function Clamp01(x)
 	return math.Clamp(x, 0, 1)
 end
 
+function Curves.Bell(x, w)
+	x = Clamp01(x)
+	w = w or 1
+
+	return math.exp(-((x - 0.5) ^ 2) / (2 * (w ^ 2)))
+end
+
+function Curves.SmoothStep(x, k)
+	x = Clamp01(x)
+	k = k or 2
+
+	return (x ^ k) / (x ^ k + ((1 - x) ^ k))
+end
+
 --- Starts slow and speeds up as it goes (like pressing harder on the gas pedal).
 -- Keeps the input value between 0 and 1, then multiplies it by itself 'k' times.
 -- @param x number: The current progress or input value (usually from 0 to 1).
