@@ -167,7 +167,9 @@ function ENT:ComputeRoutingPath(target, minLookAheadDist, goalTolerance, mode)
 	return false
 end
 
-function ENT:RefreshPathIfStale(maxAge, target, mode)
+function ENT:RefreshPathIfStale(target, mode, maxAge)
+	maxAge = maxAge or 0.1
+
 	if self.GlobalContext.Path:GetAge() < maxAge then
 		return
 	end

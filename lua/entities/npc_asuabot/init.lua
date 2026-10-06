@@ -1,3 +1,5 @@
+include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
+
 -- capability
 include("entities/npc_asuabot/capability/bot.lua")
 include("entities/npc_asuabot/capability/entity.lua")

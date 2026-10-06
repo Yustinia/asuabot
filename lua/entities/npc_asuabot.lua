@@ -5,6 +5,14 @@ ENT.PrintName = "Asuabot"
 ENT.Category = "Nextbot"
 ENT.Spawnable = true
 
+ENT.StateEnter = {}
+ENT.StateUpdate = {}
+ENT.StateExit = {}
+ENT.StateRules = {}
+ENT.StateContext = {}
+
+ENT.UtilityScores = {}
+
 if CLIENT then
 	local botMaterial = Material("vgui/entities/npc_asuabot")
 
@@ -76,11 +84,33 @@ if SERVER then
 			ProgressPosition = nil,
 			ProgressTime = 0,
 		}
+
+		self.StateContext = {}
 	end
 
 	-- Nextbot loop
 	function ENT:RunBehaviour()
 		while true do
+			local ctx = self:SampleContext()
+			local glb = self.GlobalContext
+
+			if not glb.CurrentState then
+				self:SwitchState("Wander")
+			elseif not self:IsLocked() then
+				local nextState = self:SelectState(ctx)
+
+				if nextState ~= glb.CurrentState then
+					self:SwitchState(nextState)
+				end
+			end
+
+			local update = self.StateUpdate[glb.CurrentState]
+			if update then
+				update(self, ctx)
+			end
+
+			glb.Path:Draw()
+
 			coroutine.yield()
 		end
 	end
