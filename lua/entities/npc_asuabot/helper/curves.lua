@@ -13,7 +13,7 @@ function Curves.PowerIn(x, k)
 	x = Clamp01(x)
 	k = k or 2
 
-	return math.pow(x, k)
+	return x ^ k
 end
 
 --- Starts high and curves down to zero, dropping faster as it goes (the opposite of PowerIn).
@@ -25,7 +25,7 @@ function Curves.PowerInverseIn(x, k)
 	x = Clamp01(x)
 	k = k or 2
 
-	return 1 - math.pow(x, k)
+	return 1 - (x ^ k)
 end
 
 --- Starts at 1 and drops quickly at first, then slows down as it reaches 0.
@@ -37,7 +37,7 @@ function Curves.PowerInverseOut(x, k)
 	x = Clamp01(x)
 	k = k or 2
 
-	return math.pow((1 - x), k)
+	return (1 - x) ^ k
 end
 
 --- Starts fast and slows down to a gentle stop (like hitting the brakes on a car).
@@ -49,7 +49,7 @@ function Curves.PowerOut(x, k)
 	x = Clamp01(x)
 	k = k or 2
 
-	return 1 - math.pow((1 - x), k)
+	return 1 - ((1 - x) ^ k)
 end
 
 --- Moves at a constant, steady speed from start to finish with no acceleration or slowdown.
