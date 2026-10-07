@@ -85,6 +85,22 @@ if CLIENT then
 			y = y + 16
 		end
 	end)
+
+	-- npc_asuabot.lua, inside `if CLIENT then`
+	hook.Add("PopulateToolMenu", "AsuabotOptionsMenu", function()
+		spawnmenu.AddToolMenuOption(
+			"Options",
+			"Asuabot",
+			"AsuabotControlPanel",
+			"Control Panel",
+			"",
+			"",
+			function(panel)
+				panel:ClearControls()
+				panel:CheckBox("Show Debug HUD", "asuabot_debug_hud")
+			end
+		)
+	end)
 end
 
 if SERVER then
@@ -183,7 +199,9 @@ if SERVER then
 				update(self, ctx)
 			end
 
-			glb.Path:Draw()
+			if GetConVar("asuabot_debug_hud"):GetBool() then
+				glb.Path:Draw()
+			end
 
 			coroutine.yield()
 		end
