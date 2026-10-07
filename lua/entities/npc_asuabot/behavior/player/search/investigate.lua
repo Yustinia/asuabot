@@ -49,6 +49,8 @@ ENT.StateUpdate.Investigate = function(self, ctx)
 
 	if sc.Arrived then
 		if CurTime() >= sc.WaitUntil then
+			self.GlobalContext.SweepOrigin = sc.Goal
+
 			sc.Done = true
 		end
 		return
