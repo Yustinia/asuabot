@@ -1,12 +1,12 @@
 -- behavior/navigation/movement/drift.lua
 local SPEED = 200
 local ACCEL = 300
-local SCAN_RADIUS = 800
+local SCAN_RADIUS = 1200
 local MIN_LOOK_AHEAD = 150
 local GOAL_THRESH = 120
 
 ENT.StateRules.Drift = {
-	min = 5,
+	min = 10,
 	max = 30,
 	cd = 20,
 }
