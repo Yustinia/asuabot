@@ -1,5 +1,5 @@
-local SPEED = 800
-local ACCEL = 800
+local SPEED = 1200
+local ACCEL = 1000
 local MIN_LOOK_AHEAD = 200
 local GOAL_THRESH = 0
 local DAMAGE = 20
