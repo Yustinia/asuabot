@@ -65,6 +65,10 @@ function ENT:IsLocked(ctx)
 		return false
 	end
 
+	if self.StateContext.Done then
+		return false
+	end
+
 	if rules.needsTarget and not ctx.TargetValid then
 		return false
 	end
@@ -89,7 +93,7 @@ function ENT:ScoreStates(ctx)
 	local scores, traces, best = {}, {}, 0
 	for name, scoreFn in pairs(self.UtilityScores) do
 		local onCD = CurTime() < (glb.CooldownUntil[name] or 0)
-		local blocked = exp and name == glb.CurrentState
+		local blocked = (exp or self.StateContext.Done) and name == glb.CurrentState
 
 		traces[name] = {}
 		scores[name] = 0
@@ -163,6 +167,7 @@ function ENT:SwitchState(name)
 	glb.PreviousState, glb.CurrentState, glb.StateStartTime = old, name, CurTime()
 
 	self.StateContext.InSequence = false
+	self.StateContext.Done = false
 	if self.StateEnter[name] then
 		self.StateEnter[name](self)
 	end

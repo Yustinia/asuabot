@@ -56,6 +56,8 @@ ENT.StateUpdate.Ambush = function(self, ctx)
 	if ctx.Touching then
 		self:DamageEntity(ctx.Target, DAMAGE)
 		self:PunchEntity(ctx.Target)
+		self.StateContext.Done = true
+		return
 	end
 
 	self:RefreshPathIfStale(ctx.Target, "Chase")
