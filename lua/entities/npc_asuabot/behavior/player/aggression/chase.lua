@@ -7,8 +7,8 @@ local SIGHT_RANGE = 2000
 local MEMORY_DUR = 5
 
 ENT.StateRules.Chase = {
-	min = 8,
-	max = 16,
+	min = 14,
+	max = 20,
 	cd = 75,
 	needsTarget = true,
 }

@@ -7,7 +7,7 @@ local TRIGGER_MIN = 800
 local TRIGGER_MAX = 2500
 
 ENT.StateRules.Charge = {
-	min = 6,
+	min = 18,
 	max = 25,
 	cd = 60,
 	needsTarget = true,

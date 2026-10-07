@@ -8,7 +8,7 @@ local WAIT_DUR = 3
 local LEAP_TIMEOUT = 2
 
 ENT.StateRules.Pounce = {
-	min = 6,
+	min = 14,
 	max = 20,
 	cd = 80,
 	needsTarget = true,

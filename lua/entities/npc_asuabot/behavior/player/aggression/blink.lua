@@ -6,8 +6,8 @@ local DAMAGE = 20
 local TRIGGER_RANGE = 2500
 
 ENT.StateRules.Blink = {
-	min = 8,
-	max = 30,
+	min = 20,
+	max = 45,
 	cd = 100,
 	needsTarget = true,
 }

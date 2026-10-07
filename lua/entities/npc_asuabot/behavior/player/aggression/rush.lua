@@ -7,8 +7,8 @@ local SIGHT_RANGE = 1500
 local MEMORY_DUR = 5
 
 ENT.StateRules.Rush = {
-	min = 8,
-	max = 12,
+	min = 10,
+	max = 18,
 	cd = 80,
 	needsTarget = true,
 }
