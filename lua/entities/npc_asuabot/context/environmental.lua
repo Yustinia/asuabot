@@ -23,7 +23,7 @@ end
 
 function ENT:IsPlayerCornered(target, checkDist, blockedThreshold)
 	checkDist = checkDist or 200
-	blockedThreshold = blockedThreshold or 5
+	blockedThreshold = blockedThreshold or 6
 
 	local pos = target:GetPos() + Vector(0, 0, 32)
 	local directions = 8
