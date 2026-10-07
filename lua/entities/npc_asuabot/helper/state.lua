@@ -54,6 +54,19 @@ function ENT:SampleContext()
 	c.StateTime = CurTime() - g.StateStartTime
 	c.CurrentState = g.CurrentState
 
+	-- player stillness
+	local ang = c.Target:EyeAngles()
+	local last = g.LastEyeAngles or ang
+	c.CameraDelta = math.abs(math.AngleDifference(ang.p, last.p)) + math.abs(math.AngleDifference(ang.y, last.y))
+	g.LastEyeAngles = ang
+	c.PlayerStill = c.Target:GetVelocity():Length() < 5 and c.CameraDelta < 0.1
+	if c.PlayerStill then
+		g.StillSince = g.StillSince or CurTime()
+	else
+		g.StillSince = nil
+	end
+	c.StillFor = g.StillSince and (CurTime() - g.StillSince) or 0
+
 	return c
 end
 

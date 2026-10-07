@@ -13,6 +13,7 @@ include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
 -- include("entities/npc_asuabot/behavior/player/search/sweep.lua")
 -- include("entities/npc_asuabot/behavior/menace/intimidation/apparition.lua")
 -- include("entities/npc_asuabot/behavior/menace/intimidation/stare.lua")
+-- include("entities/npc_asuabot/behavior/player/pressure/loom.lua")
 
 -- capability
 include("entities/npc_asuabot/capability/bot.lua")
