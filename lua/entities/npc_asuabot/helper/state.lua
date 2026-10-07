@@ -18,7 +18,7 @@ function WeightedGeoMean(entries)
 	return math.exp(acc / sumW)
 end
 
-local STATE_MARGIN = 0.8
+local STATE_MARGIN = 0.12
 
 function ENT:SampleContext()
 	local g, c = self.GlobalContext, {}
@@ -125,7 +125,7 @@ end
 function ENT:SelectState(scores, best)
 	local candidates = {}
 	for name, s in pairs(scores) do
-		if s > 0 and s >= best * STATE_MARGIN then
+		if s > 0 and s >= best - STATE_MARGIN then
 			candidates[#candidates + 1] = name
 		end
 	end
