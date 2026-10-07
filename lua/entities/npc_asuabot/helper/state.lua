@@ -57,11 +57,15 @@ function ENT:SampleContext()
 	return c
 end
 
-function ENT:IsLocked()
+function ENT:IsLocked(ctx)
 	local g = self.GlobalContext
 	local rules = self.StateRules[g.CurrentState]
 
 	if not rules then
+		return false
+	end
+
+	if rules.needsTarget and not ctx.TargetValid then
 		return false
 	end
 

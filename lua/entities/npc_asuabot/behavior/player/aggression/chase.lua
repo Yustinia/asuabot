@@ -10,6 +10,7 @@ ENT.StateRules.Chase = {
 	min = 8,
 	max = 16,
 	cd = 75,
+	needsTarget = true,
 }
 
 ENT.UtilityScores.Chase = function(self, ctx)

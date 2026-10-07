@@ -96,7 +96,7 @@ if SERVER then
 
 			if not glb.CurrentState then
 				self:SwitchState("Wander")
-			elseif not self:IsLocked() then
+			elseif not self:IsLocked(ctx) then
 				local nextState = self:SelectState(ctx)
 
 				if nextState ~= glb.CurrentState then
