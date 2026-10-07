@@ -55,12 +55,10 @@ end
 ENT.StateUpdate.Hide = function(self, ctx)
 	local sc = self.StateContext
 
-	-- no hidden spot was found on enter, or already settled: stay put
 	if not sc.Goal or sc.Arrived then
 		return
 	end
 
-	-- arrived: kill speed so it doesn't pace, and stop pathing
 	if self:IsAtPosition(sc.Goal, GOAL_THRESH) then
 		sc.Arrived = true
 		self:HandleSpeed(0, 0)
@@ -70,7 +68,7 @@ ENT.StateUpdate.Hide = function(self, ctx)
 			path:Invalidate()
 		end
 
-		self.GlobalContext.Concealed = true -- setup flag for Ambush later
+		self.GlobalContext.Concealed = true
 		return
 	end
 
