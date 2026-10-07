@@ -19,6 +19,10 @@ function Curves.SmoothStep(x, k)
 	return (x ^ k) / (x ^ k + ((1 - x) ^ k))
 end
 
+function Curves.SmoothStepInverse(x, k)
+	return Curves.SmoothStep(x, 1 / k)
+end
+
 --- Starts slow and speeds up as it goes (like pressing harder on the gas pedal).
 -- Keeps the input value between 0 and 1, then multiplies it by itself 'k' times.
 -- @param x number: The current progress or input value (usually from 0 to 1).
