@@ -16,6 +16,9 @@ end
 
 ENT.StateEnter.Wander = function(self)
 	local goal = self:FindDistantNavArea(SCAN_RADIUS)
+	if not goal then
+		return
+	end
 
 	self.StateContext.Goal = goal
 	self:HandleSpeed(SPEED, ACCEl)

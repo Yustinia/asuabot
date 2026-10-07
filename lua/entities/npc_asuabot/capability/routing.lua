@@ -170,13 +170,18 @@ end
 function ENT:RefreshPathIfStale(target, mode, maxAge)
 	maxAge = maxAge or 0.1
 
-	if self.GlobalContext.Path:GetAge() < maxAge then
+	local path = self.GlobalContext.Path
+	if not path then
+		return
+	end
+
+	if path:GetAge() < maxAge then
 		return
 	end
 
 	if mode == "Follow" then
-		self.GlobalContext.Path:Compute(self, target)
+		path:Compute(self, target)
 	elseif mode == "Chase" then
-		self.GlobalContext.Path:Chase(self, target)
+		path:Chase(self, target)
 	end
 end
