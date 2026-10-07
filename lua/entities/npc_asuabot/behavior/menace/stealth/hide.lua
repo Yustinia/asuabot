@@ -34,8 +34,6 @@ end
 ENT.StateEnter.Hide = function(self)
 	local sc = self.StateContext
 	sc.Goal = nil
-	sc.Arrived = false
-	self.GlobalContext.Concealed = false
 
 	local target = self.GlobalContext.Target
 	if not IsValid(target) then
@@ -55,24 +53,27 @@ end
 ENT.StateUpdate.Hide = function(self, ctx)
 	local sc = self.StateContext
 
-	if not sc.Goal or sc.Arrived then
-		return
-	end
-
-	if self:IsAtPosition(sc.Goal, GOAL_THRESH) then
-		sc.Arrived = true
-		self:HandleSpeed(0, 0)
-
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
-		end
-
-		self.GlobalContext.Concealed = true
+	if not sc.Goal then
 		return
 	end
 
 	local path = self.GlobalContext.Path
+
+	-- reached the hiding spot: teleport away and end
+	if self:IsAtPosition(sc.Goal, GOAL_THRESH) then
+		if path and path:IsValid() then
+			path:Invalidate()
+		end
+
+		local nav = self:FindRandomNavArea()
+		if nav then
+			self:Teleport(nav)
+		end
+
+		sc.Done = true
+		return
+	end
+
 	if not path or not path:IsValid() then
 		self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		return
@@ -85,8 +86,4 @@ ENT.StateUpdate.Hide = function(self, ctx)
 	self:RefreshPathIfStale(sc.Goal, "Follow")
 	path:Update(self)
 	self:ClearObstacles()
-end
-
-ENT.StateExit.Hide = function(self)
-	self.GlobalContext.Concealed = false
 end
