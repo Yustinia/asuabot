@@ -4,7 +4,8 @@ include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
 -- include("entities/npc_asuabot/behavior/menace/stealth/hide.lua")
 -- include("entities/npc_asuabot/behavior/menace/stealth/peek.lua")
 -- include("entities/npc_asuabot/behavior/player/aggression/ambush.lua")
-include("entities/npc_asuabot/behavior/player/aggression/blink.lua")
+-- include("entities/npc_asuabot/behavior/player/aggression/blink.lua")
+include("entities/npc_asuabot/behavior/player/aggression/charge.lua")
 
 -- capability
 include("entities/npc_asuabot/capability/bot.lua")
