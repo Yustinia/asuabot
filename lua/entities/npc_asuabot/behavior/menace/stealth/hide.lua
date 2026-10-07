@@ -78,8 +78,13 @@ ENT.StateUpdate.Hide = function(self, ctx)
 		return
 	end
 
+	if self:HandleStuckCheck() then
+		return
+	end
+
 	self:RefreshPathIfStale(sc.Goal, "Follow")
 	path:Update(self)
+	self:ClearObstacles()
 end
 
 ENT.StateExit.Hide = function(self)
