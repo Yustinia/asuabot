@@ -36,6 +36,77 @@ function ENT:FindPositionWithoutLOS(scanRadius, avoidPos)
 	return candidates[math.random(#candidates)]
 end
 
+--- finds the closest hiding spot relative to the scan radius of the player
+---@param scanRadius any relative to the player
+---@return unknown closestSpot hiding spot closest to the player
+function ENT:FindClosePosWithoutLOS(scanRadius, player)
+	scanRadius = scanRadius or 6000
+
+	local areas = navmesh.Find(player:GetPos(), scanRadius, 20, 50)
+	local targetEye = player:EyePos()
+
+	local closestSpot = nil
+	local closestDist = math.huge
+
+	for _, area in ipairs(areas) do
+		local center = area:GetCenter()
+
+		local tr = util.TraceLine({
+			start = center + Vector(0, 0, 64),
+			endpos = targetEye,
+			mask = MASK_BLOCKLOS,
+		})
+
+		if tr.Hit and tr.Fraction < 1.0 then
+			local dist = center:Distance(player:GetPos())
+
+			if dist < closestDist then
+				closestDist = dist
+				closestSpot = center
+			end
+		end
+	end
+
+	return closestSpot
+end
+
+function ENT:FindPosInRangeWithoutLOS(minDist, maxDist, player)
+	minDist = minDist or 500
+	maxDist = maxDist or 2500
+
+	local areas = navmesh.Find(player:GetPos(), maxDist, 20, 50)
+	local targetEye = player:EyePos()
+	local targetPos = player:GetPos()
+
+	local validSpots = {}
+
+	for i = 1, #areas do
+		local area = areas[i]
+		if IsValid(area) then
+			local center = area:GetCenter()
+			local dist = center:Distance(targetPos)
+
+			if dist >= minDist and dist <= maxDist then
+				local tr = util.TraceLine({
+					start = center + Vector(0, 0, 64),
+					endpos = targetEye,
+					mask = MASK_BLOCKLOS,
+				})
+
+				if tr.Hit and tr.Fraction < 1.0 then
+					table.insert(validSpots, center)
+				end
+			end
+		end
+	end
+
+	if #validSpots > 0 then
+		return validSpots[math.random(#validSpots)]
+	end
+
+	return nil
+end
+
 --- Finds a nearby nav area WITH line of sight to a given position.
 -- Mirror of FindPositionWithoutLOS — same loop, inverted condition.
 -- @param scanRadius number

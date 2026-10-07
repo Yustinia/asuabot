@@ -1,6 +1,6 @@
 local SPEED = 2000
 local ACCEL = 2000
-local SCAN_RADIUS = 800
+local SCAN_RADIUS = 2000
 local MIN_LOOK_AHEAD = 100
 local GOAL_THRESH = 60
 local SIGHT_RANGE = 1500
@@ -42,7 +42,7 @@ ENT.StateEnter.Hide = function(self)
 		return
 	end
 
-	local goal = self:FindPositionWithoutLOS(SCAN_RADIUS, target:GetPos())
+	local goal = self:FindClosePosWithoutLOS(SCAN_RADIUS, target)
 	if not goal then
 		return
 	end
