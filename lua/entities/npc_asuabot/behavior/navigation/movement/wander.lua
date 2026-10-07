@@ -5,9 +5,9 @@ local SPEED = 600
 local ACCEl = 600
 
 ENT.StateRules.Wander = {
-	min = 7,
-	max = 30,
-	cd = 12,
+	min = 40,
+	max = 120,
+	cd = 45,
 }
 
 ENT.UtilityScores.Wander = function(self, ctx)
