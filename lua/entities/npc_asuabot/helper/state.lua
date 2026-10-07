@@ -84,40 +84,64 @@ end
 function ENT:SelectState(ctx)
 	local glb = self.GlobalContext
 	local rules = self.StateRules
-	local exp = false
 	local cur = rules[glb.CurrentState]
+	local exp = cur and cur.max and ctx.StateTime >= cur.max
 
-	if cur and cur.max and ctx.StateTime >= cur.max then
-		exp = true
-	end
-
-	local scores, best = {}, 0
+	local scores, traces, best = {}, {}, 0
 	for name, scoreFn in pairs(self.UtilityScores) do
 		local onCD = CurTime() < (glb.CooldownUntil[name] or 0)
 		local blocked = exp and name == glb.CurrentState
 
-		if not onCD and not blocked then
-			local s = scoreFn(self, ctx)
+		traces[name] = {}
+		scores[name] = 0
 
-			if s > 0 then
-				scores[name] = s
-				best = math.max(best, s)
-			end
+		if not onCD and not blocked then
+			local s = scoreFn(self, ctx, traces[name])
+			scores[name] = s
+			best = math.max(best, s)
 		end
 	end
 
 	local candidates = {}
 	for name, s in pairs(scores) do
-		if s >= best * STATE_MARGIN then
+		if s > 0 and s >= best * STATE_MARGIN then
 			candidates[#candidates + 1] = name
 		end
 	end
+
+	glb.DebugScores = scores
+	glb.DebugTraces = traces
 
 	if #candidates == 0 then
 		return glb.CurrentState
 	end
 
 	return candidates[math.random(#candidates)]
+end
+
+function ENT:SendDebug(ctx, locked)
+	if not GetConVar("asuabot_debug_hud"):GetBool() then
+		return
+	end
+	if CurTime() < (self.NextDebugSend or 0) then
+		return
+	end
+	self.NextDebugSend = CurTime() + 0.2
+
+	local glb = self.GlobalContext
+	local rules = self.StateRules[glb.CurrentState] or {}
+
+	net.Start("AsuabotDebug")
+	net.WriteEntity(self)
+	net.WriteString(glb.CurrentState or "")
+	net.WriteFloat(ctx.StateTime)
+	net.WriteFloat(rules.min or 0)
+	net.WriteFloat(rules.max or 0)
+	net.WriteBool(locked)
+	net.WriteTable(glb.DebugScores or {})
+	net.WriteTable(glb.DebugTraces or {})
+	net.WriteTable(glb.CooldownUntil)
+	net.Broadcast()
 end
 
 function ENT:SwitchState(name)

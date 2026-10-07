@@ -13,6 +13,8 @@ ENT.StateContext = {}
 
 ENT.UtilityScores = {}
 
+CreateConVar("asuabot_debug_hud", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED, "Show Asuabot debug HUD")
+
 if CLIENT then
 	local botMaterial = Material("vgui/entities/npc_asuabot")
 
@@ -20,9 +22,74 @@ if CLIENT then
 		render.SetMaterial(botMaterial)
 		render.DrawSprite(self:GetPos() + Vector(0, 0, 50), 100, 100, color_white)
 	end
+
+	local debugData = {}
+
+	net.Receive("AsuabotDebug", function()
+		local ent = net.ReadEntity()
+		if not IsValid(ent) then
+			return
+		end
+
+		debugData[ent] = {
+			state = net.ReadString(),
+			stateTime = net.ReadFloat(),
+			min = net.ReadFloat(),
+			max = net.ReadFloat(),
+			locked = net.ReadBool(),
+			scores = net.ReadTable(),
+			traces = net.ReadTable(),
+			cooldown = net.ReadTable(),
+			time = CurTime(),
+		}
+	end)
+
+	hook.Add("HUDPaint", "AsuabotHUD", function()
+		if not GetConVar("asuabot_debug_hud"):GetBool() then
+			return
+		end
+
+		local y = 100
+		local function line(text, x, col)
+			draw.SimpleText(text, "DermaDefault", x, y, col or color_white)
+			y = y + 16
+		end
+
+		for ent, d in pairs(debugData) do
+			if not IsValid(ent) or CurTime() - d.time > 1 then
+				debugData[ent] = nil
+				continue
+			end
+
+			line(
+				string.format("STATE: %s  %.1fs  (min %.0f / max %.0f)", d.state, d.stateTime, d.min, d.max),
+				20,
+				Color(255, 220, 80)
+			)
+			line(d.locked and "LOCKED" or "open", 20, d.locked and Color(255, 100, 100) or Color(100, 255, 100))
+
+			for name, score in pairs(d.scores) do
+				local col = (name == d.state) and Color(255, 220, 80) or color_white
+				line(name .. ": " .. string.format("%.2f", score), 30, col)
+
+				local cdUntil = d.cooldown[name]
+				if cdUntil and cdUntil > CurTime() then
+					line("CD: " .. string.format("%.1f", cdUntil - CurTime()) .. "s", 40, Color(255, 100, 100))
+				end
+
+				for key, val in pairs(d.traces[name] or {}) do
+					line(key .. ": " .. string.format("%.2f", val), 40, Color(180, 180, 180))
+				end
+			end
+
+			y = y + 16
+		end
+	end)
 end
 
 if SERVER then
+	util.AddNetworkString("AsuabotDebug")
+
 	include("entities/npc_asuabot/init.lua")
 
 	function ENT:Initialize()
@@ -83,6 +150,10 @@ if SERVER then
 
 			ProgressPosition = nil,
 			ProgressTime = 0,
+
+			-- debug
+			DebugScores = {},
+			DebugTraces = {},
 		}
 
 		self.StateContext = {}
@@ -93,16 +164,19 @@ if SERVER then
 		while true do
 			local ctx = self:SampleContext()
 			local glb = self.GlobalContext
+			local locked = self:IsLocked(ctx)
 
 			if not glb.CurrentState then
 				self:SwitchState("Wander")
-			elseif not self:IsLocked(ctx) then
+			elseif not locked then
 				local nextState = self:SelectState(ctx)
 
 				if nextState ~= glb.CurrentState then
 					self:SwitchState(nextState)
 				end
 			end
+
+			self:SendDebug(ctx, locked)
 
 			local update = self.StateUpdate[glb.CurrentState]
 			if update then

@@ -13,16 +13,20 @@ ENT.StateRules.Chase = {
 	needsTarget = true,
 }
 
-ENT.UtilityScores.Chase = function(self, ctx)
+ENT.UtilityScores.Chase = function(self, ctx, trace)
 	if not ctx.TargetValid then
 		return 0
 	end
 
 	local close = Consider(ctx.Distance, 0, SIGHT_RANGE, Curves.LinearInverse)
-
 	local memory = Consider(ctx.LastSeenAge, 0, MEMORY_DUR, function(x)
 		return Curves.PowerInverseIn(x, 3)
 	end)
+
+	if trace then
+		trace.Close = close
+		trace.Memory = memory
+	end
 
 	return WeightedGeoMean({
 		{ score = close, weight = 1 },
