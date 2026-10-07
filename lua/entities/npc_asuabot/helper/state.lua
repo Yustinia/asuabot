@@ -81,10 +81,9 @@ function ENT:IsLocked(ctx)
 	return false
 end
 
-function ENT:SelectState(ctx)
+function ENT:ScoreStates(ctx)
 	local glb = self.GlobalContext
-	local rules = self.StateRules
-	local cur = rules[glb.CurrentState]
+	local cur = self.StateRules[glb.CurrentState]
 	local exp = cur and cur.max and ctx.StateTime >= cur.max
 
 	local scores, traces, best = {}, {}, 0
@@ -102,6 +101,11 @@ function ENT:SelectState(ctx)
 		end
 	end
 
+	glb.DebugScores, glb.DebugTraces = scores, traces
+	return scores, best
+end
+
+function ENT:SelectState(scores, best)
 	local candidates = {}
 	for name, s in pairs(scores) do
 		if s > 0 and s >= best * STATE_MARGIN then
@@ -109,11 +113,8 @@ function ENT:SelectState(ctx)
 		end
 	end
 
-	glb.DebugScores = scores
-	glb.DebugTraces = traces
-
 	if #candidates == 0 then
-		return glb.CurrentState
+		return self.GlobalContext.CurrentState
 	end
 
 	return candidates[math.random(#candidates)]

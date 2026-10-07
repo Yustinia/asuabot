@@ -180,12 +180,13 @@ if SERVER then
 		while true do
 			local ctx = self:SampleContext()
 			local glb = self.GlobalContext
+			local scores, best = self:ScoreStates(ctx)
 			local locked = self:IsLocked(ctx)
 
 			if not glb.CurrentState then
 				self:SwitchState("Wander")
 			elseif not locked then
-				local nextState = self:SelectState(ctx)
+				local nextState = self:SelectState(scores, best)
 
 				if nextState ~= glb.CurrentState then
 					self:SwitchState(nextState)
