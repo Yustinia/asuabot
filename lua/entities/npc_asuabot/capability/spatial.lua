@@ -59,10 +59,49 @@ function ENT:FindPositionWithLOS(scanRadius, targetPos)
 	return candidates[math.random(#candidates)]
 end
 
---- Finds a hiding spot: close to the bot, not visible from the player.
--- @param scanRadius number
--- @param playerPos Vector
--- @return Vector|nil
-function ENT:FindHidePosition(scanRadius, playerPos)
-	return self:FindPositionWithoutLOS(scanRadius, playerPos)
+--- Finds a nav area behind the target, at a radial distance from it.
+-- Prefers spots with no line of sight to the target, and falls back to any spot behind them.
+-- @param target Player: who to stay behind
+-- @param minRadius number: closest allowed distance from the target
+-- @param maxRadius number: farthest allowed distance from the target
+-- @return Vector|nil: center of a qualifying area, or nil if none found
+function ENT:FindPositionBehindTarget(target, minRadius, maxRadius)
+	if not IsValid(target) then
+		return nil
+	end
+
+	local tPos = target:GetPos()
+	local eye = target:EyePos()
+
+	local fwd = target:GetForward()
+	fwd.z = 0
+	fwd:Normalize()
+
+	local behind, hidden = {}, {}
+
+	for _, area in pairs(self.GlobalContext.CachedNavmesh) do
+		local center = area:GetCenter()
+		local dist = center:Distance(tPos)
+
+		if dist >= minRadius and dist <= maxRadius then
+			local dir = center - tPos
+			dir.z = 0
+			dir:Normalize()
+
+			if fwd:Dot(dir) < -0.2 then
+				behind[#behind + 1] = center
+
+				if not self:CheckLOS(center + Vector(0, 0, 40), eye) then
+					hidden[#hidden + 1] = center
+				end
+			end
+		end
+	end
+
+	local pool = #hidden > 0 and hidden or behind
+	if #pool == 0 then
+		return nil
+	end
+
+	return pool[math.random(#pool)]
 end
