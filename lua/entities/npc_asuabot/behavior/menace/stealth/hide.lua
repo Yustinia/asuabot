@@ -6,7 +6,7 @@ local GOAL_THRESH = 60
 local SIGHT_RANGE = 1500
 
 ENT.StateRules.Hide = {
-	min = 12,
+	min = 6,
 	max = 24,
 	cd = 35,
 	needsTarget = true,
