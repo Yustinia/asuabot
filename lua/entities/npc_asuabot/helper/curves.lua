@@ -4,11 +4,12 @@ local function Clamp01(x)
 	return math.Clamp(x, 0, 1)
 end
 
-function Curves.Bell(x, w)
+function Curves.Bell(x, c, w)
 	x = Clamp01(x)
-	w = w or 1
+	c = c or 0.5
+	w = w or 0.15
 
-	return math.exp(-((x - 0.5) ^ 2) / (2 * (w ^ 2)))
+	return math.exp(-((x - c) ^ 2) / (2 * (w ^ 2)))
 end
 
 function Curves.SmoothStep(x, k)
