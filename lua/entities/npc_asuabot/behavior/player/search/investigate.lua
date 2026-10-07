@@ -4,6 +4,12 @@ local MIN_LOOK_AHEAD = 100
 local GOAL_THRESH = 80
 local WAIT_DUR = 3
 
+ENT.StateRules.Investigate = {
+	min = 7,
+	max = 20,
+	cd = 300,
+}
+
 ENT.UtilityScores.Investigate = function(self, ctx, trace)
 	local pos = self.GlobalContext.TargetLastSeenPos
 
@@ -49,8 +55,6 @@ ENT.StateUpdate.Investigate = function(self, ctx)
 
 	if sc.Arrived then
 		if CurTime() >= sc.WaitUntil then
-			self.GlobalContext.SweepOrigin = sc.Goal
-
 			sc.Done = true
 		end
 		return

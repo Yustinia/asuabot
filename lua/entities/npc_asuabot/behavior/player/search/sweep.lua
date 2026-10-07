@@ -6,102 +6,108 @@ local WAIT_DUR = 3
 
 ENT.StateRules.Sweep = {
 	min = 8,
-	max = 60,
+	max = 90,
 	cd = 150,
-	needsTarget = true,
 }
 
 ENT.UtilityScores.Sweep = function(self, ctx, trace)
-	local origin = self.GlobalContext.SweepOrigin
+	local pos = self.GlobalContext.TargetLastSeenPos
 
 	if trace then
-		trace.HasOrigin = origin and 1 or 0
+		trace.HasPos = pos and 1 or 0
 		trace.Visible = ctx.Visible and 1 or 0
 	end
 
-	if not ctx.TargetValid or not origin or ctx.Visible then
+	if not ctx.TargetValid or not pos or ctx.Visible then
 		return 0
 	end
 
-	return 0.6
+	return 0.7
 end
 
 ENT.StateEnter.Sweep = function(self)
 	local sc = self.StateContext
-	local glb = self.GlobalContext
+	sc.Phase = "none"
 	sc.Route = {}
 	sc.Index = 1
-	sc.Arrived = false
 	sc.WaitUntil = 0
 
-	local origin = glb.SweepOrigin
-	glb.SweepOrigin = nil
-
-	if not origin then
+	local pos = self.GlobalContext.TargetLastSeenPos
+	if not pos then
 		sc.Done = true
 		return
 	end
 
-	local area = navmesh.GetNearestNavArea(origin)
-	for _, adj in ipairs(self:GetNavAreaConnections(area)) do
-		sc.Route[#sc.Route + 1] = adj:GetCenter()
-	end
-
-	if #sc.Route == 0 then
-		sc.Done = true
-		return
-	end
-
-	-- nearest first, so it doesn't zigzag
-	local from = self:GetPos()
-	table.sort(sc.Route, function(a, b)
-		return a:DistToSqr(from) < b:DistToSqr(from)
-	end)
-
+	sc.Origin = pos
+	sc.Phase = "go"
 	self:HandleSpeed(SPEED, ACCEL)
-	self:ComputeRoutingPath(sc.Route[1], MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+	self:ComputeRoutingPath(pos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Sweep = function(self, ctx)
 	local sc = self.StateContext
-	local goal = sc.Route and sc.Route[sc.Index]
 
-	if not goal then
+	if sc.Phase == "none" then
 		return
 	end
 
-	if sc.Arrived then
+	local path = self.GlobalContext.Path
+
+	if sc.Phase == "wait" then
 		if CurTime() < sc.WaitUntil then
 			return
 		end
 
-		sc.Index = sc.Index + 1
-		sc.Arrived = false
+		if sc.Index == 0 then
+			local area = navmesh.GetNearestNavArea(sc.Origin)
+			for _, adj in ipairs(self:GetNavAreaConnections(area)) do
+				sc.Route[#sc.Route + 1] = adj:GetCenter()
+			end
 
+			if #sc.Route == 0 then
+				sc.Done = true
+				return
+			end
+
+			local from = self:GetPos()
+			table.sort(sc.Route, function(a, b)
+				return a:DistToSqr(from) < b:DistToSqr(from)
+			end)
+		end
+
+		sc.Index = sc.Index + 1
 		local nextGoal = sc.Route[sc.Index]
 		if not nextGoal then
 			sc.Done = true
 			return
 		end
 
+		sc.Phase = "sweep"
 		self:HandleSpeed(SPEED, ACCEL)
 		self:ComputeRoutingPath(nextGoal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		return
 	end
 
+	local goal = sc.Phase == "go" and sc.Origin or sc.Route[sc.Index]
+	if not goal then
+		return
+	end
+
 	if self:IsAtPosition(goal, GOAL_THRESH) then
-		sc.Arrived = true
+		if sc.Phase == "go" then
+			sc.Index = 0
+		end
+
+		sc.Phase = "wait"
 		sc.WaitUntil = CurTime() + WAIT_DUR
 		self:HandleSpeed(0, 0)
 
-		local path = self.GlobalContext.Path
 		if path and path:IsValid() then
 			path:Invalidate()
 		end
 		return
 	end
 
-	local path = self.GlobalContext.Path
 	if not path or not path:IsValid() then
 		self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		return
