@@ -12,6 +12,10 @@ function Curves.Bell(x, c, w)
 	return math.exp(-((x - c) ^ 2) / (2 * (w ^ 2)))
 end
 
+function Curves.BellInverse(x, c, w)
+	return 1 - Curves.Bell(x, c, w)
+end
+
 function Curves.SmoothStepIn(x, k)
 	x = Clamp01(x)
 	k = k or 2
