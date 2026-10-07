@@ -8,6 +8,7 @@ include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
 -- include("entities/npc_asuabot/behavior/player/aggression/charge.lua")
 -- include("entities/npc_asuabot/behavior/player/aggression/rush.lua")
 -- include("entities/npc_asuabot/behavior/player/aggression/pounce.lua")
+-- include("entities/npc_asuabot/behavior/player/search/investigate.lua")
 
 -- capability
 include("entities/npc_asuabot/capability/bot.lua")
