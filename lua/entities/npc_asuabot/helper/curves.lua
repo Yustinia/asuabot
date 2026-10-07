@@ -12,15 +12,23 @@ function Curves.Bell(x, c, w)
 	return math.exp(-((x - c) ^ 2) / (2 * (w ^ 2)))
 end
 
-function Curves.SmoothStep(x, k)
+function Curves.SmoothStepIn(x, k)
 	x = Clamp01(x)
 	k = k or 2
 
 	return (x ^ k) / (x ^ k + ((1 - x) ^ k))
 end
 
-function Curves.SmoothStepInverse(x, k)
-	return Curves.SmoothStep(x, 1 / k)
+function Curves.SmoothStepInverseIn(x, k)
+	return Curves.SmoothStepIn(x, 1 / k)
+end
+
+function Curves.SmoothStepOut(x, k)
+	return 1 - Curves.SmoothStepIn(x, k)
+end
+
+function Curves.SmoothStepInverseOut(x, k)
+	return 1 - Curves.SmoothStepInverseIn(x, k)
 end
 
 --- Starts slow and speeds up as it goes (like pressing harder on the gas pedal).
