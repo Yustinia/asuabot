@@ -1,4 +1,5 @@
 include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
+include("entities/npc_asuabot/behavior/navigation/movement/drift.lua")
 include("entities/npc_asuabot/behavior/player/aggression/chase.lua")
 
 -- capability
