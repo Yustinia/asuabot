@@ -1,8 +1,8 @@
 local SPEED = 2400
 local ACCEL = 3600
-local MIN_LOOK_AHEAD = 60
-local GOAL_THRESH = 40
-local DIST = 150
+local MIN_LOOK_AHEAD = 40
+local GOAL_THRESH = 20
+local DIST = 100
 local EDGE_ANGLE = 50
 local STILL_REQUIRED = 1.5
 
@@ -53,6 +53,16 @@ ENT.StateUpdate.Loom = function(self, ctx)
 	local sc = self.StateContext
 
 	if not ctx.PlayerStill then
+		local path = self.GlobalContext.Path
+		if path and path:IsValid() then
+			path:Invalidate()
+		end
+
+		local nav = self:FindRandomNavArea()
+		if nav then
+			self:Teleport(nav)
+		end
+
 		sc.Done = true
 		return
 	end
@@ -78,11 +88,4 @@ ENT.StateUpdate.Loom = function(self, ctx)
 
 	self:RefreshPathIfStale(sc.Goal, "Follow")
 	path:Update(self)
-end
-
-ENT.StateExit.Loom = function(self)
-	local nav = self:FindRandomNavArea()
-	if nav then
-		self:Teleport(nav)
-	end
 end
