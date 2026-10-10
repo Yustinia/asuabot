@@ -32,7 +32,7 @@ ENT.StateEnter.Peek = function(self)
 	sc.Phase = "none"
 	sc.HideSpot = nil
 	sc.OutUntil = 0
-	sc.Caught = false
+	sc.Vanish = false
 	sc.InSequence = true
 
 	local target = self.GlobalContext.Target
@@ -127,7 +127,7 @@ ENT.StateUpdate.Peek = function(self, ctx)
 
 	if sc.Phase == "return" then
 		if self:IsAtPosition(sc.HideSpot, GOAL_THRESH) then
-			sc.Caught = true
+			sc.Vanish = true
 			sc.InSequence = false
 			sc.Done = true
 			return
@@ -145,7 +145,7 @@ ENT.StateUpdate.Peek = function(self, ctx)
 end
 
 ENT.StateExit.Peek = function(self)
-	if self.StateContext.Caught then
+	if self.StateContext.Vanish then
 		local path = self.GlobalContext.Path
 		if path and path:IsValid() then
 			path:Invalidate()

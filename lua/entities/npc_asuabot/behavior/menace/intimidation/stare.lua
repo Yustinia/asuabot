@@ -23,6 +23,7 @@ end
 ENT.StateEnter.Stare = function(self)
 	local sc = self.StateContext
 	sc.Seen = false
+	sc.Vanish = false
 
 	self:HandleSpeed(0, 0)
 	local path = self.GlobalContext.Path
@@ -32,6 +33,7 @@ ENT.StateEnter.Stare = function(self)
 
 	local target = self.GlobalContext.Target
 	if not IsValid(target) then
+		sc.Done = true
 		return
 	end
 
@@ -45,11 +47,11 @@ ENT.StateEnter.Stare = function(self)
 end
 
 ENT.StateUpdate.Stare = function(self, ctx)
-	if not ctx.TargetValid then
+	local sc = self.StateContext
+	if sc.Done or not ctx.TargetValid then
 		return
 	end
 
-	local sc = self.StateContext
 	local looking = self:IsPlayerLookingAtBot(ctx.Target)
 
 	if not sc.Seen then
@@ -60,10 +62,23 @@ ENT.StateUpdate.Stare = function(self, ctx)
 	end
 
 	if not looking then
-		local nav = self:FindRandomNavArea()
-		if nav then
-			self:Teleport(nav)
-		end
+		sc.Vanish = true
 		sc.Done = true
+	end
+end
+
+ENT.StateExit.Stare = function(self)
+	if not self.StateContext.Vanish then
+		return
+	end
+
+	local path = self.GlobalContext.Path
+	if path and path:IsValid() then
+		path:Invalidate()
+	end
+
+	local nav = self:FindRandomNavArea()
+	if nav then
+		self:Teleport(nav)
 	end
 end
