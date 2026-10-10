@@ -201,7 +201,9 @@ if SERVER then
 			end
 
 			if GetConVar("asuabot_debug_hud"):GetBool() then
-				glb.Path:Draw()
+				if glb.Path and glb.Path:IsValid() then
+					glb.Path:Draw()
+				end
 			end
 
 			coroutine.yield()
