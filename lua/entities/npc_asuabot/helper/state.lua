@@ -181,6 +181,7 @@ function ENT:SwitchState(name)
 
 	self.StateContext.InSequence = false
 	self.StateContext.Done = false
+	self.StateContext.Caught = false
 	if self.StateEnter[name] then
 		self.StateEnter[name](self)
 	end

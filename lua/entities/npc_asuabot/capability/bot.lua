@@ -1,5 +1,7 @@
 function ENT:Teleport(vectorPos)
 	self:SetPos(vectorPos)
+	self.loco:SetVelocity(Vector(0, 0, 0))
+	self.loco:ClearStuck()
 end
 
 --- Plays a sound from the bot's own position.

@@ -5,8 +5,8 @@ local SPEED = 600
 local ACCEl = 600
 
 ENT.StateRules.Wander = {
-	min = 20,
-	max = 110,
+	min = 2,
+	max = 2,
 	cd = 45,
 }
 

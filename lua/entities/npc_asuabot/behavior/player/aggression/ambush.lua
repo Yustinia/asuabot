@@ -10,8 +10,8 @@ local GOAL_THRESH = 60
 local STRIKE_THRESH = 0
 local DAMAGE = 20
 local TRIGGER_RANGE = 800
-local WAIT_DUR = 30
-local STRIKE_DUR = 4
+local WAIT_DUR = 30 -- wait at position for 30s
+local STRIKE_DUR = 4 -- how long strike sequence happens
 
 ENT.StateRules.Ambush = {
 	min = 10,
@@ -123,6 +123,7 @@ ENT.StateUpdate.Ambush = function(self, ctx)
 
 			sc.InSequence = false
 			sc.Done = true
+			sc.Caught = true
 			return
 		end
 
@@ -140,5 +141,19 @@ ENT.StateUpdate.Ambush = function(self, ctx)
 		self:RefreshPathIfStale(ctx.Target, "Chase")
 		path:Update(self)
 		self:ClearObstacles()
+	end
+end
+
+ENT.StateExit.Ambush = function(self)
+	if self.StateContext.Caught then
+		local path = self.GlobalContext.Path
+		if path and path:IsValid() then
+			path:Invalidate()
+		end
+
+		local nav = self:FindRandomNavArea()
+		if nav then
+			self:Teleport(nav)
+		end
 	end
 end

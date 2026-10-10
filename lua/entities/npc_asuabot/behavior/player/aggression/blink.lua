@@ -71,10 +71,25 @@ ENT.StateUpdate.Blink = function(self, ctx)
 		self:DamageEntity(ctx.Target, DAMAGE)
 		self:PunchEntity(ctx.Target)
 		self.StateContext.Done = true
+		self.StateContext.Caught = true
 		return
 	end
 
 	self:RefreshPathIfStale(ctx.Target, "Chase")
 	path:Update(self)
 	self:ClearObstacles()
+end
+
+ENT.StateExit.Blink = function(self)
+	if self.StateContext.Caught then
+		local path = self.GlobalContext.Path
+		if path and path:IsValid() then
+			path:Invalidate()
+		end
+
+		local nav = self:FindRandomNavArea()
+		if nav then
+			self:Teleport(nav)
+		end
+	end
 end

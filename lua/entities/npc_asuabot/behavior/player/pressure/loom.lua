@@ -1,7 +1,3 @@
-local SPEED = 2400
-local ACCEL = 3600
-local MIN_LOOK_AHEAD = 40
-local GOAL_THRESH = 20
 local DIST = 100
 local EDGE_ANGLE = 50
 local STILL_REQUIRED = 1.5
@@ -27,10 +23,19 @@ end
 
 ENT.StateEnter.Loom = function(self)
 	local sc = self.StateContext
-	sc.Goal = nil
+	sc.Appeared = false
+	sc.InSequence = true
+
+	self:HandleSpeed(0, 0)
+	local path = self.GlobalContext.Path
+	if path and path:IsValid() then
+		path:Invalidate()
+	end
 
 	local target = self.GlobalContext.Target
 	if not IsValid(target) then
+		sc.InSequence = false
+		sc.Done = true
 		return
 	end
 
@@ -40,52 +45,36 @@ ENT.StateEnter.Loom = function(self)
 
 	local area = navmesh.GetNearestNavArea(pos)
 	if not IsValid(area) then
+		sc.InSequence = false
 		sc.Done = true
 		return
 	end
 
-	sc.Goal = area:GetClosestPointOnArea(pos)
-	self:HandleSpeed(SPEED, ACCEL)
-	self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+	self:Teleport(area:GetClosestPointOnArea(pos))
+	sc.Appeared = true
 end
 
 ENT.StateUpdate.Loom = function(self, ctx)
 	local sc = self.StateContext
 
 	if not ctx.PlayerStill then
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
-		end
-
-		local nav = self:FindRandomNavArea()
-		if nav then
-			self:Teleport(nav)
-		end
-
+		sc.InSequence = false
 		sc.Done = true
-		return
 	end
+end
 
-	if not sc.Goal then
-		return
-	end
-
-	if self:IsAtPosition(sc.Goal, GOAL_THRESH) then
-		self:HandleSpeed(0, 0)
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
-		end
+ENT.StateExit.Loom = function(self)
+	if not self.StateContext.Appeared then
 		return
 	end
 
 	local path = self.GlobalContext.Path
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
-		return
+	if path and path:IsValid() then
+		path:Invalidate()
 	end
 
-	self:RefreshPathIfStale(sc.Goal, "Follow")
-	path:Update(self)
+	local nav = self:FindRandomNavArea()
+	if nav then
+		self:Teleport(nav)
+	end
 end

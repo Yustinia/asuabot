@@ -21,6 +21,11 @@ if CLIENT then
 	function ENT:Draw()
 		render.SetMaterial(botMaterial)
 		render.DrawSprite(self:GetPos() + Vector(0, 0, 50), 100, 100, color_white)
+
+		if (self.NextPrint or 0) < CurTime() then
+			self.NextPrint = CurTime() + 0.2
+			print("CLIENT", self:GetPos(), self:IsDormant())
+		end
 	end
 
 	local debugData = {}

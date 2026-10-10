@@ -4,7 +4,7 @@ local MIN_LOOK_AHEAD = 60
 local GOAL_THRESH = 60
 local DAMAGE = 20
 local SIGHT_RANGE = 1800
-local WAIT_DUR = 3
+local WAIT_DUR = 3 -- wait until next pounce
 local LEAP_TIMEOUT = 2
 
 ENT.StateRules.Pounce = {
@@ -64,6 +64,7 @@ ENT.StateUpdate.Pounce = function(self, ctx)
 			self:PunchEntity(ctx.Target)
 			self:HandleSpeed(0, 0)
 			sc.Done = true
+			sc.Caught = true
 			return
 		end
 
@@ -98,5 +99,19 @@ ENT.StateUpdate.Pounce = function(self, ctx)
 		sc.Phase = "leap"
 		self:HandleSpeed(SPEED, ACCEL)
 		self:ComputeRoutingPath(sc.LockedPos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+	end
+end
+
+ENT.StateExit.Pounce = function(self)
+	if self.StateContext.Caught then
+		local path = self.GlobalContext.Path
+		if path and path:IsValid() then
+			path:Invalidate()
+		end
+
+		local nav = self:FindRandomNavArea()
+		if nav then
+			self:Teleport(nav)
+		end
 	end
 end
