@@ -41,7 +41,7 @@ ENT.StateEnter.Stare = function(self)
 		return
 	end
 
-	self:SetPos(spot)
+	self:Teleport(spot)
 end
 
 ENT.StateUpdate.Stare = function(self, ctx)

@@ -40,7 +40,7 @@ ENT.StateEnter.Apparition = function(self)
 
 	local spot = self:FindPositionBehindTarget(target, MIN_RADIUS, MAX_RADIUS)
 	if spot then
-		self:SetPos(spot)
+		self:Teleport(spot)
 	end
 
 	self:ComputeRoutingPath(target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
@@ -61,7 +61,7 @@ ENT.StateUpdate.Apparition = function(self, ctx)
 
 			local spot = self:FindPositionBehindTarget(ctx.Target, MIN_RADIUS, MAX_RADIUS)
 			if spot then
-				self:SetPos(spot)
+				self:Teleport(spot)
 				self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 			end
 			return
