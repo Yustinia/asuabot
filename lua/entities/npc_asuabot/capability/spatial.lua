@@ -176,3 +176,42 @@ function ENT:FindPositionBehindTarget(target, minRadius, maxRadius)
 
 	return pool[math.random(#pool)]
 end
+
+--- Finds a navmesh position outside a radius around an entity.
+-- @param target Entity: The entity to measure from (e.g. a player).
+-- @param minRadius number: The position must be at least this far from the target.
+-- @param maxRadius number|nil: If given, the position must also be within this distance.
+-- @param mustBeHidden boolean|nil: true = the position must be out of the target's line of sight; false/nil = visible or hidden are both acceptable.
+-- @return Vector|nil: The position found, or nil if none qualified.
+function ENT:FindPositionRadial(target, minRadius, maxRadius, mustBeHidden)
+	local origin = target:GetPos()
+	local eye = target:EyePos()
+	local areas = self.GlobalContext.CachedNavmesh
+
+	local start = math.random(#areas)
+
+	for i = 0, #areas - 1 do
+		local area = areas[(start + i - 1) % #areas + 1]
+		local point = area:GetRandomPoint()
+		local dist = origin:Distance(point)
+
+		if dist >= minRadius and (not maxRadius or dist <= maxRadius) then
+			if not mustBeHidden then
+				return point
+			end
+
+			local tr = util.TraceLine({
+				start = eye,
+				endpos = point + Vector(0, 0, 50),
+				mask = MASK_OPAQUE,
+				filter = target,
+			})
+
+			if tr.Fraction < 1 then
+				return point
+			end
+		end
+	end
+
+	return nil
+end
