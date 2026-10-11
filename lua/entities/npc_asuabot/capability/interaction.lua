@@ -69,3 +69,17 @@ function ENT:DragEntity(target, strength)
 
 	target:SetVelocity(dir * strength * FrameTime())
 end
+
+function ENT:RepelEntity(target, strength)
+	strength = strength or 800
+
+	if not IsValid(target) then
+		return
+	end
+
+	local dir = target:GetPos() - self:GetPos()
+	dir.z = 0
+	dir:Normalize()
+
+	target:SetVelocity(dir * strength * FrameTime())
+end
