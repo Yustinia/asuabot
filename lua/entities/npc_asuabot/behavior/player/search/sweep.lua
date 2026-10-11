@@ -8,6 +8,7 @@ ENT.StateRules.Sweep = {
 	min = 8,
 	max = 90,
 	cd = 150,
+	block = { "Investigate" },
 }
 
 ENT.UtilityScores.Sweep = function(self, ctx, trace)

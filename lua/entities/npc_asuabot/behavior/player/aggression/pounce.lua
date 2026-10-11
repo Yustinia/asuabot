@@ -12,6 +12,7 @@ ENT.StateRules.Pounce = {
 	max = 20,
 	cd = 80,
 	needsTarget = true,
+	block = { "Chase", "Rush", "Charge", "Blink", "Ambush", "Feint" },
 }
 
 ENT.UtilityScores.Pounce = function(self, ctx, trace)

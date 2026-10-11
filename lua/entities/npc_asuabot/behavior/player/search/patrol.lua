@@ -9,6 +9,7 @@ ENT.StateRules.Patrol = {
 	max = 90,
 	cd = 200,
 	needsTarget = true,
+	block = { "Investigate", "Sweep" },
 }
 
 ENT.UtilityScores.Patrol = function(self, ctx, trace)

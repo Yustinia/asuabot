@@ -10,6 +10,7 @@ ENT.StateRules.Blink = {
 	max = 45,
 	cd = 100,
 	needsTarget = true,
+	block = { "Chase", "Rush", "Charge", "Pounce", "Ambush" },
 }
 
 ENT.UtilityScores.Blink = function(self, ctx, trace)

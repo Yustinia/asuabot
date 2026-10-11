@@ -18,6 +18,7 @@ ENT.StateRules.Ambush = {
 	max = 60,
 	cd = 320,
 	needsTarget = true,
+	block = { "Chase", "Rush", "Charge", "Blink", "Pounce", "Peek" },
 }
 
 ENT.UtilityScores.Ambush = function(self, ctx, trace)

@@ -8,6 +8,7 @@ ENT.StateRules.Investigate = {
 	min = 7,
 	max = 20,
 	cd = 300,
+	block = { "Sweep" },
 }
 
 ENT.UtilityScores.Investigate = function(self, ctx, trace)

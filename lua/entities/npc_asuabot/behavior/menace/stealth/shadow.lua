@@ -12,6 +12,7 @@ ENT.StateRules.Shadow = {
 	max = 45,
 	cd = 100,
 	needsTarget = true,
+	block = { "Creep" },
 }
 
 ENT.UtilityScores.Shadow = function(self, ctx, trace)

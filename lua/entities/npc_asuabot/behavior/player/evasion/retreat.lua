@@ -10,6 +10,7 @@ ENT.StateRules.Retreat = {
 	max = 20,
 	cd = 90,
 	needsTarget = true,
+	block = { "Hide", "Flee" },
 }
 
 ENT.UtilityScores.Retreat = function(self, ctx, trace)

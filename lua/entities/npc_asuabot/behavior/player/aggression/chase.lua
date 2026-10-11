@@ -11,6 +11,7 @@ ENT.StateRules.Chase = {
 	max = 20,
 	cd = 75,
 	needsTarget = true,
+	block = { "Rush", "Charge", "Pounce", "Blink", "Ambush" },
 }
 
 ENT.UtilityScores.Chase = function(self, ctx, trace)

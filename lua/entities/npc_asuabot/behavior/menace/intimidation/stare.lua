@@ -6,6 +6,7 @@ ENT.StateRules.Stare = {
 	max = 30,
 	cd = 90,
 	needsTarget = true,
+	block = { "Loom", "Apparition" },
 }
 
 ENT.UtilityScores.Stare = function(self, ctx, trace)

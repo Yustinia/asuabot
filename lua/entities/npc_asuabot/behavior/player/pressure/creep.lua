@@ -13,6 +13,7 @@ ENT.StateRules.Creep = {
 	max = 40,
 	cd = 120,
 	needsTarget = true,
+	block = { "Shadow", "Apparition" },
 }
 
 ENT.UtilityScores.Creep = function(self, ctx, trace)

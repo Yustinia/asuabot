@@ -13,6 +13,7 @@ ENT.StateRules.Apparition = {
 	max = 25,
 	cd = 120,
 	needsTarget = true,
+	block = { "Loom", "Stare" },
 }
 
 ENT.UtilityScores.Apparition = function(self, ctx, trace)

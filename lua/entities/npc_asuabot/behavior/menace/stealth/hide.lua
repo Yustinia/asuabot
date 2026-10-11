@@ -10,6 +10,7 @@ ENT.StateRules.Hide = {
 	max = 24,
 	cd = 35,
 	needsTarget = true,
+	block = { "Peek", "Ambush", "Retreat", "Flee" },
 }
 
 ENT.UtilityScores.Hide = function(self, ctx, trace)

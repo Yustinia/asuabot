@@ -13,6 +13,7 @@ ENT.StateRules.Peek = {
 	max = 90,
 	cd = 200,
 	needsTarget = true,
+	block = { "Hide", "Ambush" },
 }
 
 ENT.UtilityScores.Peek = function(self, ctx, trace)

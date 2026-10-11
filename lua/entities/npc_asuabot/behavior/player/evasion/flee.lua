@@ -8,6 +8,7 @@ ENT.StateRules.Flee = {
 	min = 5,
 	max = 30,
 	cd = 60,
+	block = { "Retreat", "Hide" },
 }
 
 ENT.UtilityScores.Flee = function(self, ctx, trace)

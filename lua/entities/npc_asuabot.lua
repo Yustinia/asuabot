@@ -78,7 +78,11 @@ if CLIENT then
 				end
 
 				for key, val in pairs(d.traces[name] or {}) do
-					line(key .. ": " .. string.format("%.2f", val), 40, Color(180, 180, 180))
+					if key == "Blocked" then
+						line("BLOCKED", 40, Color(255, 100, 100))
+					else
+						line(key .. ": " .. string.format("%.2f", val), 40, Color(180, 180, 180))
+					end
 				end
 			end
 

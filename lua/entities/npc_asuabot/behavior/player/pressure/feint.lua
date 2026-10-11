@@ -11,6 +11,7 @@ ENT.StateRules.Feint = {
 	max = 12,
 	cd = 60,
 	needsTarget = true,
+	block = { "Pounce", "Charge", "Rush" },
 }
 
 ENT.UtilityScores.Feint = function(self, ctx, trace)
