@@ -1,5 +1,5 @@
-local SPEED = 1000
-local ACCEL = 1200
+local SPEED = 2000
+local ACCEL = 2400
 local MIN_LOOK_AHEAD = 120
 local GOAL_THRESH = 60
 local MIN_RADIUS = 1000
