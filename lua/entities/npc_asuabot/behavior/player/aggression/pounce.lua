@@ -53,7 +53,7 @@ end
 ENT.StateUpdate.Pounce = function(self, ctx)
 	local sc = self.StateContext
 
-	if sc.Phase == "none" or not ctx.TargetValid then
+	if sc.Phase == "none" or sc.Done or not ctx.TargetValid then
 		return
 	end
 
@@ -75,12 +75,18 @@ ENT.StateUpdate.Pounce = function(self, ctx)
 				path:Invalidate()
 			end
 			sc.Phase = "wait"
+			self.GlobalContext.ProgressPosition = nil
+
 			sc.WaitUntil = CurTime() + WAIT_DUR
 			return
 		end
 
 		if not path or not path:IsValid() then
 			self:ComputeRoutingPath(sc.LockedPos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+			return
+		end
+
+		if self:HandleStuckCheck() then
 			return
 		end
 
@@ -98,6 +104,8 @@ ENT.StateUpdate.Pounce = function(self, ctx)
 		sc.LockedPos = ctx.Target:GetPos()
 		sc.LeapUntil = CurTime() + LEAP_TIMEOUT
 		sc.Phase = "leap"
+		self.GlobalContext.ProgressPosition = nil
+
 		self:HandleSpeed(SPEED, ACCEL)
 		self:ComputeRoutingPath(sc.LockedPos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 	end

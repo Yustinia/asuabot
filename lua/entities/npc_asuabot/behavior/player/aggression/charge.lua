@@ -44,7 +44,8 @@ ENT.StateEnter.Charge = function(self)
 end
 
 ENT.StateUpdate.Charge = function(self, ctx)
-	if not ctx.TargetValid then
+	local sc = self.StateContext
+	if sc.Done or not ctx.TargetValid then
 		return
 	end
 
@@ -59,6 +60,10 @@ ENT.StateUpdate.Charge = function(self, ctx)
 		self:PunchEntity(ctx.Target)
 		self.StateContext.Done = true
 		self.StateContext.Caught = true
+		return
+	end
+
+	if self:HandleStuckCheck() then
 		return
 	end
 

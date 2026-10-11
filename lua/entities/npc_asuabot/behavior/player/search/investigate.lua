@@ -50,7 +50,7 @@ end
 ENT.StateUpdate.Investigate = function(self, ctx)
 	local sc = self.StateContext
 
-	if not sc.Goal then
+	if sc.Done or not sc.Goal then
 		return
 	end
 
@@ -73,13 +73,13 @@ ENT.StateUpdate.Investigate = function(self, ctx)
 		return
 	end
 
-	if self:HandleStuckCheck() then
-		return
-	end
-
 	local path = self.GlobalContext.Path
 	if not path or not path:IsValid() then
 		self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+		return
+	end
+
+	if self:HandleStuckCheck() then
 		return
 	end
 

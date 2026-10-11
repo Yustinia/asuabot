@@ -53,7 +53,7 @@ end
 ENT.StateUpdate.Feint = function(self, ctx)
 	local sc = self.StateContext
 
-	if sc.Phase == "none" or not ctx.TargetValid then
+	if sc.Phase == "none" or sc.Done or not ctx.TargetValid then
 		return
 	end
 
@@ -66,12 +66,18 @@ ENT.StateUpdate.Feint = function(self, ctx)
 				path:Invalidate()
 			end
 			sc.Phase = "hold"
+			self.GlobalContext.ProgressPosition = nil
+
 			sc.HoldUntil = CurTime() + HOLD_DUR
 			return
 		end
 
 		if not path or not path:IsValid() then
 			self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+			return
+		end
+
+		if self:HandleStuckCheck() then
 			return
 		end
 

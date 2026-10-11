@@ -66,6 +66,8 @@ ENT.StateUpdate.Peek = function(self, ctx)
 	if sc.Phase == "hide" then
 		if self:IsAtPosition(sc.HideSpot, GOAL_THRESH) then
 			sc.Phase = "out"
+			self.GlobalContext.ProgressPosition = nil
+
 			sc.OutUntil = CurTime() + OUT_DUR
 			self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 			return
@@ -89,6 +91,8 @@ ENT.StateUpdate.Peek = function(self, ctx)
 	if sc.Phase == "out" then
 		if ctx.Visible then
 			sc.Phase = "watch"
+			self.GlobalContext.ProgressPosition = nil
+
 			self:HandleSpeed(0, 0)
 			if path and path:IsValid() then
 				path:Invalidate()
@@ -98,6 +102,8 @@ ENT.StateUpdate.Peek = function(self, ctx)
 
 		if CurTime() >= sc.OutUntil then
 			sc.Phase = "return"
+			self.GlobalContext.ProgressPosition = nil
+
 			self:HandleSpeed(SPEED, ACCEL)
 			self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 			return
@@ -105,6 +111,10 @@ ENT.StateUpdate.Peek = function(self, ctx)
 
 		if not path or not path:IsValid() then
 			self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+			return
+		end
+
+		if self:HandleStuckCheck() then
 			return
 		end
 
@@ -120,6 +130,8 @@ ENT.StateUpdate.Peek = function(self, ctx)
 
 		if close or looked or CurTime() >= sc.OutUntil then
 			sc.Phase = "return"
+			self.GlobalContext.ProgressPosition = nil
+
 			self:HandleSpeed(SPEED, ACCEL)
 			self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		end
@@ -136,6 +148,10 @@ ENT.StateUpdate.Peek = function(self, ctx)
 
 		if not path or not path:IsValid() then
 			self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+			return
+		end
+
+		if self:HandleStuckCheck() then
 			return
 		end
 

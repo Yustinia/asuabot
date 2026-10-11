@@ -2,6 +2,9 @@ function ENT:Teleport(vectorPos)
 	self:SetPos(vectorPos)
 	self.loco:SetVelocity(Vector(0, 0, 0))
 	self.loco:ClearStuck()
+
+	-- reset progress position since it's far
+	self.GlobalContext.ProgressPosition = nil
 end
 
 --- Plays a sound from the bot's own position.

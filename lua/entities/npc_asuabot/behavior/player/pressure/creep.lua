@@ -92,6 +92,10 @@ ENT.StateUpdate.Creep = function(self, ctx)
 			return
 		end
 
+		if self:HandleStuckCheck() then
+			return
+		end
+
 		self:RefreshPathIfStale(ctx.Target, "Chase")
 		path:Update(self)
 		self:ClearObstacles()

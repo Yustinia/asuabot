@@ -8,7 +8,6 @@ ENT.StateRules.Patrol = {
 	min = 10,
 	max = 90,
 	cd = 200,
-	needsTarget = true,
 	block = { "Investigate", "Sweep" },
 }
 
@@ -54,7 +53,7 @@ ENT.StateUpdate.Patrol = function(self, ctx)
 	local sc = self.StateContext
 	local goal = sc.Route and sc.Route[sc.Index]
 
-	if not goal then
+	if sc.Done or not goal then
 		return
 	end
 
@@ -73,6 +72,7 @@ ENT.StateUpdate.Patrol = function(self, ctx)
 		end
 
 		self:HandleSpeed(SPEED, ACCEL)
+		self.GlobalContext.ProgressPosition = nil
 		self:ComputeRoutingPath(nextGoal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		return
 	end
@@ -89,13 +89,13 @@ ENT.StateUpdate.Patrol = function(self, ctx)
 		return
 	end
 
-	if self:HandleStuckCheck() then
-		return
-	end
-
 	local path = self.GlobalContext.Path
 	if not path or not path:IsValid() then
 		self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+		return
+	end
+
+	if self:HandleStuckCheck() then
 		return
 	end
 

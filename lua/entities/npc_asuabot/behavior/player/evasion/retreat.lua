@@ -50,7 +50,7 @@ end
 ENT.StateUpdate.Retreat = function(self, ctx)
 	local sc = self.StateContext
 
-	if not sc.Goal then
+	if sc.Done or not sc.Goal then
 		return
 	end
 

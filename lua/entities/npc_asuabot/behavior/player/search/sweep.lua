@@ -48,7 +48,7 @@ end
 ENT.StateUpdate.Sweep = function(self, ctx)
 	local sc = self.StateContext
 
-	if sc.Phase == "none" then
+	if sc.Phase == "none" or sc.Done then
 		return
 	end
 
@@ -84,6 +84,8 @@ ENT.StateUpdate.Sweep = function(self, ctx)
 		end
 
 		sc.Phase = "sweep"
+		self.GlobalContext.ProgressPosition = nil
+
 		self:HandleSpeed(SPEED, ACCEL)
 		self:ComputeRoutingPath(nextGoal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		return
@@ -100,6 +102,8 @@ ENT.StateUpdate.Sweep = function(self, ctx)
 		end
 
 		sc.Phase = "wait"
+		self.GlobalContext.ProgressPosition = nil
+
 		sc.WaitUntil = CurTime() + WAIT_DUR
 		self:HandleSpeed(0, 0)
 

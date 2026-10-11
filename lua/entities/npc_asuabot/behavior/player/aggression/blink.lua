@@ -47,10 +47,16 @@ ENT.StateUpdate.Blink = function(self, ctx)
 	end
 
 	local sc = self.StateContext
+	if sc.Done or not ctx.TargetValid then
+		return
+	end
+
 	local seen = self:IsPlayerLookingAtBot(ctx.Target)
 
 	if seen ~= sc.Frozen then
 		sc.Frozen = seen
+		self.GlobalContext.ProgressPosition = nil
+
 		if seen then
 			self:HandleSpeed(0, 0)
 		else
@@ -73,6 +79,10 @@ ENT.StateUpdate.Blink = function(self, ctx)
 		self:PunchEntity(ctx.Target)
 		self.StateContext.Done = true
 		self.StateContext.Caught = true
+		return
+	end
+
+	if self:HandleStuckCheck() then
 		return
 	end
 

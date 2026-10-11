@@ -64,6 +64,10 @@ ENT.StateUpdate.Ambush = function(self, ctx)
 		return
 	end
 
+	if sc.Done then
+		return
+	end
+
 	local path = self.GlobalContext.Path
 
 	if sc.Phase == "hide" then
@@ -73,6 +77,8 @@ ENT.StateUpdate.Ambush = function(self, ctx)
 				path:Invalidate()
 			end
 			sc.Phase = "wait"
+			self.GlobalContext.ProgressPosition = nil
+
 			sc.WaitUntil = CurTime() + WAIT_DUR
 			return
 		end
@@ -95,6 +101,8 @@ ENT.StateUpdate.Ambush = function(self, ctx)
 	if sc.Phase == "wait" then
 		if ctx.Visible or ctx.Distance <= TRIGGER_RANGE then
 			sc.Phase = "strike"
+			self.GlobalContext.ProgressPosition = nil
+
 			sc.StrikeUntil = CurTime() + STRIKE_DUR
 			self:HandleSpeed(SPEED, ACCEL)
 			self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, STRIKE_THRESH, "Chase")
@@ -113,15 +121,6 @@ ENT.StateUpdate.Ambush = function(self, ctx)
 			self:DamageEntity(ctx.Target, DAMAGE)
 			self:PunchEntity(ctx.Target)
 
-			if path and path:IsValid() then
-				path:Invalidate()
-			end
-
-			local nav = self:FindRandomNavArea()
-			if nav then
-				self:Teleport(nav)
-			end
-
 			sc.InSequence = false
 			sc.Done = true
 			sc.Caught = true
@@ -136,6 +135,10 @@ ENT.StateUpdate.Ambush = function(self, ctx)
 
 		if not path or not path:IsValid() then
 			self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, STRIKE_THRESH, "Chase")
+			return
+		end
+
+		if self:HandleStuckCheck() then
 			return
 		end
 

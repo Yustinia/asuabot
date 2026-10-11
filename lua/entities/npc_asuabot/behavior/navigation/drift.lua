@@ -53,6 +53,10 @@ ENT.StateUpdate.Drift = function(self, ctx)
 		return
 	end
 
+	if self:HandleStuckCheck() then
+		return
+	end
+
 	self:RefreshPathIfStale(self.StateContext.Goal, "Follow")
 	path:Update(self)
 end
