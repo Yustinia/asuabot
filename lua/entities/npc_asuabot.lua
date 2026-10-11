@@ -184,6 +184,11 @@ if SERVER then
 			local locked = self:IsLocked(ctx)
 
 			if not glb.CurrentState then
+				local nav = self:FindRandomNavArea()
+				if nav then
+					self:Teleport(nav)
+				end
+
 				self:SwitchState("Wander")
 			elseif not locked then
 				local nextState = self:SelectState(scores, best)
