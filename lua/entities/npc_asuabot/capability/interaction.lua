@@ -55,3 +55,17 @@ function ENT:PullEntity(target, force)
 
 	self.GlobalContext.NextPullTime = CurTime() + PullCD
 end
+
+function ENT:DragEntity(target, strength)
+	strength = strength or 800
+
+	if not IsValid(target) then
+		return
+	end
+
+	local dir = self:GetPos() - target:GetPos()
+	dir.z = 0
+	dir:Normalize()
+
+	target:SetVelocity(dir * strength * FrameTime())
+end

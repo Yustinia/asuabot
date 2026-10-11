@@ -5,7 +5,7 @@ local MIN_LOOK_AHEAD = 120
 local GOAL_THRESH = 0
 local START_RANGE = 3000
 local CATCH_RADIUS = 150
-local PULL_FORCE = 1200
+local PULL_FORCE = 2400
 
 ENT.StateRules.Shadow = {
 	min = 6,
@@ -24,7 +24,7 @@ ENT.UtilityScores.Shadow = function(self, ctx, trace)
 		return 0
 	end
 
-	return 0.90
+	return 0.55
 end
 
 ENT.StateEnter.Shadow = function(self)
@@ -56,7 +56,7 @@ ENT.StateUpdate.Shadow = function(self, ctx)
 	end
 
 	if ctx.Visible and PULL_FORCE and PULL_FORCE > 0 then
-		self:PullEntity(ctx.Target, PULL_FORCE)
+		self:DragEntity(ctx.Target, PULL_FORCE)
 	end
 
 	local seen = ctx.Visible and true or false
