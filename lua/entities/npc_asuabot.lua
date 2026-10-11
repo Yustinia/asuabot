@@ -112,6 +112,13 @@ if SERVER then
 
 	include("entities/npc_asuabot/init.lua")
 
+	function ENT:OnRemove()
+		local snd = self.StateContext and self.StateContext.Loop
+		if snd then
+			snd:Stop()
+		end
+	end
+
 	function ENT:Initialize()
 		-- Model / appearance
 		self:SetModel("models/player/kleiner.mdl")
