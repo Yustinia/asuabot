@@ -190,6 +190,7 @@ function ENT:SwitchState(name)
 	end
 
 	glb.PreviousState, glb.CurrentState, glb.StateStartTime = old, name, CurTime()
+	glb.ProgressPosition = nil
 
 	self.StateContext.InSequence = false
 	self.StateContext.Done = false

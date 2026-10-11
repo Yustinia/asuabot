@@ -21,7 +21,7 @@ end
 
 local UNSTUCK_LIFT = Vector(0, 0, 10)
 local UNSTUCK_DIST = 40
-local UNSTUCK_RESET_WINDOW = 4
+local UNSTUCK_RESET_WINDOW = 6
 
 local PROGRESS_CHECK_INTERVAL = 2
 local PROGRESS_MIN_DIST = 60
@@ -116,6 +116,10 @@ function ENT:HandleStuck()
 	end
 
 	self.loco:ClearStuck()
+
+	self.GlobalContext.ProgressPosition = self:GetPos()
+	self.GlobalContext.ProgressTime = CurTime()
+
 	coroutine.yield()
 end
 
@@ -127,8 +131,11 @@ function ENT:HandleStuckCheck()
 	self:HandleStuck()
 
 	if self.GlobalContext.StuckTries >= self.GlobalContext.StuckMaxAttempts then
-		local selectedNav = self:FindRandomNavArea()
-		self:Teleport(selectedNav)
+		local nav = self:FindRandomNavArea()
+
+		if nav then
+			self:Teleport(nav)
+		end
 
 		return true
 	end
