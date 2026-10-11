@@ -103,15 +103,27 @@ function ENT:ScoreStates(ctx)
 	local cur = self.StateRules[glb.CurrentState]
 	local exp = cur and cur.max and ctx.StateTime >= cur.max
 
+	local blacklist = {}
+	if cur and cur.block then
+		for _, n in ipairs(cur.block) do
+			blacklist[n] = true
+		end
+	end
+
 	local scores, traces, best = {}, {}, 0
 	for name, scoreFn in pairs(self.UtilityScores) do
 		local onCD = CurTime() < (glb.CooldownUntil[name] or 0)
 		local blocked = (exp or self.StateContext.Done) and name == glb.CurrentState
+		local denied = name ~= glb.CurrentState and blacklist[name]
 
 		traces[name] = {}
 		scores[name] = 0
 
-		if not onCD and not blocked then
+		if denied then
+			traces[name].Blocked = 1
+		end
+
+		if not onCD and not blocked and not denied then
 			local s = scoreFn(self, ctx, traces[name])
 			scores[name] = s
 			best = math.max(best, s)
