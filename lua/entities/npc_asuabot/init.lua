@@ -18,7 +18,7 @@ include("entities/npc_asuabot/behavior/navigation/movement/wander.lua")
 -- include("entities/npc_asuabot/behavior/player/evasion/retreat.lua")
 -- include("entities/npc_asuabot/behavior/player/pressure/creep.lua")
 -- include("entities/npc_asuabot/behavior/menace/stealth/shadow.lua")
-include("entities/npc_asuabot/behavior/player/evasion/flee.lua")
+-- include("entities/npc_asuabot/behavior/player/evasion/flee.lua")
 
 -- capability
 include("entities/npc_asuabot/capability/bot.lua")
