@@ -8,7 +8,7 @@ local function Add(name, files, level, pitch)
 		channel = CHAN_AUTO,
 		volume = 1.0,
 		level = level or 100,
-		pitch = pitch or { 95, 105 },
+		pitch = pitch or { 80, 120 },
 		sound = files,
 	})
 end
