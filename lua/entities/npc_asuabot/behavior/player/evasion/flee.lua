@@ -8,6 +8,7 @@ ENT.StateRules.Flee = {
 	min = 5,
 	max = 30,
 	cd = 60,
+	needsTarget = true,
 	block = { "Retreat", "Hide" },
 }
 
@@ -24,18 +25,22 @@ ENT.UtilityScores.Flee = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Flee = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Goal = nil
 	sc.InSequence = true
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	if not IsValid(gl.Target) then
 		sc.InSequence = false
 		sc.Done = true
 		return
 	end
 
-	local goal = self:FindPositionRadial(target, MIN_RADIUS, nil, false)
+	local goal = self:FindPositionRadial(gl.Target, MIN_RADIUS, nil, false)
 	if not goal then
 		sc.InSequence = false
 		sc.Done = true
@@ -43,14 +48,17 @@ ENT.StateEnter.Flee = function(self)
 	end
 
 	sc.Goal = goal
+
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Flee = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
-	if sc.Done or not sc.Goal then
+	if not sc.Goal or not ctx.TargetValid then
+		sc.Done = true
+		sc.InSequence = false
 		return
 	end
 
@@ -60,17 +68,20 @@ ENT.StateUpdate.Flee = function(self, ctx)
 		return
 	end
 
-	local path = self.GlobalContext.Path
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
-		return
-	end
-
 	if self:HandleStuckCheck() then
 		return
 	end
 
+	self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 	self:RefreshPathIfStale(sc.Goal, "Follow")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
+end
+
+ENT.StateExit.Flee = function(self)
+	local gl, sc = self:ReturnContext()
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 end
