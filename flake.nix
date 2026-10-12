@@ -15,9 +15,9 @@
       pkgs = nixpkgs.legacyPackages.${system};
 
       glua-api-snippets = pkgs.fetchzip {
-        url = "https://github.com/luttje/glua-api-snippets/releases/download/2026-08-31_17-51-30/2026-08-31_17-51-30.lua.zip";
+        url = "https://github.com/luttje/glua-api-snippets/releases/download/2026-09-28_17-43-07/2026-09-28_17-43-07.lua.zip";
         stripRoot = false;
-        hash = "sha256-YSI0dq57x22v8CYLV0ZJ/IPIN2A158DmtKPb/6WMm1M=";
+        hash = "sha256-pthQos21tOyGptZy+cG3cidhH4Wcfte3JOVD2zMM4kA=";
       };
     in
     {
