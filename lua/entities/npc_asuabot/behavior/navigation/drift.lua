@@ -59,4 +59,5 @@ ENT.StateUpdate.Drift = function(self, ctx)
 
 	self:RefreshPathIfStale(self.StateContext.Goal, "Follow")
 	path:Update(self)
+	self:ClearObstacles()
 end
