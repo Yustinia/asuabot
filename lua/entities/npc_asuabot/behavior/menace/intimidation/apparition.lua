@@ -38,23 +38,28 @@ ENT.UtilityScores.Apparition = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Apparition = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.SeenSince = nil
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	if not IsValid(gl.Target) then
+		sc.Done = true
 		return
 	end
 
 	self:HandleSpeed(SPEED, ACCEL)
-
-	Reappear(self, target)
+	Reappear(self, gl.Target)
 end
 
 ENT.StateUpdate.Apparition = function(self, ctx)
-	local gl, sc = self.GlobalContext, self.StateContext
+	local gl, sc = self:ReturnContext()
 
 	if not ctx.TargetValid then
+		sc.Done = true
 		return
 	end
 
