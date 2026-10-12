@@ -7,13 +7,21 @@ function ENT:Teleport(vectorPos)
 	self.GlobalContext.ProgressPosition = nil
 end
 
---- Plays a sound from the bot's own position.
--- @param soundPath string: sound file path
--- @param volume number|nil: 0-1, defaults to engine default if omitted
--- @param pitch number|nil: 0-255, defaults to 100 if omitted
--- @return nil
-function ENT:PlaySound(soundPath, volume, pitch)
-	self:EmitSound(soundPath, volume and (volume * 100) or 75, pitch or 100)
+--- Re-emits a sound each time its length elapses.
+-- @param ent Entity: emitter (the bot or the player)
+-- @param key string: unique key for this loop
+-- @param name string: registered sound name
+-- @param file string: the file path, used only to read its length
+function ENT:EmitLoop(ent, key, name, file)
+	local sc = self.StateContext
+	sc.LoopNext = sc.LoopNext or {}
+
+	if CurTime() < (sc.LoopNext[key] or 0) then
+		return
+	end
+
+	sc.LoopNext[key] = CurTime() + SoundDuration(file) - 0.05
+	ent:EmitSound(name)
 end
 
 function ENT:SetAccel(accel)

@@ -112,7 +112,22 @@ if SERVER then
 
 	include("entities/npc_asuabot/init.lua")
 
-	function ENT:OnRemove() end
+	function ENT:OnRemove()
+		local target = self.GlobalContext.Target
+		if IsValid(target) then
+			target:StopSound("Asuabot.Screech")
+			target:StopSound("Asuabot.Approach")
+			target:StopSound("Asuabot.Ambiance1")
+			target:StopSound("Asuabot.Ambiance2")
+			target:StopSound("Asuabot.Ambiance3")
+		end
+
+		self:StopSound("Asuabot.Screech")
+		self:StopSound("Asuabot.Approach")
+		self:StopSound("Asuabot.Ambiance1")
+		self:StopSound("Asuabot.Ambiance2")
+		self:StopSound("Asuabot.Ambiance3")
+	end
 
 	function ENT:Initialize()
 		-- Model / appearance

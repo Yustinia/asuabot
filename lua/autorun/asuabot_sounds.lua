@@ -3,7 +3,7 @@ local function Add(name, files, level, pitch)
 		name = name,
 		channel = CHAN_AUTO,
 		volume = 1.0,
-		level = level or 75,
+		level = level or 100,
 		pitch = pitch or { 95, 105 },
 		sound = files,
 	})
