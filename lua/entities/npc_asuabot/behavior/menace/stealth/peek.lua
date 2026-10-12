@@ -164,7 +164,7 @@ ENT.StateUpdate.Peek = function(self, ctx)
 end
 
 ENT.StateExit.Peek = function(self)
-	local gl, sc = self.ReturnContext()
+	local gl, sc = self:ReturnContext()
 
 	if not sc.Vanish then
 		return
