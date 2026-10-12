@@ -17,6 +17,24 @@ Add("Asuabot.Screech", {
 	"asuabot/Screech-1.wav",
 	"asuabot/Screech-2.wav",
 	"asuabot/Screech-3.wav",
+	"asuabot/Screech-4.wav",
+	"asuabot/Screech-5.wav",
+	"asuabot/Screech-6.wav",
+	"asuabot/Screech-7.wav",
+	"asuabot/Screech-8.wav",
+	"asuabot/Screech-9.wav",
+	"asuabot/Screech-10.wav",
+	"asuabot/Screech-11.wav",
+	"asuabot/Screech-12.wav",
+	"asuabot/Screech-13.wav",
+	"asuabot/LowScreech-1.wav",
+	"asuabot/LowScreech-2.wav",
+	"asuabot/LowScreech-3.wav",
+	"asuabot/LowScreech-4.wav",
+	"asuabot/LowScreech-5.wav",
+	"asuabot/LowScreech-6.wav",
+	"asuabot/LowScreech-7.wav",
+	"asuabot/LowScreech-8.wav",
 }, 40)
 
 Add("Asuabot.Jumpscare", {
@@ -28,6 +46,7 @@ Add("Asuabot.Jumpscare", {
 Add("Asuabot.Approach", {
 	"asuabot/Approach-1.wav",
 	"asuabot/Approach-2.wav",
+	"asuabot/Approach-3.wav",
 }, 100)
 
 Add("Asuabot.Ambiance", {
@@ -43,4 +62,8 @@ Add("Asuabot.Slam", {
 	"asuabot/Slam-1.wav",
 	"asuabot/Slam-2.wav",
 	"asuabot/Slam-3.wav",
+}, 100)
+
+Add("Asuabot.Foley", {
+	"asuabot/Foley-1.wav",
 }, 100)
