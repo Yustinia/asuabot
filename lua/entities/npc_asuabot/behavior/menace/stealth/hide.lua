@@ -33,42 +33,39 @@ ENT.UtilityScores.Hide = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Hide = function(self)
-	local sc = self.StateContext
+	local gl, sc = self.ReturnContext()
+
 	sc.Goal = nil
 	sc.Vanish = false
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if not IsValid(gl.Target) then
+		sc.Done = true
 		return
 	end
 
-	local goal = self:FindClosePosWithoutLOS(SCAN_RADIUS, target)
+	local goal = self:FindClosePosWithoutLOS(SCAN_RADIUS, gl.target)
 	if not goal then
+		sc.Done = true
 		return
 	end
 
 	sc.Goal = goal
+
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Hide = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
 	if not sc.Goal then
-		return
-	end
-
-	local path = self.GlobalContext.Path
-
-	if self:IsAtPosition(sc.Goal, GOAL_THRESH) then
-		sc.Vanish = true
 		sc.Done = true
 		return
 	end
 
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+	if self:IsAtPosition(sc.Goal, GOAL_THRESH) then
+		sc.Vanish = true
+		sc.Done = true
 		return
 	end
 
@@ -77,20 +74,24 @@ ENT.StateUpdate.Hide = function(self, ctx)
 	end
 
 	self:RefreshPathIfStale(sc.Goal, "Follow")
-	path:Update(self)
+	self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+	gl.Path:Update(self)
 	self:ClearObstacles()
 end
 
 ENT.StateExit.Hide = function(self)
-	if self.StateContext.Vanish then
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
-		end
+	local gl, sc = self:ReturnContext()
 
-		local nav = self:FindRandomNavArea()
-		if nav then
-			self:Teleport(nav)
-		end
+	if not sc.Vanish then
+		return
+	end
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	local nav = self:FindRandomNavArea()
+	if nav then
+		self:Teleport(nav)
 	end
 end
