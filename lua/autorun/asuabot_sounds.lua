@@ -1,4 +1,8 @@
+ASUABOT_SOUND_FILES = ASUABOT_SOUND_FILES or {}
+
 local function Add(name, files, level, pitch)
+	ASUABOT_SOUND_FILES[name] = istable(files) and files[1] or files
+
 	sound.Add({
 		name = name,
 		channel = CHAN_AUTO,

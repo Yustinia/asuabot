@@ -11,8 +11,13 @@ end
 -- @param ent Entity: emitter (the bot or the player)
 -- @param key string: unique key for this loop
 -- @param name string: registered sound name
--- @param file string: the file path, used only to read its length
-function ENT:EmitLoop(ent, key, name, file)
+-- helper
+function ENT:EmitLoop(ent, key, name)
+	local file = ASUABOT_SOUND_FILES[name]
+	if not IsValid(ent) or not file then
+		return
+	end
+
 	local sc = self.StateContext
 	sc.LoopNext = sc.LoopNext or {}
 
