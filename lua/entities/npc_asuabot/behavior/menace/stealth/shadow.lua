@@ -29,30 +29,36 @@ ENT.UtilityScores.Shadow = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Shadow = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Caught = false
 	sc.Slowed = false
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	if not IsValid(gl.Target) then
 		sc.Done = true
 		return
 	end
 
 	self:HandleSpeed(SPEED, ACCEL)
-	self:ComputeRoutingPath(target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+	self:ComputeRoutingPath(gl.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 end
 
 ENT.StateUpdate.Shadow = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
-	if sc.Done or not ctx.TargetValid then
+	if not ctx.TargetValid then
+		sc.Done = true
 		return
 	end
 
 	if ctx.Distance <= CATCH_RADIUS then
 		sc.Caught = true
 		sc.Done = true
+
 		return
 	end
 
@@ -66,29 +72,25 @@ ENT.StateUpdate.Shadow = function(self, ctx)
 		self:HandleSpeed(seen and SPEED * SEEN_SPEED_MULT or SPEED, ACCEL)
 	end
 
-	local path = self.GlobalContext.Path
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
-		return
-	end
-
 	if self:HandleStuckCheck() then
 		return
 	end
 
+	self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 	self:RefreshPathIfStale(ctx.Target, "Chase")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
 end
 
 ENT.StateExit.Shadow = function(self)
+	local gl, sc = self:ReturnContext()
+
 	if not self.StateContext.Caught then
 		return
 	end
 
-	local path = self.GlobalContext.Path
-	if path and path:IsValid() then
-		path:Invalidate()
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
 	end
 
 	local nav = self:FindRandomNavArea()

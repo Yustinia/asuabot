@@ -36,34 +36,34 @@ ENT.UtilityScores.Chase = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Chase = function(self)
-	self:HandleSpeed(SPEED, ACCEL)
+	local gl, sc = self:ReturnContext()
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	if not IsValid(gl.Target) then
+		sc.Done = true
 		return
 	end
 
-	self:ComputeRoutingPath(target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+	self:HandleSpeed(SPEED, ACCEL)
+	self:ComputeRoutingPath(gl.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 end
 
 ENT.StateUpdate.Chase = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
-	if sc.Done or not ctx.TargetValid then
-		return
-	end
-
-	local path = self.GlobalContext.Path
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+	if not ctx.TargetValid then
+		sc.Done = true
 		return
 	end
 
 	if ctx.Touching then
 		self:DamageEntity(ctx.Target, DAMAGE)
 		self:PunchEntity(ctx.Target)
-		self.StateContext.Done = true
-		self.StateContext.Caught = true
+		sc.Done = true
+		sc.Caught = true
 		return
 	end
 
@@ -71,21 +71,25 @@ ENT.StateUpdate.Chase = function(self, ctx)
 		return
 	end
 
+	self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 	self:RefreshPathIfStale(ctx.Target, "Chase")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
 end
 
 ENT.StateExit.Chase = function(self)
-	if self.StateContext.Caught then
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
-		end
+	local gl, sc = self:ReturnContext()
 
-		local nav = self:FindRandomNavArea()
-		if nav then
-			self:Teleport(nav)
-		end
+	if not sc.Caught then
+		return
+	end
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	local nav = self:FindRandomNavArea()
+	if nav then
+		self:Teleport(nav)
 	end
 end

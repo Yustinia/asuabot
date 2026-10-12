@@ -31,10 +31,15 @@ ENT.UtilityScores.Investigate = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Investigate = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Goal = nil
 	sc.Arrived = false
 	sc.WaitUntil = 0
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 
 	local pos = self.GlobalContext.TargetLastSeenPos
 	if not pos then
@@ -43,14 +48,16 @@ ENT.StateEnter.Investigate = function(self)
 	end
 
 	sc.Goal = pos
+
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(pos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Investigate = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
-	if sc.Done or not sc.Goal then
+	if not sc.Goal then
+		sc.Done = true
 		return
 	end
 
@@ -64,18 +71,12 @@ ENT.StateUpdate.Investigate = function(self, ctx)
 	if self:IsAtPosition(sc.Goal, GOAL_THRESH) then
 		sc.Arrived = true
 		sc.WaitUntil = CurTime() + WAIT_DUR
+
 		self:HandleSpeed(0, 0)
 
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
+		if gl.Path and gl.Path:IsValid() then
+			gl.Path:Invalidate()
 		end
-		return
-	end
-
-	local path = self.GlobalContext.Path
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		return
 	end
 
@@ -83,7 +84,16 @@ ENT.StateUpdate.Investigate = function(self, ctx)
 		return
 	end
 
+	self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 	self:RefreshPathIfStale(sc.Goal, "Follow")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
+end
+
+ENT.StateExit.Investigate = function(self)
+	local gl, sc = self:ReturnContext()
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 end

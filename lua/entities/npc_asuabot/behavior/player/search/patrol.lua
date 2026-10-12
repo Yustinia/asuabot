@@ -30,11 +30,16 @@ ENT.UtilityScores.Patrol = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Patrol = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Route = {}
 	sc.Index = 1
 	sc.Arrived = false
 	sc.WaitUntil = 0
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 
 	for _, pos in ipairs(self.GlobalContext.LastSeenTargetPositions or {}) do
 		sc.Route[#sc.Route + 1] = pos
@@ -50,10 +55,12 @@ ENT.StateEnter.Patrol = function(self)
 end
 
 ENT.StateUpdate.Patrol = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	local goal = sc.Route and sc.Route[sc.Index]
 
-	if sc.Done or not goal then
+	if not goal then
+		sc.Done = true
 		return
 	end
 
@@ -72,7 +79,9 @@ ENT.StateUpdate.Patrol = function(self, ctx)
 		end
 
 		self:HandleSpeed(SPEED, ACCEL)
-		self.GlobalContext.ProgressPosition = nil
+
+		gl.ProgressPosition = nil
+
 		self:ComputeRoutingPath(nextGoal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		return
 	end
@@ -82,16 +91,9 @@ ENT.StateUpdate.Patrol = function(self, ctx)
 		sc.WaitUntil = CurTime() + WAIT_DUR
 		self:HandleSpeed(0, 0)
 
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
+		if gl.Path and gl.Path:IsValid() then
+			gl.Path:Invalidate()
 		end
-		return
-	end
-
-	local path = self.GlobalContext.Path
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		return
 	end
 
@@ -99,7 +101,16 @@ ENT.StateUpdate.Patrol = function(self, ctx)
 		return
 	end
 
+	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 	self:RefreshPathIfStale(goal, "Follow")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
+end
+
+ENT.StateExit.Patrol = function(self)
+	local gl, sc = self:ReturnContext()
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 end

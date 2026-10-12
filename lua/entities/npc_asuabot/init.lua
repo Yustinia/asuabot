@@ -43,3 +43,4 @@ include("entities/npc_asuabot/context/threat.lua")
 -- helper
 include("entities/npc_asuabot/helper/curves.lua")
 include("entities/npc_asuabot/helper/state.lua")
+include("entities/npc_asuabot/helper/context.lua")

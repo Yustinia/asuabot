@@ -22,35 +22,35 @@ ENT.UtilityScores.Stare = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Stare = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Seen = false
 	sc.Vanish = false
 
-	self:HandleSpeed(0, 0)
-	local path = self.GlobalContext.Path
-	if path and path:IsValid() then
-		path:Invalidate()
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
 	end
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if not IsValid(gl.Target) then
 		sc.Done = true
 		return
 	end
 
-	local spot = self:FindPositionBehindTarget(target, MIN_RADIUS, MAX_RADIUS)
+	local spot = self:FindPositionBehindTarget(gl.Target, MIN_RADIUS, MAX_RADIUS)
 	if not spot then
 		sc.Done = true
 		return
 	end
 
+	self:HandleSpeed(0, 0)
 	self:Teleport(spot)
 end
 
 ENT.StateUpdate.Stare = function(self, ctx)
-	local sc = self.StateContext
-	if sc.Done or not ctx.TargetValid then
-		return
+	local gl, sc = self:ReturnContext()
+
+	if not ctx.TargetValid then
+		sc.Done = true
 	end
 
 	local looking = self:IsPlayerLookingAtBot(ctx.Target)
@@ -69,13 +69,14 @@ ENT.StateUpdate.Stare = function(self, ctx)
 end
 
 ENT.StateExit.Stare = function(self)
-	if not self.StateContext.Vanish then
+	local gl, sc = self:ReturnContext()
+
+	if not sc.Vanish then
 		return
 	end
 
-	local path = self.GlobalContext.Path
-	if path and path:IsValid() then
-		path:Invalidate()
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
 	end
 
 	local nav = self:FindRandomNavArea()

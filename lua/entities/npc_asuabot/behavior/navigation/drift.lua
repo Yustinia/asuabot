@@ -1,9 +1,8 @@
--- behavior/navigation/movement/drift.lua
 local SPEED = 200
 local ACCEL = 300
 local SCAN_RADIUS = 1200
 local MIN_LOOK_AHEAD = 150
-local GOAL_THRESH = 120
+local GOAL_THRESH = 20
 
 ENT.StateRules.Drift = {
 	min = 10,
@@ -28,28 +27,37 @@ ENT.UtilityScores.Drift = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Drift = function(self)
-	self:HandleSpeed(SPEED, ACCEL)
+	local gl, sc = self:ReturnContext()
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 
 	local goal = self:FindNearbyNavArea(SCAN_RADIUS)
 	if not goal then
+		sc.Done = true
 		return
 	end
 
-	self.StateContext.Goal = goal
+	sc.Goal = goal
+
+	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Drift = function(self, ctx)
-	local path = self.GlobalContext.Path
+	local gl, sc = self:ReturnContext()
 
-	if not path or not path:IsValid() then
+	if not gl.Path or not gl.Path:IsValid() then
 		local goal = self:FindNearbyNavArea(SCAN_RADIUS)
 		if not goal then
+			sc.Done = true
 			return
 		end
 
-		self.StateContext.Goal = goal
+		sc.Goal = goal
 		self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+
 		return
 	end
 
@@ -58,6 +66,14 @@ ENT.StateUpdate.Drift = function(self, ctx)
 	end
 
 	self:RefreshPathIfStale(self.StateContext.Goal, "Follow")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
+end
+
+ENT.StateExit.Drift = function(self)
+	local gl, sc = self:ReturnContext()
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 end

@@ -4,6 +4,11 @@ local MIN_LOOK_AHEAD = 100
 local GOAL_THRESH = 80
 local WAIT_DUR = 3
 
+local function PhaseChange(gl, sc, phaseName)
+	sc.Phase = phaseName
+	gl.ProgressPosition = nil
+end
+
 ENT.StateRules.Sweep = {
 	min = 8,
 	max = 90,
@@ -27,11 +32,16 @@ ENT.UtilityScores.Sweep = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Sweep = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Phase = "none"
 	sc.Route = {}
 	sc.Index = 1
 	sc.WaitUntil = 0
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 
 	local pos = self.GlobalContext.TargetLastSeenPos
 	if not pos then
@@ -41,18 +51,18 @@ ENT.StateEnter.Sweep = function(self)
 
 	sc.Origin = pos
 	sc.Phase = "go"
+
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(pos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Sweep = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
-	if sc.Phase == "none" or sc.Done then
+	if sc.Phase == "none" then
+		sc.Done = true
 		return
 	end
-
-	local path = self.GlobalContext.Path
 
 	if sc.Phase == "wait" then
 		if CurTime() < sc.WaitUntil then
@@ -83,8 +93,7 @@ ENT.StateUpdate.Sweep = function(self, ctx)
 			return
 		end
 
-		sc.Phase = "sweep"
-		self.GlobalContext.ProgressPosition = nil
+		PhaseChange(gl, sc, "sweep")
 
 		self:HandleSpeed(SPEED, ACCEL)
 		self:ComputeRoutingPath(nextGoal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
@@ -101,20 +110,14 @@ ENT.StateUpdate.Sweep = function(self, ctx)
 			sc.Index = 0
 		end
 
-		sc.Phase = "wait"
-		self.GlobalContext.ProgressPosition = nil
+		PhaseChange(gl, sc, "wait")
 
 		sc.WaitUntil = CurTime() + WAIT_DUR
 		self:HandleSpeed(0, 0)
 
-		if path and path:IsValid() then
-			path:Invalidate()
+		if gl.Path and gl.Path:IsValid() then
+			gl.Path:Invalidate()
 		end
-		return
-	end
-
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 		return
 	end
 
@@ -122,7 +125,16 @@ ENT.StateUpdate.Sweep = function(self, ctx)
 		return
 	end
 
+	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 	self:RefreshPathIfStale(goal, "Follow")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
+end
+
+ENT.StateExit.Sweep = function(self)
+	local gl, sc = self:ReturnContext()
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 end

@@ -6,6 +6,44 @@ local STOP_DIST = 20
 local START_RANGE = 1500
 local HOLD_DUR = 3
 
+local function PhaseChange(gl, sc, phaseName)
+	sc.Phase = phaseName
+	gl.ProgressPosition = nil
+end
+
+local Phases = {}
+
+Phases.dash = function(self, ctx, gl, sc)
+	if ctx.Distance <= STOP_DIST then
+		self:HandleSpeed(0, 0)
+
+		if gl.Path and gl.Path:IsValid() then
+			gl.Path:Invalidate()
+		end
+
+		PhaseChange(gl, sc, "hold")
+
+		sc.HoldUntil = CurTime() + HOLD_DUR
+		return
+	end
+
+	if self:HandleStuckCheck() then
+		return
+	end
+
+	self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+	self:RefreshPathIfStale(ctx.Target, "Chase")
+	gl.Path:Update(self)
+	self:ClearObstacles()
+end
+
+Phases.hold = function(self, ctx, gl, sc)
+	if CurTime() >= sc.HoldUntil then
+		sc.InSequence = false
+		sc.Done = true
+	end
+end
+
 ENT.StateRules.Feint = {
 	min = 4,
 	max = 12,
@@ -33,64 +71,44 @@ ENT.UtilityScores.Feint = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Feint = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Phase = "none"
 	sc.HoldUntil = 0
 	sc.InSequence = true
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	if not IsValid(gl.Target) then
 		sc.InSequence = false
 		sc.Done = true
 		return
 	end
 
 	sc.Phase = "dash"
+
 	self:HandleSpeed(SPEED, ACCEL)
-	self:ComputeRoutingPath(target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+	self:ComputeRoutingPath(gl.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 end
 
 ENT.StateUpdate.Feint = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
-	if sc.Phase == "none" or sc.Done or not ctx.TargetValid then
+	if sc.Phase == "none" or not ctx.TargetValid then
+		sc.InSequence = false
+		sc.Done = true
 		return
 	end
 
-	local path = self.GlobalContext.Path
+	Phases[sc.Phase](self, ctx, gl, sc)
+end
 
-	if sc.Phase == "dash" then
-		if ctx.Distance <= STOP_DIST then
-			self:HandleSpeed(0, 0)
-			if path and path:IsValid() then
-				path:Invalidate()
-			end
-			sc.Phase = "hold"
-			self.GlobalContext.ProgressPosition = nil
+ENT.StateExit.Feint = function(self)
+	local gl, sc = self:ReturnContext()
 
-			sc.HoldUntil = CurTime() + HOLD_DUR
-			return
-		end
-
-		if not path or not path:IsValid() then
-			self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
-			return
-		end
-
-		if self:HandleStuckCheck() then
-			return
-		end
-
-		self:RefreshPathIfStale(ctx.Target, "Chase")
-		path:Update(self)
-		self:ClearObstacles()
-		return
-	end
-
-	if sc.Phase == "hold" then
-		if CurTime() >= sc.HoldUntil then
-			sc.InSequence = false
-			sc.Done = true
-		end
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
 	end
 end

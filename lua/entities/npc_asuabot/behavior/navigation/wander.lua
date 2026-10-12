@@ -15,25 +15,34 @@ ENT.UtilityScores.Wander = function(self, ctx)
 end
 
 ENT.StateEnter.Wander = function(self)
+	local gl, sc = self:ReturnContext()
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
 	local goal = self:FindDistantNavArea(SCAN_RADIUS)
 	if not goal then
+		sc.Done = true
 		return
 	end
 
-	self.StateContext.Goal = goal
+	sc.Goal = goal
+
 	self:HandleSpeed(SPEED, ACCEl)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Wander = function(self, ctx)
-	local path = self.GlobalContext.Path
-	if not path or not path:IsValid() then
+	local gl, sc = self:ReturnContext()
+
+	if not gl.Path or not gl.Path:IsValid() then
 		local goal = self:FindDistantNavArea(SCAN_RADIUS)
 		if not goal then
 			return
 		end
 
-		self.StateContext.Goal = goal
+		sc.Goal = goal
 		self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 
 		return
@@ -44,6 +53,14 @@ ENT.StateUpdate.Wander = function(self, ctx)
 	end
 
 	self:RefreshPathIfStale(self.StateContext.Goal, "Follow")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
+end
+
+ENT.StateExit.Wander = function(self)
+	local gl, sc = self:ReturnContext()
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
 end

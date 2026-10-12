@@ -26,35 +26,38 @@ ENT.UtilityScores.Retreat = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Retreat = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Goal = nil
 	sc.Caught = false
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	if not IsValid(gl.Target) then
 		sc.Done = true
 		return
 	end
 
-	local goal = self:FindClosePosWithoutLOS(SCAN_RADIUS, target)
+	local goal = self:FindClosePosWithoutLOS(SCAN_RADIUS, gl.Target)
 	if not goal then
 		sc.Done = true
 		return
 	end
 
 	sc.Goal = goal
+
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Retreat = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
-	if sc.Done or not sc.Goal then
-		return
+	if not sc.Goal or not ctx.TargetValid then
+		sc.Done = true
 	end
-
-	local path = self.GlobalContext.Path
 
 	if self:IsAtPosition(sc.Goal, ARRIVE_DIST) then
 		sc.Caught = true
@@ -62,30 +65,29 @@ ENT.StateUpdate.Retreat = function(self, ctx)
 		return
 	end
 
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
-		return
-	end
-
 	if self:HandleStuckCheck() then
 		return
 	end
 
+	self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 	self:RefreshPathIfStale(sc.Goal, "Follow")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
 end
 
 ENT.StateExit.Retreat = function(self)
-	if self.StateContext.Caught then
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
-		end
+	local gl, sc = self:ReturnContext()
 
-		local nav = self:FindRandomNavArea()
-		if nav then
-			self:Teleport(nav)
-		end
+	if not sc.Caught then
+		return
+	end
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	local nav = self:FindRandomNavArea()
+	if nav then
+		self:Teleport(nav)
 	end
 end
