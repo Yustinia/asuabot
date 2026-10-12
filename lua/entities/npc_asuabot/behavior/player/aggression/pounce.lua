@@ -7,6 +7,60 @@ local SIGHT_RANGE = 1800
 local WAIT_DUR = 3 -- wait until next pounce
 local LEAP_TIMEOUT = 2
 
+local function PhaseChange(gl, sc, phaseName)
+	sc.Phase = phaseName
+	gl.ProgressPosition = nil
+end
+
+local Phases = {}
+
+Phases.leap = function(self, ctx, gl, sc)
+	if ctx.Touching then
+		self:DamageEntity(ctx.Target, DAMAGE)
+		self:PunchEntity(ctx.Target)
+		self:HandleSpeed(0, 0)
+		sc.Done = true
+		sc.Caught = true
+		return
+	end
+
+	if self:IsAtPosition(sc.LockedPos, GOAL_THRESH) or CurTime() >= sc.LeapUntil then
+		self:HandleSpeed(0, 0)
+
+		if gl.Path and gl.Path:IsValid() then
+			gl.Path:Invalidate()
+		end
+
+		PhaseChange(gl, sc, "wait")
+
+		sc.WaitUntil = CurTime() + WAIT_DUR
+		return
+	end
+
+	if self:HandleStuckCheck() then
+		return
+	end
+
+	self:ComputeRoutingPath(sc.LockedPos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+	self:RefreshPathIfStale(sc.LockedPos, "Follow")
+	gl.Path:Update(self)
+	self:ClearObstacles()
+end
+
+Phases.wait = function(self, ctx, gl, sc)
+	if CurTime() < sc.WaitUntil then
+		return
+	end
+
+	sc.LockedPos = ctx.Target:GetPos()
+	sc.LeapUntil = CurTime() + LEAP_TIMEOUT
+
+	PhaseChange(gl, sc, "leap")
+
+	self:HandleSpeed(SPEED, ACCEL)
+	self:ComputeRoutingPath(sc.LockedPos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+end
+
 ENT.StateRules.Pounce = {
 	min = 14,
 	max = 20,
@@ -35,92 +89,50 @@ ENT.UtilityScores.Pounce = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Pounce = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Phase = "none"
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	if not IsValid(gl.Target) then
 		return
 	end
 
-	sc.LockedPos = target:GetPos()
+	sc.LockedPos = gl.Target:GetPos()
 	sc.LeapUntil = CurTime() + LEAP_TIMEOUT
 	sc.Phase = "leap"
+
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(sc.LockedPos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Pounce = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
-	if sc.Phase == "none" or sc.Done or not ctx.TargetValid then
+	if sc.Phase == "none" or not ctx.TargetValid then
+		sc.Done = true
 		return
 	end
 
-	local path = self.GlobalContext.Path
-
-	if sc.Phase == "leap" then
-		if ctx.Touching then
-			self:DamageEntity(ctx.Target, DAMAGE)
-			self:PunchEntity(ctx.Target)
-			self:HandleSpeed(0, 0)
-			sc.Done = true
-			sc.Caught = true
-			return
-		end
-
-		if self:IsAtPosition(sc.LockedPos, GOAL_THRESH) or CurTime() >= sc.LeapUntil then
-			self:HandleSpeed(0, 0)
-			if path and path:IsValid() then
-				path:Invalidate()
-			end
-			sc.Phase = "wait"
-			self.GlobalContext.ProgressPosition = nil
-
-			sc.WaitUntil = CurTime() + WAIT_DUR
-			return
-		end
-
-		if not path or not path:IsValid() then
-			self:ComputeRoutingPath(sc.LockedPos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
-			return
-		end
-
-		if self:HandleStuckCheck() then
-			return
-		end
-
-		self:RefreshPathIfStale(sc.LockedPos, "Follow")
-		path:Update(self)
-		self:ClearObstacles()
-		return
-	end
-
-	if sc.Phase == "wait" then
-		if CurTime() < sc.WaitUntil then
-			return
-		end
-
-		sc.LockedPos = ctx.Target:GetPos()
-		sc.LeapUntil = CurTime() + LEAP_TIMEOUT
-		sc.Phase = "leap"
-		self.GlobalContext.ProgressPosition = nil
-
-		self:HandleSpeed(SPEED, ACCEL)
-		self:ComputeRoutingPath(sc.LockedPos, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
-	end
+	Phases[sc.Phase](self, ctx, gl, sc)
 end
 
 ENT.StateExit.Pounce = function(self)
-	if self.StateContext.Caught then
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
-		end
+	local gl, sc = self:ReturnContext()
 
-		local nav = self:FindRandomNavArea()
-		if nav then
-			self:Teleport(nav)
-		end
+	if not sc.Caught then
+		return
+	end
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	local nav = self:FindRandomNavArea()
+	if nav then
+		self:Teleport(nav)
 	end
 end
