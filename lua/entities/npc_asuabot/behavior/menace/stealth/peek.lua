@@ -133,6 +133,7 @@ ENT.StateEnter.Peek = function(self)
 	end
 
 	if not IsValid(gl.Target) then
+		sc.InSequence = false
 		sc.Done = true
 		return
 	end

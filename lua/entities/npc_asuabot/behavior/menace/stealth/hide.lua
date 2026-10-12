@@ -33,7 +33,7 @@ ENT.UtilityScores.Hide = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Hide = function(self)
-	local gl, sc = self.ReturnContext()
+	local gl, sc = self:ReturnContext()
 
 	sc.Goal = nil
 	sc.Vanish = false
@@ -47,7 +47,7 @@ ENT.StateEnter.Hide = function(self)
 		return
 	end
 
-	local goal = self:FindClosePosWithoutLOS(SCAN_RADIUS, gl.target)
+	local goal = self:FindClosePosWithoutLOS(SCAN_RADIUS, gl.Target)
 	if not goal then
 		sc.Done = true
 		return
