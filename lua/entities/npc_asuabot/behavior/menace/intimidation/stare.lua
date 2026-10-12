@@ -22,17 +22,18 @@ ENT.UtilityScores.Stare = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Stare = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Seen = false
 	sc.Vanish = false
 
 	self:HandleSpeed(0, 0)
-	local path = self.GlobalContext.Path
+	local path = gl.Path
 	if path and path:IsValid() then
 		path:Invalidate()
 	end
 
-	local target = self.GlobalContext.Target
+	local target = gl.Target
 	if not IsValid(target) then
 		sc.Done = true
 		return
@@ -48,7 +49,7 @@ ENT.StateEnter.Stare = function(self)
 end
 
 ENT.StateUpdate.Stare = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 	if sc.Done or not ctx.TargetValid then
 		return
 	end
