@@ -37,6 +37,10 @@ ENT.StateEnter.Investigate = function(self)
 	sc.Arrived = false
 	sc.WaitUntil = 0
 
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
 	local pos = self.GlobalContext.TargetLastSeenPos
 	if not pos then
 		sc.Done = true
