@@ -30,32 +30,34 @@ ENT.UtilityScores.Blink = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Blink = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Frozen = nil
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	if not IsValid(gl.Target) then
+		sc.Done = true
 		return
 	end
 
-	self:ComputeRoutingPath(target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+	self:ComputeRoutingPath(gl.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 end
 
 ENT.StateUpdate.Blink = function(self, ctx)
-	if not ctx.TargetValid then
-		return
-	end
+	local gl, sc = self:ReturnContext()
 
-	local sc = self.StateContext
-	if sc.Done or not ctx.TargetValid then
+	if not ctx.TargetValid then
+		sc.Done = true
 		return
 	end
 
 	local seen = self:IsPlayerLookingAtBot(ctx.Target)
-
 	if seen ~= sc.Frozen then
 		sc.Frozen = seen
-		self.GlobalContext.ProgressPosition = nil
+		gl.ProgressPosition = nil
 
 		if seen then
 			self:HandleSpeed(0, 0)
@@ -68,17 +70,11 @@ ENT.StateUpdate.Blink = function(self, ctx)
 		return
 	end
 
-	local path = self.GlobalContext.Path
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
-		return
-	end
-
 	if ctx.Touching then
 		self:DamageEntity(ctx.Target, DAMAGE)
 		self:PunchEntity(ctx.Target)
-		self.StateContext.Done = true
-		self.StateContext.Caught = true
+		sc.Done = true
+		sc.Caught = true
 		return
 	end
 
@@ -86,21 +82,25 @@ ENT.StateUpdate.Blink = function(self, ctx)
 		return
 	end
 
+	self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 	self:RefreshPathIfStale(ctx.Target, "Chase")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
 end
 
 ENT.StateExit.Blink = function(self)
-	if self.StateContext.Caught then
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
-		end
+	local gl, sc = self:ReturnContext()
 
-		local nav = self:FindRandomNavArea()
-		if nav then
-			self:Teleport(nav)
-		end
+	if not sc.Caught then
+		return
+	end
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	local nav = self:FindRandomNavArea()
+	if nav then
+		self:Teleport(nav)
 	end
 end
