@@ -8,6 +8,15 @@ local SEEN_DELAY = 1
 local LOOK_THRESHOLD = 0.966
 local DAMAGE = 2
 
+local function Reappear(self, target)
+	local spot = self:FindPositionBehindTarget(target, MIN_RADIUS, MAX_RADIUS)
+	if spot then
+		self:Teleport(spot)
+	end
+
+	self:ComputeRoutingPath(target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+end
+
 ENT.StateRules.Apparition = {
 	min = 15,
 	max = 25,
@@ -39,20 +48,15 @@ ENT.StateEnter.Apparition = function(self)
 
 	self:HandleSpeed(SPEED, ACCEL)
 
-	local spot = self:FindPositionBehindTarget(target, MIN_RADIUS, MAX_RADIUS)
-	if spot then
-		self:Teleport(spot)
-	end
-
-	self:ComputeRoutingPath(target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+	Reappear(self, target)
 end
 
 ENT.StateUpdate.Apparition = function(self, ctx)
+	local gl, sc = self.GlobalContext, self.StateContext
+
 	if not ctx.TargetValid then
 		return
 	end
-
-	local sc = self.StateContext
 
 	if self:IsPlayerLookingAtBot(ctx.Target, LOOK_THRESHOLD) then
 		sc.SeenSince = sc.SeenSince or CurTime()
@@ -60,11 +64,7 @@ ENT.StateUpdate.Apparition = function(self, ctx)
 		if CurTime() - sc.SeenSince >= SEEN_DELAY then
 			sc.SeenSince = nil
 
-			local spot = self:FindPositionBehindTarget(ctx.Target, MIN_RADIUS, MAX_RADIUS)
-			if spot then
-				self:Teleport(spot)
-				self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
-			end
+			Reappear(self, ctx.Target)
 			return
 		end
 	else
@@ -75,17 +75,12 @@ ENT.StateUpdate.Apparition = function(self, ctx)
 		self:DamageEntity(ctx.Target, DAMAGE)
 	end
 
-	local path = self.GlobalContext.Path
-	if not path or not path:IsValid() then
-		self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
-		return
-	end
-
 	if self:HandleStuckCheck() then
 		return
 	end
 
+	self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
 	self:RefreshPathIfStale(ctx.Target, "Chase")
-	path:Update(self)
+	gl.Path:Update(self)
 	self:ClearObstacles()
 end
