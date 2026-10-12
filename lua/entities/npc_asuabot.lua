@@ -117,20 +117,14 @@ if SERVER then
 		if IsValid(target) then
 			target:StopSound("Asuabot.Screech")
 			target:StopSound("Asuabot.Approach")
-			target:StopSound("Asuabot.Ambiance1")
-			target:StopSound("Asuabot.Ambiance2")
-			target:StopSound("Asuabot.Ambiance3")
-			target:StopSound("Asuabot.Ambiance4")
+			target:StopSound("Asuabot.Ambiance")
 			target:StopSound("Asuabot.Jumpscare")
 			target:StopSound("Asuabot.Slam")
 		end
 
 		self:StopSound("Asuabot.Screech")
 		self:StopSound("Asuabot.Approach")
-		self:StopSound("Asuabot.Ambiance1")
-		self:StopSound("Asuabot.Ambiance2")
-		self:StopSound("Asuabot.Ambiance3")
-		self:StopSound("Asuabot.Ambiance4")
+		self:StopSound("Asuabot.Ambiance")
 		self:StopSound("Asuabot.Jumpscare")
 		self:StopSound("Asuabot.Slam")
 	end
