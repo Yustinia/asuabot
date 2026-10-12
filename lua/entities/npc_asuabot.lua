@@ -120,6 +120,9 @@ if SERVER then
 			target:StopSound("Asuabot.Ambiance1")
 			target:StopSound("Asuabot.Ambiance2")
 			target:StopSound("Asuabot.Ambiance3")
+			target:StopSound("Asuabot.Ambiance4")
+			target:StopSound("Asuabot.Jumpscare")
+			target:StopSound("Asuabot.Slam")
 		end
 
 		self:StopSound("Asuabot.Screech")
@@ -127,6 +130,9 @@ if SERVER then
 		self:StopSound("Asuabot.Ambiance1")
 		self:StopSound("Asuabot.Ambiance2")
 		self:StopSound("Asuabot.Ambiance3")
+		self:StopSound("Asuabot.Ambiance4")
+		self:StopSound("Asuabot.Jumpscare")
+		self:StopSound("Asuabot.Slam")
 	end
 
 	function ENT:Initialize()
