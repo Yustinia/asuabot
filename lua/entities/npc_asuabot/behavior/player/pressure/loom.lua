@@ -23,26 +23,24 @@ ENT.UtilityScores.Loom = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Loom = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Appeared = false
 	sc.InSequence = true
 
-	self:HandleSpeed(0, 0)
-	local path = self.GlobalContext.Path
-	if path and path:IsValid() then
-		path:Invalidate()
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
 	end
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if not IsValid(gl.Target) then
 		sc.InSequence = false
 		sc.Done = true
 		return
 	end
 
 	local side = math.random(2) == 1 and 1 or -1
-	local yaw = target:EyeAngles().y + EDGE_ANGLE * side
-	local pos = target:GetPos() + Angle(0, yaw, 0):Forward() * DIST
+	local yaw = gl.Target:EyeAngles().y + EDGE_ANGLE * side
+	local pos = gl.Target:GetPos() + Angle(0, yaw, 0):Forward() * DIST
 
 	local area = navmesh.GetNearestNavArea(pos)
 	if not IsValid(area) then
@@ -51,12 +49,14 @@ ENT.StateEnter.Loom = function(self)
 		return
 	end
 
-	self:Teleport(area:GetClosestPointOnArea(pos))
 	sc.Appeared = true
+
+	self:HandleSpeed(0, 0)
+	self:Teleport(area:GetClosestPointOnArea(pos))
 end
 
 ENT.StateUpdate.Loom = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
 	if not ctx.PlayerStill then
 		sc.InSequence = false
@@ -65,13 +65,14 @@ ENT.StateUpdate.Loom = function(self, ctx)
 end
 
 ENT.StateExit.Loom = function(self)
-	if not self.StateContext.Appeared then
+	local gl, sc = self:ReturnContext()
+
+	if not sc.Appeared then
 		return
 	end
 
-	local path = self.GlobalContext.Path
-	if path and path:IsValid() then
-		path:Invalidate()
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
 	end
 
 	local nav = self:FindRandomNavArea()
