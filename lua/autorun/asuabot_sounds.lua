@@ -66,4 +66,5 @@ Add("Asuabot.Slam", {
 
 Add("Asuabot.Foley", {
 	"asuabot/Foley-1.wav",
+	"asuabot/Foley-2.wav",
 }, 100)
