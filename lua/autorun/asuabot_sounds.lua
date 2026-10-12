@@ -17,6 +17,6 @@ Add("Asuabot.Screech", {
 
 Add("Asuabot.Approach", "asuabot/Approach-1.wav")
 
-Add("Asuabot.Ambiance1", "asuabot/Ambiance-1.mp3", 70, 100)
-Add("Asuabot.Ambiance2", "asuabot/Ambiance-2.wav", 70, 100)
-Add("Asuabot.Ambiance3", "asuabot/Ambiance-3.mp3", 70, 100)
+Add("Asuabot.Ambiance1", "asuabot/Ambiance-1.wav", 100, 100)
+Add("Asuabot.Ambiance2", "asuabot/Ambiance-2.wav", 100, 100)
+Add("Asuabot.Ambiance3", "asuabot/Ambiance-3.wav", 100, 100)

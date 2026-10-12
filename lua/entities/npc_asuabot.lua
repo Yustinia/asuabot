@@ -112,12 +112,7 @@ if SERVER then
 
 	include("entities/npc_asuabot/init.lua")
 
-	function ENT:OnRemove()
-		local snd = self.StateContext and self.StateContext.Loop
-		if snd then
-			snd:Stop()
-		end
-	end
+	function ENT:OnRemove() end
 
 	function ENT:Initialize()
 		-- Model / appearance
@@ -181,6 +176,9 @@ if SERVER then
 			-- debug
 			DebugScores = {},
 			DebugTraces = {},
+
+			-- sound
+			Loop = nil,
 		}
 
 		self.StateContext = {}
