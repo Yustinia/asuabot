@@ -89,3 +89,11 @@ ENT.StateUpdate.Apparition = function(self, ctx)
 	gl.Path:Update(self)
 	self:ClearObstacles()
 end
+
+ENT.StateExit.Apparition = function(self)
+	local gl, sc = self:ReturnContext()
+
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+end
