@@ -78,6 +78,7 @@ ENT.StateUpdate.Apparition = function(self, ctx)
 
 	if ctx.Touching then
 		self:DamageEntity(ctx.Target, DAMAGE)
+		self:PunchEntity(ctx.Target)
 	end
 
 	if self:HandleStuckCheck() then
