@@ -9,10 +9,9 @@ end
 
 --- Re-emits a sound each time its length elapses.
 -- @param ent Entity: emitter (the bot or the player)
--- @param key string: unique key for this loop
 -- @param name string: registered sound name
 -- helper
-function ENT:EmitLoop(ent, key, name)
+function ENT:EmitLoop(ent, name)
 	local file = ASUABOT_SOUND_FILES[name]
 	if not IsValid(ent) or not file then
 		return
@@ -21,11 +20,17 @@ function ENT:EmitLoop(ent, key, name)
 	local sc = self.StateContext
 	sc.LoopNext = sc.LoopNext or {}
 
+	local key = ent:EntIndex() .. name
 	if CurTime() < (sc.LoopNext[key] or 0) then
 		return
 	end
 
-	sc.LoopNext[key] = CurTime() + SoundDuration(file) - 0.05
+	local len = SoundDuration(file)
+	if len <= 0 then
+		return
+	end
+
+	sc.LoopNext[key] = CurTime() + len - 0.05
 	ent:EmitSound(name)
 end
 
