@@ -8,6 +8,97 @@ local LOOK_THRESHOLD = 0.966
 local MAX_START_DIST = 2000
 local OUT_DUR = 20
 
+local function PhaseChange(gl, sc, phaseName)
+	sc.Phase = phaseName
+	gl.ProgressPosition = nil
+end
+
+local Phases = {}
+
+-- go to the hiding position
+Phases.hide = function(self, ctx, gl, sc)
+	if self:IsAtPosition(sc.HideSpot, GOAL_THRESH) then
+		PhaseChange(gl, sc, "out")
+
+		sc.OutUntil = CurTime() + OUT_DUR
+		self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+		return
+	end
+
+	if self:HandleStuckCheck() then
+		return
+	end
+
+	self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+	self:RefreshPathIfStale(sc.HideSpot, "Follow")
+	gl.Path:Update(self)
+	self:ClearObstacles()
+end
+
+-- bot chases the player
+Phases.out = function(self, ctx, gl, sc)
+	if ctx.Visible then
+		PhaseChange(gl, sc, "watch")
+
+		self:HandleSpeed(0, 0)
+
+		if gl.Path and gl.Path:IsValid() then
+			gl.Path:Invalidate()
+		end
+
+		return
+	end
+
+	if CurTime() >= sc.OutUntil then
+		PhaseChange(gl, sc, "back")
+
+		self:HandleSpeed(SPEED, ACCEL)
+		self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+		return
+	end
+
+	if self:HandleStuckCheck() then
+		return
+	end
+
+	self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+	self:RefreshPathIfStale(ctx.Target, "Chase")
+	gl.Path:Update(self)
+	self:ClearObstacles()
+end
+
+-- bot watching player
+Phases.watch = function(self, ctx, gl, sc)
+	local close = ctx.Distance <= TRIGGER_RANGE
+	local looked = self:IsPlayerLookingAtBot(ctx.Target, LOOK_THRESHOLD)
+
+	if close or looked or CurTime() >= sc.OutUntil then
+		PhaseChange(gl, sc, "back")
+
+		self:HandleSpeed(SPEED, ACCEL)
+		self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+	end
+end
+
+-- bot returning to hide position
+Phases.back = function(self, ctx, gl, sc)
+	if self:IsAtPosition(sc.HideSpot, GOAL_THRESH) then
+		sc.Vanish = true
+		sc.InSequence = false
+		sc.Done = true
+		return
+	end
+
+	if self:HandleStuckCheck() then
+		return
+	end
+
+	self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+	self:RefreshPathIfStale(sc.HideSpot, "Follow")
+	gl.Path:Update(self)
+	self:ClearObstacles()
+end
+
 ENT.StateRules.Peek = {
 	min = 8,
 	max = 90,
@@ -29,148 +120,58 @@ ENT.UtilityScores.Peek = function(self, ctx, trace)
 end
 
 ENT.StateEnter.Peek = function(self)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
+
 	sc.Phase = "none"
 	sc.HideSpot = nil
 	sc.OutUntil = 0
 	sc.Vanish = false
 	sc.InSequence = true
 
-	local target = self.GlobalContext.Target
-	if not IsValid(target) then
+	if not IsValid(gl.Target) then
 		sc.Done = true
 		return
 	end
 
-	local goal = self:FindClosePosWithoutLOS(SCAN_RADIUS, target)
+	local goal = self:FindClosePosWithoutLOS(SCAN_RADIUS, gl.Target)
 	if not goal then
+		sc.InSequence = false
 		sc.Done = true
 		return
 	end
 
 	sc.HideSpot = goal
 	sc.Phase = "hide"
+
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 end
 
 ENT.StateUpdate.Peek = function(self, ctx)
-	local sc = self.StateContext
+	local gl, sc = self:ReturnContext()
 
 	if sc.Phase == "none" or not ctx.TargetValid then
+		sc.Done = true
+		sc.InSequence = false
 		return
 	end
 
-	local path = self.GlobalContext.Path
-
-	if sc.Phase == "hide" then
-		if self:IsAtPosition(sc.HideSpot, GOAL_THRESH) then
-			sc.Phase = "out"
-			self.GlobalContext.ProgressPosition = nil
-
-			sc.OutUntil = CurTime() + OUT_DUR
-			self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
-			return
-		end
-
-		if not path or not path:IsValid() then
-			self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
-			return
-		end
-
-		if self:HandleStuckCheck() then
-			return
-		end
-
-		self:RefreshPathIfStale(sc.HideSpot, "Follow")
-		path:Update(self)
-		self:ClearObstacles()
-		return
-	end
-
-	if sc.Phase == "out" then
-		if ctx.Visible then
-			sc.Phase = "watch"
-			self.GlobalContext.ProgressPosition = nil
-
-			self:HandleSpeed(0, 0)
-			if path and path:IsValid() then
-				path:Invalidate()
-			end
-			return
-		end
-
-		if CurTime() >= sc.OutUntil then
-			sc.Phase = "return"
-			self.GlobalContext.ProgressPosition = nil
-
-			self:HandleSpeed(SPEED, ACCEL)
-			self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
-			return
-		end
-
-		if not path or not path:IsValid() then
-			self:ComputeRoutingPath(ctx.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
-			return
-		end
-
-		if self:HandleStuckCheck() then
-			return
-		end
-
-		self:RefreshPathIfStale(ctx.Target, "Chase")
-		path:Update(self)
-		self:ClearObstacles()
-		return
-	end
-
-	if sc.Phase == "watch" then
-		local close = ctx.Distance <= TRIGGER_RANGE
-		local looked = self:IsPlayerLookingAtBot(ctx.Target, LOOK_THRESHOLD)
-
-		if close or looked or CurTime() >= sc.OutUntil then
-			sc.Phase = "return"
-			self.GlobalContext.ProgressPosition = nil
-
-			self:HandleSpeed(SPEED, ACCEL)
-			self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
-		end
-		return
-	end
-
-	if sc.Phase == "return" then
-		if self:IsAtPosition(sc.HideSpot, GOAL_THRESH) then
-			sc.Vanish = true
-			sc.InSequence = false
-			sc.Done = true
-			return
-		end
-
-		if not path or not path:IsValid() then
-			self:ComputeRoutingPath(sc.HideSpot, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
-			return
-		end
-
-		if self:HandleStuckCheck() then
-			return
-		end
-
-		self:RefreshPathIfStale(sc.HideSpot, "Follow")
-		path:Update(self)
-		self:ClearObstacles()
-	end
+	Phases[sc.Phase](self, ctx, gl, sc)
 end
 
 ENT.StateExit.Peek = function(self)
-	if self.StateContext.Vanish then
-		local path = self.GlobalContext.Path
-		if path and path:IsValid() then
-			path:Invalidate()
-		end
+	local gl, sc = self.ReturnContext()
 
-		local nav = self:FindRandomNavArea()
-		if nav then
-			self:Teleport(nav)
-		end
+	if not sc.Vanish then
+		return
+	end
+
+	if gl.Path or gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
+	local nav = self.FindRandomNavArea()
+	if nav then
+		self:Teleport(nav)
 	end
 end
