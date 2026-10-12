@@ -38,6 +38,10 @@ ENT.StateEnter.Hide = function(self)
 	sc.Goal = nil
 	sc.Vanish = false
 
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
 	if not IsValid(gl.Target) then
 		sc.Done = true
 		return

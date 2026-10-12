@@ -128,6 +128,10 @@ ENT.StateEnter.Peek = function(self)
 	sc.Vanish = false
 	sc.InSequence = true
 
+	if gl.Path and gl.Path:IsValid() then
+		gl.Path:Invalidate()
+	end
+
 	if not IsValid(gl.Target) then
 		sc.Done = true
 		return
