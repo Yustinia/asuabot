@@ -41,6 +41,9 @@ Add("Asuabot.Jumpscare", {
 	"asuabot/Jumpscare-1.wav",
 	"asuabot/Jumpscare-2.wav",
 	"asuabot/Jumpscare-3.wav",
+	"asuabot/Jumpscare-4.wav",
+	"asuabot/Jumpscare-5.wav",
+	"asuabot/Jumpscare-6.wav",
 }, 100)
 
 Add("Asuabot.Approach", {
@@ -56,12 +59,14 @@ Add("Asuabot.Ambiance", {
 	"asuabot/Ambiance-4.wav",
 	"asuabot/Ambiance-5.wav",
 	"asuabot/Ambiance-6.wav",
+	"asuabot/Ambiance-7.wav",
 }, 100, 100)
 
 Add("Asuabot.Slam", {
 	"asuabot/Slam-1.wav",
 	"asuabot/Slam-2.wav",
 	"asuabot/Slam-3.wav",
+	"asuabot/Slam-4.wav",
 }, 100)
 
 Add("Asuabot.Foley", {
