@@ -53,12 +53,6 @@ ENT.StateRules.Feint = {
 }
 
 ENT.UtilityScores.Feint = function(self, ctx, trace)
-	if trace then
-		trace.Distance = ctx.Distance
-		trace.Visible = ctx.Visible and 1 or 0
-	end
-
-	-- needs the player in view, and room to dash before stopping
 	if not ctx.TargetValid or not ctx.Visible then
 		return 0
 	end
@@ -67,7 +61,29 @@ ENT.UtilityScores.Feint = function(self, ctx, trace)
 		return 0
 	end
 
-	return 0.65
+	local range = math.max(
+		Consider(ctx.Distance, STOP_DIST, START_RANGE, function(x)
+			return Curves.Bell(x, 0.5, 0.3)
+		end),
+		0.2
+	)
+	local watched = ctx.Observe and 1 or 0.4
+	local room = ctx.PlayerInOpen and 1 or 0.6
+	local healthy = math.max(Consider(ctx.HealthFrac, 0, 1, Curves.Linear), 0.4)
+
+	if trace then
+		trace.Range = range
+		trace.Watched = watched
+		trace.Room = room
+		trace.Healthy = healthy
+	end
+
+	return WeightedGeoMean({
+		{ score = range, weight = 1 },
+		{ score = watched, weight = 1.3 },
+		{ score = room, weight = 0.8 },
+		{ score = healthy, weight = 0.6 },
+	})
 end
 
 ENT.StateEnter.Feint = function(self)

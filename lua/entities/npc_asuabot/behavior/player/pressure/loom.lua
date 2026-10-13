@@ -11,15 +11,31 @@ ENT.StateRules.Loom = {
 }
 
 ENT.UtilityScores.Loom = function(self, ctx, trace)
-	if trace then
-		trace.StillFor = ctx.StillFor
-	end
-
 	if not ctx.TargetValid or ctx.StillFor < STILL_REQUIRED then
 		return 0
 	end
 
-	return 0.8
+	local patience = math.max(
+		Consider(ctx.StillFor, STILL_REQUIRED, 15, function(x)
+			return Curves.PowerOut(x, 2)
+		end),
+		0.5
+	)
+	local dark = ctx.Flashlight and 0.7 or 1
+	local tight = ctx.PlayerEnclosed and 1 or 0.7
+
+	if trace then
+		trace.StillFor = ctx.StillFor
+		trace.Patience = patience
+		trace.Dark = dark
+		trace.Tight = tight
+	end
+
+	return WeightedGeoMean({
+		{ score = patience, weight = 1.2 },
+		{ score = dark, weight = 0.6 },
+		{ score = tight, weight = 0.8 },
+	})
 end
 
 ENT.StateEnter.Loom = function(self)

@@ -99,16 +99,28 @@ ENT.StateRules.Creep = {
 }
 
 ENT.UtilityScores.Creep = function(self, ctx, trace)
-	if trace then
-		trace.Distance = ctx.Distance
-		trace.Observe = ctx.Observe and 1 or 0
-	end
-
 	if not ctx.TargetValid or ctx.Observe or ctx.Distance > START_RANGE then
 		return 0
 	end
 
-	return 0.6
+	local range = math.max(Consider(ctx.Distance, 0, START_RANGE, Curves.LinearInverse), 0.2)
+	local dark = ctx.Flashlight and 0.7 or 1
+	local cover = ctx.PlayerInOpen and 0.5 or 1
+	local distracted = math.max(Consider(ctx.PlayerSpeed, 0, 250, Curves.Linear), 0.4)
+
+	if trace then
+		trace.Range = range
+		trace.Dark = dark
+		trace.Cover = cover
+		trace.Distracted = distracted
+	end
+
+	return WeightedGeoMean({
+		{ score = range, weight = 1 },
+		{ score = dark, weight = 0.7 },
+		{ score = cover, weight = 1 },
+		{ score = distracted, weight = 0.6 },
+	})
 end
 
 ENT.StateEnter.Creep = function(self)
