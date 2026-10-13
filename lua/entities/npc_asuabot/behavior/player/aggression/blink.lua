@@ -18,14 +18,26 @@ ENT.UtilityScores.Blink = function(self, ctx, trace)
 		return 0
 	end
 
-	local close = Consider(ctx.Distance, 0, TRIGGER_RANGE, Curves.LinearInverse)
+	local close = math.max(Consider(ctx.Distance, 0, TRIGGER_RANGE, Curves.LinearInverse), 0.15)
+	local unseen = ctx.Observe and 0.3 or 1
+	local moving = math.max(Consider(ctx.PlayerSpeed, 0, 250, Curves.Linear), 0.3)
+	local cover = ctx.PlayerInOpen and 0.4 or (ctx.PlayerEnclosed and 1 or 0.7)
+	local dark = ctx.Flashlight and 0.7 or 1
 
 	if trace then
 		trace.Close = close
+		trace.Unseen = unseen
+		trace.Moving = moving
+		trace.Cover = cover
+		trace.Dark = dark
 	end
 
 	return WeightedGeoMean({
 		{ score = close, weight = 1 },
+		{ score = unseen, weight = 1.2 },
+		{ score = moving, weight = 0.8 },
+		{ score = cover, weight = 1 },
+		{ score = dark, weight = 0.5 },
 	})
 end
 
