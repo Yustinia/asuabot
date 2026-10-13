@@ -20,15 +20,18 @@ ENT.UtilityScores.Hide = function(self, ctx, trace)
 
 	local near = Consider(ctx.Distance, 0, SIGHT_RANGE, Curves.LinearInverse)
 	local seen = ctx.Observe and 1 or 0.2
+	local armed = ctx.HoldingRanged and 1 or 0.4
 
 	if trace then
 		trace.Near = near
 		trace.Seen = seen
+		trace.Armed = armed
 	end
 
 	return WeightedGeoMean({
 		{ score = near, weight = 1 },
 		{ score = seen, weight = 1.5 },
+		{ score = armed, weight = 1.2 },
 	})
 end
 
