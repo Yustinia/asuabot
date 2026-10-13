@@ -95,15 +95,30 @@ ENT.StateRules.Ambush = {
 }
 
 ENT.UtilityScores.Ambush = function(self, ctx, trace)
-	if trace then
-		trace.Distance = ctx.Distance
-	end
-
 	if not ctx.TargetValid or ctx.Distance > START_RANGE then
 		return 0
 	end
 
-	return 0.75
+	local range = Consider(ctx.Distance, 0, START_RANGE, function(x)
+		return Curves.Bell(x, 0.7, 0.25)
+	end)
+	local moving = math.max(Consider(ctx.PlayerSpeed, 0, 300, Curves.Linear), 0.2)
+	local unseen = ctx.Observe and 0.3 or 1
+	local enclosed = ctx.PlayerEnclosed and 1 or 0.5
+
+	if trace then
+		trace.Range = range
+		trace.Moving = moving
+		trace.Unseen = unseen
+		trace.Enclosed = enclosed
+	end
+
+	return WeightedGeoMean({
+		{ score = range, weight = 1 },
+		{ score = moving, weight = 1.2 },
+		{ score = unseen, weight = 1 },
+		{ score = enclosed, weight = 0.8 },
+	})
 end
 
 ENT.StateEnter.Ambush = function(self)
