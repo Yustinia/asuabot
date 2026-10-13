@@ -12,17 +12,22 @@ ENT.StateRules.Drift = {
 
 ENT.UtilityScores.Drift = function(self, ctx, trace)
 	if not ctx.TargetValid then
-		return 0
+		return 0.7
 	end
 
 	local near = Consider(ctx.Distance, 0, SCAN_RADIUS, Curves.LinearInverse)
+	local distance = Consider(ctx.Distance, 0, 4000, function(x)
+		return Curves.Bell(x, nil, 0.15)
+	end)
 
 	if trace then
 		trace.Near = near
+		trace.Distance = distance
 	end
 
 	return WeightedGeoMean({
-		{ score = near, weight = 1 },
+		{ score = near, weight = 1.5 },
+		{ score = distance, weight = 0.8 },
 	})
 end
 
