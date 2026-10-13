@@ -14,20 +14,32 @@ ENT.StateRules.Investigate = {
 ENT.UtilityScores.Investigate = function(self, ctx, trace)
 	local pos = self.GlobalContext.TargetLastSeenPos
 
-	if trace then
-		trace.HasPos = pos and 1 or 0
-		trace.Visible = ctx.Visible and 1 or 0
-	end
-
 	if not ctx.TargetValid or not pos or ctx.Visible then
 		return 0
 	end
 
-	if self:GetPos():Distance(pos) <= GOAL_THRESH then
+	local dist = self:GetPos():Distance(pos)
+	if dist <= GOAL_THRESH then
 		return 0
 	end
 
-	return 0.7
+	local fresh = math.max(
+		Consider(ctx.LastSeenAge, 0, 30, function(x)
+			return Curves.PowerInverseOut(x, 2)
+		end),
+		0.2
+	)
+	local reach = math.max(Consider(dist, 0, 3000, Curves.LinearInverse), 0.3)
+
+	if trace then
+		trace.Fresh = fresh
+		trace.Reach = reach
+	end
+
+	return WeightedGeoMean({
+		{ score = fresh, weight = 1.3 },
+		{ score = reach, weight = 0.7 },
+	})
 end
 
 ENT.StateEnter.Investigate = function(self)

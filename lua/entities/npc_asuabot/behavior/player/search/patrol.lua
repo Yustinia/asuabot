@@ -15,18 +15,29 @@ ENT.UtilityScores.Patrol = function(self, ctx, trace)
 	local glb = self.GlobalContext
 	local list = glb.LastSeenTargetPositions
 	local count = list and #list or 0
-	local required = glb.LastSeenTargetSize
 
-	if trace then
-		trace.Points = count
-		trace.Visible = ctx.Visible and 1 or 0
-	end
-
-	if not ctx.TargetValid or count < required or ctx.Visible then
+	if not ctx.TargetValid or count < glb.LastSeenTargetSize or ctx.Visible then
 		return 0
 	end
 
-	return 0.6
+	local cold = math.max(
+		Consider(ctx.LastSeenAge, 0, 90, function(x)
+			return Curves.PowerIn(x, 1.5)
+		end),
+		0.2
+	)
+	local far = math.max(Consider(ctx.Distance, 0, 4000, Curves.Linear), 0.3)
+
+	if trace then
+		trace.Points = count
+		trace.Cold = cold
+		trace.Far = far
+	end
+
+	return WeightedGeoMean({
+		{ score = cold, weight = 1.3 },
+		{ score = far, weight = 0.6 },
+	})
 end
 
 ENT.StateEnter.Patrol = function(self)

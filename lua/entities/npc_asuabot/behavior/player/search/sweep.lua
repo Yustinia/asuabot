@@ -19,16 +19,27 @@ ENT.StateRules.Sweep = {
 ENT.UtilityScores.Sweep = function(self, ctx, trace)
 	local pos = self.GlobalContext.TargetLastSeenPos
 
-	if trace then
-		trace.HasPos = pos and 1 or 0
-		trace.Visible = ctx.Visible and 1 or 0
-	end
-
 	if not ctx.TargetValid or not pos or ctx.Visible then
 		return 0
 	end
 
-	return 0.7
+	local cooling = math.max(
+		Consider(ctx.LastSeenAge, 0, 60, function(x)
+			return Curves.Bell(x, 0.4, 0.25)
+		end),
+		0.2
+	)
+	local tight = ctx.PlayerEnclosed and 1 or 0.7
+
+	if trace then
+		trace.Cooling = cooling
+		trace.Tight = tight
+	end
+
+	return WeightedGeoMean({
+		{ score = cooling, weight = 1.3 },
+		{ score = tight, weight = 0.5 },
+	})
 end
 
 ENT.StateEnter.Sweep = function(self)
