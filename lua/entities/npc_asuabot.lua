@@ -49,7 +49,7 @@ if CLIENT then
 			return
 		end
 
-		local y = 100
+		local y = 10
 		local function line(text, x, col)
 			draw.SimpleText(text, "DermaDefault", x, y, col or color_white)
 			y = y + 16

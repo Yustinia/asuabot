@@ -14,15 +14,30 @@ ENT.StateRules.Retreat = {
 }
 
 ENT.UtilityScores.Retreat = function(self, ctx, trace)
-	if trace then
-		trace.Observe = ctx.Observe and 1 or 0
-	end
-
 	if not ctx.TargetValid or not ctx.Observe then
 		return 0
 	end
 
-	return 0.6
+	local mid = math.max(
+		Consider(ctx.Distance, 0, 2500, function(x)
+			return Curves.Bell(x, 0.5, 0.25)
+		end),
+		0.15
+	)
+	local calm = math.max(Consider(ctx.PlayerSpeed, 0, 300, Curves.LinearInverse), 0.3)
+	local healthy = math.max(Consider(ctx.HealthFrac, 0, 1, Curves.Linear), 0.4)
+
+	if trace then
+		trace.Mid = mid
+		trace.Calm = calm
+		trace.Healthy = healthy
+	end
+
+	return WeightedGeoMean({
+		{ score = mid, weight = 1 },
+		{ score = calm, weight = 1 },
+		{ score = healthy, weight = 0.6 },
+	})
 end
 
 ENT.StateEnter.Retreat = function(self)

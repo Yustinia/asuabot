@@ -13,15 +13,26 @@ ENT.StateRules.Flee = {
 }
 
 ENT.UtilityScores.Flee = function(self, ctx, trace)
-	if trace then
-		trace.Observe = ctx.Observe and 1 or 0
-	end
-
 	if not ctx.TargetValid or not ctx.Observe then
 		return 0
 	end
 
-	return 0.7
+	local close = math.max(Consider(ctx.Distance, 0, 1200, Curves.LinearInverse), 0.15)
+	local armed = ctx.HoldingRanged and 1 or 0.5
+	local pressed = Consider(ctx.PlayerSpeed, 0, 300, Curves.Linear)
+	pressed = math.max(pressed, 0.3)
+
+	if trace then
+		trace.Close = close
+		trace.Armed = armed
+		trace.Pressed = pressed
+	end
+
+	return WeightedGeoMean({
+		{ score = close, weight = 1.2 },
+		{ score = armed, weight = 1 },
+		{ score = pressed, weight = 0.8 },
+	})
 end
 
 ENT.StateEnter.Flee = function(self)
