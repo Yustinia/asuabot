@@ -1,33 +1,5 @@
-function ENT:GetPlayerPosition(target)
-	return target:GetPos()
-end
-
-function ENT:GetPlayerDistance(target)
-	return self:Distance(target:GetPos())
-end
-
 function ENT:GetPlayerOccupiedNavArea(target)
 	return navmesh.GetNearestNavArea(target:GetPos())
-end
-
-function ENT:GetPlayerDirection(target)
-	return target:GetForward()
-end
-
-function ENT:IsPlayerBehindBot(target)
-	local dirToPlayer = (target:GetPos() - self:GetPos()):GetNormalized()
-
-	return self:GetForward():Dot(dirToPlayer) < 0
-end
-
-function ENT:IsPlayerFrontBot(target)
-	local dirToPlayer = (target:GetPos() - self:GetPos()):GetNormalized()
-
-	return self:GetForward():Dot(dirToPlayer) > 0
-end
-
-function ENT:GetPlayerRelativeVelocity(target)
-	return target:GetVelocity() - self:GetVelocity()
 end
 
 function ENT:IsTouchingPlayer(target, distanceThreshold)

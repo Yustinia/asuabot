@@ -35,10 +35,7 @@ include("entities/npc_asuabot/capability/spatial.lua")
 include("entities/npc_asuabot/context/environmental.lua")
 include("entities/npc_asuabot/context/equipment.lua")
 include("entities/npc_asuabot/context/perceptual.lua")
-include("entities/npc_asuabot/context/physical.lua")
-include("entities/npc_asuabot/context/social.lua")
 include("entities/npc_asuabot/context/spatial.lua")
-include("entities/npc_asuabot/context/threat.lua")
 
 -- helper
 include("entities/npc_asuabot/helper/curves.lua")

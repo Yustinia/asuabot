@@ -36,6 +36,7 @@ function ENT:SampleContext()
 	c.Observe = false
 	c.PlayerSpeed = 0
 	c.PlayerSpeed3D = 0
+	c.PlayerVelocity = 0
 	c.Crouching = false
 	c.Swimming = false
 	c.InVehicle = false
@@ -44,6 +45,10 @@ function ENT:SampleContext()
 	c.CameraDelta = 0
 	c.PlayerStill = false
 	c.StillFor = 0
+	c.PlayerPosition = 0
+	c.PlayerInOpen = false
+	c.PlayerCornered = false
+	c.PlayerEnclosed = false
 
 	if c.TargetValid then
 		c.Distance = self:GetPos():Distance(c.Target:GetPos())
@@ -52,11 +57,22 @@ function ENT:SampleContext()
 		c.Observe = self:IsPlayerLookingAtBot(c.Target)
 		c.PlayerSpeed = c.Target:GetVelocity():Length2D()
 		c.PlayerSpeed3D = c.Target:GetVelocity():Length()
+		c.PlayerVelocity = c.Target:GetVelocity()
 		c.Crouching = c.Target:Crouching()
 		c.Swimming = c.Target:WaterLevel() >= 2
 		c.InVehicle = c.Target:InVehicle()
 		c.Flashlight = c.Target:FlashlightIsOn()
 		c.HealthFrac = c.Target:Health() / math.max(c.Target:GetMaxHealth(), 1)
+		c.PlayerPosition = c.Target:GetPos()
+
+		if CurTime() >= (g.NextSurroundSample or 0) then
+			g.NextSurroundSample = CurTime() + 0.5
+			g.PlayerInOpen, g.PlayerCornered, g.PlayerEnclosed = self:SampleSurroundings(c.Target)
+		end
+
+		c.PlayerInOpen = g.PlayerInOpen or false
+		c.PlayerCornered = g.PlayerCornered or false
+		c.PlayerEnclosed = g.PlayerEnclosed or false
 
 		if c.Visible then
 			g.TargetLastSeenTime = CurTime()
@@ -79,6 +95,9 @@ function ENT:SampleContext()
 	else
 		g.LastEyeAngles = nil
 		g.StillSince = nil
+
+		g.PlayerInOpen, g.PlayerCornered, g.PlayerEnclosed = nil, nil, nil
+		g.NextSurroundSample = 0
 	end
 
 	c.LastSeenAge = CurTime() - g.TargetLastSeenTime

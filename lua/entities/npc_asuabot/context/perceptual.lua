@@ -1,7 +1,3 @@
-function ENT:GetPlayerViewDirection(target)
-	return target:EyeAngles():Forward()
-end
-
 function ENT:CanBotSeeTarget(target)
 	if not IsValid(target) then
 		return false

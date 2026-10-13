@@ -15,7 +15,7 @@ ENT.UtilityScores.Wander = function(self, ctx, trace)
 		return 0.7
 	end
 
-	local playerInOpen = self:IsPlayerInOpenArea(ctx.Target, 200) and 0.7 or 0.2
+	local playerInOpen = ctx.PlayerInOpen and 0.7 or 0.2
 	local distance = Consider(ctx.Distance, 0, 4000, function(x)
 		return Curves.Bell(x, nil, 0.2)
 	end)

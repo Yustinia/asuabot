@@ -30,7 +30,7 @@ ENT.UtilityScores.Apparition = function(self, ctx, trace)
 		return 0
 	end
 
-	local playerCornered = self:IsPlayerCornered(ctx.Target, 200, 6) and 0.6 or 0.4
+	local playerCornered = ctx.PlayerCornered and 0.6 or 0.4
 
 	if trace then
 		trace.Cornered = playerCornered
