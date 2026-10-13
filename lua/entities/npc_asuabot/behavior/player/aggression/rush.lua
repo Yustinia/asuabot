@@ -19,19 +19,35 @@ ENT.UtilityScores.Rush = function(self, ctx, trace)
 		return 0
 	end
 
-	local close = Consider(ctx.Distance, 0, SIGHT_RANGE, Curves.LinearInverse)
+	local range = math.max(
+		Consider(ctx.Distance, 0, SIGHT_RANGE, function(x)
+			return Curves.Bell(x, 0.4, 0.25)
+		end),
+		0.15
+	)
 	local memory = Consider(ctx.LastSeenAge, 0, MEMORY_DUR, function(x)
 		return Curves.SmoothStepInverseOut(x, 3)
 	end)
+	local watched = ctx.Observe and 1 or 0.6
+	local wounded = math.max(
+		Consider(ctx.HealthFrac, 0, 1, function(x)
+			return Curves.SmoothStepOut(x, 2)
+		end),
+		0.4
+	)
 
 	if trace then
-		trace.Close = close
+		trace.Range = range
 		trace.Memory = memory
+		trace.Watched = watched
+		trace.Wounded = wounded
 	end
 
 	return WeightedGeoMean({
-		{ score = close, weight = 1 },
+		{ score = range, weight = 1 },
 		{ score = memory, weight = 1.4 },
+		{ score = watched, weight = 0.8 },
+		{ score = wounded, weight = 0.8 },
 	})
 end
 

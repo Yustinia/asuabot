@@ -19,16 +19,28 @@ ENT.UtilityScores.Charge = function(self, ctx, trace)
 		return 0
 	end
 
-	local range = Consider(ctx.Distance, TRIGGER_MIN - 600, TRIGGER_MAX + 600, function(x)
-		return Curves.Bell(x, 0.25)
-	end)
+	local range = math.max(
+		Consider(ctx.Distance, TRIGGER_MIN - 600, TRIGGER_MAX + 600, function(x)
+			return Curves.Bell(x, 0.3, 0.25)
+		end),
+		0.1
+	)
+	local clear = ctx.PlayerInOpen and 1 or (ctx.PlayerEnclosed and 0.4 or 0.7)
+	local watched = ctx.Observe and 1 or 0.7
+	local unarmed = ctx.HoldingRanged and 0.5 or 1
 
 	if trace then
 		trace.Range = range
+		trace.Clear = clear
+		trace.Watched = watched
+		trace.Unarmed = unarmed
 	end
 
 	return WeightedGeoMean({
 		{ score = range, weight = 1 },
+		{ score = clear, weight = 1 },
+		{ score = watched, weight = 0.6 },
+		{ score = unarmed, weight = 0.8 },
 	})
 end
 

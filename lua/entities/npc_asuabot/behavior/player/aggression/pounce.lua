@@ -74,17 +74,23 @@ ENT.UtilityScores.Pounce = function(self, ctx, trace)
 		return 0
 	end
 
-	local close = Consider(ctx.Distance, 0, SIGHT_RANGE, Curves.LinearInverse)
-	local moving = math.max(Consider(ctx.PlayerSpeed, 0, 300, Curves.Linear), 0.2)
+	local close = math.max(Consider(ctx.Distance, 0, SIGHT_RANGE, Curves.LinearInverse), 0.15)
+	local still = math.max(Consider(ctx.PlayerSpeed, 0, 300, Curves.LinearInverse), 0.2)
+	local tight = ctx.PlayerCornered and 1 or (ctx.PlayerEnclosed and 0.8 or 0.5)
+	local unseen = ctx.Observe and 0.5 or 1
 
 	if trace then
 		trace.Close = close
-		trace.Moving = moving
+		trace.Still = still
+		trace.Tight = tight
+		trace.Unseen = unseen
 	end
 
 	return WeightedGeoMean({
 		{ score = close, weight = 1 },
-		{ score = moving, weight = 1.2 },
+		{ score = still, weight = 1.2 },
+		{ score = tight, weight = 1 },
+		{ score = unseen, weight = 0.8 },
 	})
 end
 

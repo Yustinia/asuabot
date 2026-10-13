@@ -19,19 +19,22 @@ ENT.UtilityScores.Chase = function(self, ctx, trace)
 		return 0
 	end
 
-	local close = Consider(ctx.Distance, 0, SIGHT_RANGE, Curves.LinearInverse)
+	local close = math.max(Consider(ctx.Distance, 0, SIGHT_RANGE, Curves.LinearInverse), 0.15)
 	local memory = Consider(ctx.LastSeenAge, 0, MEMORY_DUR, function(x)
 		return Curves.PowerInverseIn(x, 3)
 	end)
+	local open = ctx.PlayerEnclosed and 0.7 or 1
 
 	if trace then
 		trace.Close = close
 		trace.Memory = memory
+		trace.Open = open
 	end
 
 	return WeightedGeoMean({
 		{ score = close, weight = 1 },
 		{ score = memory, weight = 1.2 },
+		{ score = open, weight = 0.4 },
 	})
 end
 
