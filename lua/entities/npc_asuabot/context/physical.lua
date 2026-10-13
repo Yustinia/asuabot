@@ -18,6 +18,10 @@ function ENT:GetPlayerSpeed(target)
 	return target:GetVelocity():Length()
 end
 
+function ENT:GetPlayer2DSpeed(target)
+	return target:GetVelocity():Length2D()
+end
+
 function ENT:IsPlayerStationary(target, threshold)
 	threshold = threshold or 10
 	return target:GetVelocity():Length2D() < threshold
