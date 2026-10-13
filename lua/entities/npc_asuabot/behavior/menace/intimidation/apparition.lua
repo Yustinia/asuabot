@@ -30,11 +30,15 @@ ENT.UtilityScores.Apparition = function(self, ctx, trace)
 		return 0
 	end
 
+	local playerCornered = self:IsPlayerCornered(ctx.Target, 200, 6) and 0.6 or 0.4
+
 	if trace then
-		trace.Distance = ctx.Distance
+		trace.Cornered = playerCornered
 	end
 
-	return 0.6
+	return WeightedGeoMean({
+		{ score = playerCornered, weight = 1.0 },
+	})
 end
 
 ENT.StateEnter.Apparition = function(self)
