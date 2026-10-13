@@ -1,54 +1,33 @@
-local meleeWeapons = {
-	"weapon_crowbar",
-	"weapon_stunstick",
+local MELEE_HOLD = {
+	melee = true,
+	melee2 = true,
+	knife = true,
+	fist = true,
 }
 
-local rangedWeapons = {
-	"weapon_pistol",
-	"weapon_357",
-	"weapon_smg1",
-	"weapon_ar2",
-	"weapon_shotgun",
-	"weapon_crossbow",
-	"weapon_rpg",
+local RANGED_HOLD = {
+	pistol = true,
+	revolver = true,
+	smg = true,
+	ar2 = true,
+	shotgun = true,
+	crossbow = true,
+	rpg = true,
+	duel = true,
 }
-
-function ENT:GetActiveWeapon(target)
-	return target:GetActiveWeapon():GetClass()
-end
 
 function ENT:GetActiveWeaponType(target)
-	return target:GetActiveWeapon():GetHoldType()
+	local w = IsValid(target) and target:GetActiveWeapon()
+	if not IsValid(w) then
+		return nil
+	end
+	return w:GetHoldType()
 end
 
 function ENT:IsPlayerHoldingMelee(target)
-	local weap = self:GetActiveWeapon(target)
-
-	if not IsValid(target) then
-		return false
-	end
-
-	for _, weapon in ipairs(meleeWeapons) do
-		if weap == weapon then
-			return true
-		end
-	end
-
-	return false
+	return MELEE_HOLD[self:GetActiveWeaponType(target)] == true
 end
 
 function ENT:IsPlayerHoldingRanged(target)
-	local weap = self:GetActiveWeapon(target)
-
-	if not IsValid(target) then
-		return false
-	end
-
-	for _, weapon in ipairs(rangedWeapons) do
-		if weap == weapon then
-			return true
-		end
-	end
-
-	return false
+	return RANGED_HOLD[self:GetActiveWeaponType(target)] == true
 end

@@ -49,6 +49,8 @@ function ENT:SampleContext()
 	c.PlayerInOpen = false
 	c.PlayerCornered = false
 	c.PlayerEnclosed = false
+	c.HoldingMelee = false
+	c.HoldingRanged = false
 
 	if c.TargetValid then
 		c.Distance = self:GetPos():Distance(c.Target:GetPos())
@@ -73,6 +75,9 @@ function ENT:SampleContext()
 		c.PlayerInOpen = g.PlayerInOpen or false
 		c.PlayerCornered = g.PlayerCornered or false
 		c.PlayerEnclosed = g.PlayerEnclosed or false
+
+		c.HoldingMelee = self:IsPlayerHoldingMelee(c.Target)
+		c.HoldingRanged = self:IsPlayerHoldingRanged(c.Target)
 
 		if c.Visible then
 			g.TargetLastSeenTime = CurTime()
