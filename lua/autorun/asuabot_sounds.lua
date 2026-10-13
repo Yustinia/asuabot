@@ -17,7 +17,7 @@ Add("Asuabot.Screech", {
 	"asuabot/Screech-1.wav",
 	"asuabot/Screech-2.wav",
 	"asuabot/Screech-3.wav",
-}, 40)
+}, 80)
 
 Add("Asuabot.Roar", {
 	"asuabot/Roar-1.wav",
