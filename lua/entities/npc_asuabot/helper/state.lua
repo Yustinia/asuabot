@@ -35,6 +35,15 @@ function ENT:SampleContext()
 	c.Visible = false
 	c.Observe = false
 	c.PlayerSpeed = 0
+	c.PlayerSpeed3D = 0
+	c.Crouching = false
+	c.Swimming = false
+	c.InVehicle = false
+	c.Flashlight = false
+	c.HealthFrac = 1
+	c.CameraDelta = 0
+	c.PlayerStill = false
+	c.StillFor = 0
 
 	if c.TargetValid then
 		c.Distance = self:GetPos():Distance(c.Target:GetPos())
@@ -42,30 +51,39 @@ function ENT:SampleContext()
 		c.Visible = self:IsTargetVisibleFromBot(c.Target)
 		c.Observe = self:IsPlayerLookingAtBot(c.Target)
 		c.PlayerSpeed = c.Target:GetVelocity():Length2D()
+		c.PlayerSpeed3D = c.Target:GetVelocity():Length()
+		c.Crouching = c.Target:Crouching()
+		c.Swimming = c.Target:WaterLevel() >= 2
+		c.InVehicle = c.Target:InVehicle()
+		c.Flashlight = c.Target:FlashlightIsOn()
+		c.HealthFrac = c.Target:Health() / math.max(c.Target:GetMaxHealth(), 1)
 
 		if c.Visible then
 			g.TargetLastSeenTime = CurTime()
 			g.TargetLastSeenPos = c.Target:GetPos()
 			self:RecordLastSeenPosition(c.Target:GetPos())
 		end
+
+		-- player stillness
+		local ang = c.Target:EyeAngles()
+		local last = g.LastEyeAngles or ang
+		c.CameraDelta = math.abs(math.AngleDifference(ang.p, last.p)) + math.abs(math.AngleDifference(ang.y, last.y))
+		g.LastEyeAngles = ang
+		c.PlayerStill = c.Target:GetVelocity():Length() < 5 and c.CameraDelta < 0.3
+		if c.PlayerStill then
+			g.StillSince = g.StillSince or CurTime()
+		else
+			g.StillSince = nil
+		end
+		c.StillFor = g.StillSince and (CurTime() - g.StillSince) or 0
+	else
+		g.LastEyeAngles = nil
+		g.StillSince = nil
 	end
 
 	c.LastSeenAge = CurTime() - g.TargetLastSeenTime
 	c.StateTime = CurTime() - g.StateStartTime
 	c.CurrentState = g.CurrentState
-
-	-- player stillness
-	local ang = c.Target:EyeAngles()
-	local last = g.LastEyeAngles or ang
-	c.CameraDelta = math.abs(math.AngleDifference(ang.p, last.p)) + math.abs(math.AngleDifference(ang.y, last.y))
-	g.LastEyeAngles = ang
-	c.PlayerStill = c.Target:GetVelocity():Length() < 5 and c.CameraDelta < 0.1
-	if c.PlayerStill then
-		g.StillSince = g.StillSince or CurTime()
-	else
-		g.StillSince = nil
-	end
-	c.StillFor = g.StillSince and (CurTime() - g.StillSince) or 0
 
 	return c
 end
