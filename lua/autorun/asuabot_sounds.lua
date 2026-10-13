@@ -66,7 +66,7 @@ Add("Asuabot.Ambiance", {
 	"asuabot/Ambiance-5.wav",
 	"asuabot/Ambiance-6.wav",
 	"asuabot/Ambiance-7.wav",
-}, 100, 100)
+}, 60)
 
 Add("Asuabot.Slam", {
 	"asuabot/Slam-1.wav",
