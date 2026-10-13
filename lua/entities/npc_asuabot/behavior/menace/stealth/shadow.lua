@@ -16,16 +16,35 @@ ENT.StateRules.Shadow = {
 }
 
 ENT.UtilityScores.Shadow = function(self, ctx, trace)
-	if trace then
-		trace.Distance = ctx.Distance
-		trace.Visible = ctx.Visible and 1 or 0
-	end
-
 	if not ctx.TargetValid or ctx.Distance > START_RANGE or ctx.Distance <= CATCH_RADIUS then
 		return 0
 	end
 
-	return 0.55
+	local wounded = math.max(
+		Consider(ctx.HealthFrac, 0, 1, function(x)
+			return Curves.SmoothStepOut(x, 2)
+		end),
+		0.25
+	)
+	local range = Consider(ctx.Distance, CATCH_RADIUS, START_RANGE, function(x)
+		return Curves.PowerInverseIn(x, 2)
+	end)
+	local unseen = ctx.Observe and 0.4 or 1
+	local moving = math.max(Consider(ctx.PlayerSpeed, 0, 250, Curves.Linear), 0.3)
+
+	if trace then
+		trace.Wounded = wounded
+		trace.Range = math.max(range, 0.2)
+		trace.Unseen = unseen
+		trace.Moving = moving
+	end
+
+	return WeightedGeoMean({
+		{ score = wounded, weight = 1.4 },
+		{ score = math.max(range, 0.2), weight = 0.8 },
+		{ score = unseen, weight = 1 },
+		{ score = moving, weight = 0.8 },
+	})
 end
 
 ENT.StateEnter.Shadow = function(self)
