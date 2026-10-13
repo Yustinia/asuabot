@@ -116,17 +116,23 @@ if SERVER then
 		local target = self.GlobalContext.Target
 		if IsValid(target) then
 			target:StopSound("Asuabot.Screech")
+			target:StopSound("Asuabot.Roar")
+			target:StopSound("Asuabot.Growl")
+			target:StopSound("Asuabot.Jumpscare")
 			target:StopSound("Asuabot.Approach")
 			target:StopSound("Asuabot.Ambiance")
-			target:StopSound("Asuabot.Jumpscare")
 			target:StopSound("Asuabot.Slam")
+			target:StopSound("Asuabot.Foley")
 		end
 
 		self:StopSound("Asuabot.Screech")
+		self:StopSound("Asuabot.Roar")
+		self:StopSound("Asuabot.Growl")
+		self:StopSound("Asuabot.Jumpscare")
 		self:StopSound("Asuabot.Approach")
 		self:StopSound("Asuabot.Ambiance")
-		self:StopSound("Asuabot.Jumpscare")
 		self:StopSound("Asuabot.Slam")
+		self:StopSound("Asuabot.Foley")
 	end
 
 	function ENT:Initialize()
