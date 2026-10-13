@@ -48,6 +48,8 @@ ENT.StateEnter.Drift = function(self)
 
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+
+	gl.Target:EmitSound("Asuabot.Screech")
 end
 
 ENT.StateUpdate.Drift = function(self, ctx)
@@ -73,6 +75,8 @@ ENT.StateUpdate.Drift = function(self, ctx)
 	self:RefreshPathIfStale(self.StateContext.Goal, "Follow")
 	gl.Path:Update(self)
 	self:ClearObstacles()
+
+	self:EmitLoop(ctx.Target, "Asuabot.Ambiance")
 end
 
 ENT.StateExit.Drift = function(self)
@@ -81,4 +85,6 @@ ENT.StateExit.Drift = function(self)
 	if gl.Path and gl.Path:IsValid() then
 		gl.Path:Invalidate()
 	end
+
+	gl.Target:StopSound("Asuabot.Ambiance")
 end

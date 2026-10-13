@@ -52,6 +52,9 @@ ENT.StateEnter.Chase = function(self)
 
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(gl.Target, MIN_LOOK_AHEAD, GOAL_THRESH, "Chase")
+
+	gl.Target:EmitSound("Asuabot.Screech")
+	gl.Target:EmitSound("Asuabot.Roar")
 end
 
 ENT.StateUpdate.Chase = function(self, ctx)
@@ -67,6 +70,8 @@ ENT.StateUpdate.Chase = function(self, ctx)
 		self:PunchEntity(ctx.Target)
 		sc.Done = true
 		sc.Caught = true
+
+		ctx.Target:EmitSound("Asuabot.Slam")
 		return
 	end
 
@@ -78,6 +83,8 @@ ENT.StateUpdate.Chase = function(self, ctx)
 	self:RefreshPathIfStale(ctx.Target, "Chase")
 	gl.Path:Update(self)
 	self:ClearObstacles()
+
+	self:EmitLoop(ctx.Target, "Asuabot.Approach")
 end
 
 ENT.StateExit.Chase = function(self)
@@ -95,4 +102,6 @@ ENT.StateExit.Chase = function(self)
 	if nav then
 		self:Teleport(nav)
 	end
+
+	gl.Target:StopSound("Asuabot.Approach")
 end

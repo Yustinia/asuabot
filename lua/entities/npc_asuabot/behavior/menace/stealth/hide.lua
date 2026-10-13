@@ -60,6 +60,8 @@ ENT.StateEnter.Hide = function(self)
 
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+
+	gl.Target:EmitSound("Asuabot.Screech")
 end
 
 ENT.StateUpdate.Hide = function(self, ctx)
@@ -84,6 +86,8 @@ ENT.StateUpdate.Hide = function(self, ctx)
 	self:ComputeRoutingPath(sc.Goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
 	gl.Path:Update(self)
 	self:ClearObstacles()
+
+	self:EmitLoop(ctx.Target, "Asuabot.Foley")
 end
 
 ENT.StateExit.Hide = function(self)
@@ -101,4 +105,6 @@ ENT.StateExit.Hide = function(self)
 	if nav then
 		self:Teleport(nav)
 	end
+
+	gl.Target:StopSound("Asuabot.Foley")
 end

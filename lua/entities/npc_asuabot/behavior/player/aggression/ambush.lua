@@ -39,6 +39,8 @@ Phases.hide = function(self, ctx, gl, sc)
 	self:RefreshPathIfStale(sc.Goal, "Follow")
 	gl.Path:Update(self)
 	self:ClearObstacles()
+
+	self:EmitLoop(ctx.Target, "Asuabot.Foley")
 end
 
 Phases.wait = function(self, ctx, gl, sc)
@@ -57,6 +59,9 @@ Phases.wait = function(self, ctx, gl, sc)
 		sc.InSequence = false
 		sc.Done = true
 	end
+
+	ctx.Target:StopSound("Asuabot.Foley")
+	self:EmitLoop(ctx.Target, "Asuabot.Ambiance")
 end
 
 Phases.strike = function(self, ctx, gl, sc)
@@ -67,6 +72,8 @@ Phases.strike = function(self, ctx, gl, sc)
 		sc.InSequence = false
 		sc.Done = true
 		sc.Caught = true
+
+		ctx.Target:EmitSound("Asuabot.Slam")
 		return
 	end
 
@@ -84,6 +91,9 @@ Phases.strike = function(self, ctx, gl, sc)
 	self:RefreshPathIfStale(ctx.Target, "Chase")
 	gl.Path:Update(self)
 	self:ClearObstacles()
+
+	ctx.Target:StopSound("Asuabot.Ambiance")
+	self:EmitLoop(ctx.Target, "Asuabot.Jumpscare")
 end
 
 ENT.StateRules.Ambush = {
@@ -146,16 +156,14 @@ ENT.StateEnter.Ambush = function(self)
 
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+
+	gl.Target:EmitSound("Asuabot.Screech")
 end
 
 ENT.StateUpdate.Ambush = function(self, ctx)
 	local gl, sc = self:ReturnContext()
 
-	if sc.Phase == "none" or not ctx.TargetValid then
-		sc.InSequence = false
-
-		sc.Done = true
-
+	if sc.Done then
 		return
 	end
 
@@ -177,4 +185,8 @@ ENT.StateExit.Ambush = function(self)
 	if nav then
 		self:Teleport(nav)
 	end
+
+	gl.Target:StopSound("Asuabot.Jumpscare")
+	gl.Target:StopSound("Asuabot.Ambiance")
+	gl.Target:StopSound("Asuabot.Foley")
 end

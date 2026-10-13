@@ -168,18 +168,20 @@ ENT.StateEnter.Peek = function(self)
 
 	self:HandleSpeed(SPEED, ACCEL)
 	self:ComputeRoutingPath(goal, MIN_LOOK_AHEAD, GOAL_THRESH, "Follow")
+
+	gl.Target:EmitSound("Asuabot.Screech")
 end
 
 ENT.StateUpdate.Peek = function(self, ctx)
 	local gl, sc = self:ReturnContext()
 
-	if sc.Phase == "none" or not ctx.TargetValid then
-		sc.Done = true
-		sc.InSequence = false
+	if sc.Done then
 		return
 	end
 
 	Phases[sc.Phase](self, ctx, gl, sc)
+
+	self:EmitLoop(ctx.Target, "Asuabot.Foley")
 end
 
 ENT.StateExit.Peek = function(self)
@@ -197,4 +199,6 @@ ENT.StateExit.Peek = function(self)
 	if nav then
 		self:Teleport(nav)
 	end
+
+	gl.Target:StopSound("Asuabot.Foley")
 end
