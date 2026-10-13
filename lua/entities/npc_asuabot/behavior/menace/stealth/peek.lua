@@ -108,15 +108,33 @@ ENT.StateRules.Peek = {
 }
 
 ENT.UtilityScores.Peek = function(self, ctx, trace)
-	if trace then
-		trace.Distance = ctx.Distance
-	end
-
 	if not ctx.TargetValid or ctx.Distance > MAX_START_DIST then
 		return 0
 	end
 
-	return 0.7
+	local range = Consider(ctx.Distance, 0, MAX_START_DIST, function(x)
+		return Curves.Bell(x, 0.65, 0.3)
+	end)
+	local unseen = ctx.Observe and 0.3 or 1
+	local moving = math.max(Consider(ctx.PlayerSpeed, 0, 250, Curves.Linear), 0.3)
+	local cover = ctx.PlayerInOpen and 0.3 or 1
+	local fresh = math.max(Consider(ctx.LastSeenAge, 0, 30, Curves.Linear), 0.3)
+
+	if trace then
+		trace.Range = range
+		trace.Unseen = unseen
+		trace.Moving = moving
+		trace.Cover = cover
+		trace.Fresh = fresh
+	end
+
+	return WeightedGeoMean({
+		{ score = range, weight = 1 },
+		{ score = unseen, weight = 1.2 },
+		{ score = moving, weight = 0.8 },
+		{ score = cover, weight = 1 },
+		{ score = fresh, weight = 0.8 },
+	})
 end
 
 ENT.StateEnter.Peek = function(self)
