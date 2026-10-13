@@ -17,25 +17,31 @@ Add("Asuabot.Screech", {
 	"asuabot/Screech-1.wav",
 	"asuabot/Screech-2.wav",
 	"asuabot/Screech-3.wav",
-	"asuabot/Screech-4.wav",
-	"asuabot/Screech-5.wav",
-	"asuabot/Screech-6.wav",
-	"asuabot/Screech-7.wav",
-	"asuabot/Screech-8.wav",
-	"asuabot/Screech-9.wav",
-	"asuabot/Screech-10.wav",
-	"asuabot/Screech-11.wav",
-	"asuabot/Screech-12.wav",
-	"asuabot/Screech-13.wav",
-	"asuabot/LowScreech-1.wav",
-	"asuabot/LowScreech-2.wav",
-	"asuabot/LowScreech-3.wav",
-	"asuabot/LowScreech-4.wav",
-	"asuabot/LowScreech-5.wav",
-	"asuabot/LowScreech-6.wav",
-	"asuabot/LowScreech-7.wav",
-	"asuabot/LowScreech-8.wav",
 }, 40)
+
+Add("Asuabot.Roar", {
+	"asuabot/Roar-1.wav",
+	"asuabot/Roar-2.wav",
+	"asuabot/Roar-3.wav",
+	"asuabot/Roar-4.wav",
+	"asuabot/Roar-5.wav",
+	"asuabot/Roar-6.wav",
+	"asuabot/Roar-7.wav",
+	"asuabot/Roar-8.wav",
+	"asuabot/Roar-9.wav",
+	"asuabot/Roar-10.wav",
+}, 80)
+
+Add("Asuabot.Growl", {
+	"asuabot/Growl-1.wav",
+	"asuabot/Growl-2.wav",
+	"asuabot/Growl-3.wav",
+	"asuabot/Growl-4.wav",
+	"asuabot/Growl-5.wav",
+	"asuabot/Growl-6.wav",
+	"asuabot/Growl-7.wav",
+	"asuabot/Growl-8.wav",
+}, 80)
 
 Add("Asuabot.Jumpscare", {
 	"asuabot/Jumpscare-1.wav",
