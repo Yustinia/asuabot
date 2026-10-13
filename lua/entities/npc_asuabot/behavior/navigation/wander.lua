@@ -10,8 +10,25 @@ ENT.StateRules.Wander = {
 	cd = 45,
 }
 
-ENT.UtilityScores.Wander = function(self, ctx)
-	return 0.5
+ENT.UtilityScores.Wander = function(self, ctx, trace)
+	if not ctx.TargetValid then
+		return 0.7
+	end
+
+	local playerInOpen = self:IsPlayerInOpenArea(ctx.Target) and 0.7 or 0.2
+	local distance = Consider(ctx.Distance, 0, 4000, function(x)
+		return Curves.Bell(x, nil, 0.2)
+	end)
+
+	if trace then
+		trace.PlayerInOpen = playerInOpen
+		trace.Distance = distance
+	end
+
+	return WeightedGeoMean({
+		{ score = playerInOpen, weight = 1.2 },
+		{ score = distance, weight = 1.1 },
+	})
 end
 
 ENT.StateEnter.Wander = function(self)
