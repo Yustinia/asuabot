@@ -193,7 +193,7 @@ ENT.StateExit.Peek = function(self)
 		gl.Path:Invalidate()
 	end
 
-	local nav = self.FindRandomNavArea()
+	local nav = self:FindRandomNavArea()
 	if nav then
 		self:Teleport(nav)
 	end
