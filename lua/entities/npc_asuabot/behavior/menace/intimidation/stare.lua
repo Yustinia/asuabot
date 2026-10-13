@@ -1,5 +1,6 @@
 local MIN_RADIUS = 200
 local MAX_RADIUS = 400
+local FORCE = 700
 
 ENT.StateRules.Stare = {
 	min = 5,
@@ -53,16 +54,18 @@ ENT.StateUpdate.Stare = function(self, ctx)
 		sc.Done = true
 	end
 
-	local looking = self:IsPlayerLookingAtBot(ctx.Target)
+	if ctx.Observed and (FORCE > 0 and ctx.Distance > 200) then
+		self:DragEntity(ctx.Target, FORCE)
+	end
 
 	if not sc.Seen then
-		if looking then
+		if ctx.Observed then
 			sc.Seen = true
 		end
 		return
 	end
 
-	if not looking then
+	if not ctx.Observed then
 		sc.Vanish = true
 		sc.Done = true
 	end
